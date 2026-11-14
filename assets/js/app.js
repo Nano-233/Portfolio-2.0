@@ -530,7 +530,7 @@
 
     detailLinks.textContent = "";
     if (!p.links || !p.links.length) {
-      detailLinks.appendChild(el("span", "note", p.status === "team" ? "Team hackathon, no public repository" : "Not published, available on request"));
+      detailLinks.appendChild(el("span", "note", p.status === "team" ? "Team hackathon — no public repository" : "Not published — available on request"));
     } else {
       p.links.forEach(function (l) {
         var a = el("a", null, l.label + " ↗");
