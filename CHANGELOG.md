@@ -33,3 +33,7 @@ Every project now has media except EchoForge and st-tg-bridge (nothing visual ex
   - strip skews with its scroll/drag velocity
   - live Singapore clock in the hero facts
 - **Cursor jitter fixed:** the dot used to ride the same lagging container as the preview, so it trailed the pointer and snapped when the preview flipped at a screen edge. The dot now sits exactly on the pointer; only the preview eases.
+
+## exp-wheel (branch, experiment; branched from main, replaces the split-stage idea)
+The Index list is now a **3D wheel**: a CSS-3D cylinder of project cards that the page scroll spins (section pins for ~0.4 screen per project). Front card is bright and, if it has a video, plays it; the title, tagline and Open button sit below. Click a side card to spin to it, click the front card to open it. Filters still work (the wheel rebuilds). No libraries, plain CSS 3D transforms. Page scrolling is never trapped: it is ordinary scrolling mapped to rotation.
+Revert: `git switch main`. The earlier split idea lives on `exp-stage`.

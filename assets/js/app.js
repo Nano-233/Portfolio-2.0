@@ -100,55 +100,125 @@
    * index rows
    * ------------------------------------------------------------------ */
 
-  var rowsEl = $("rows");
   var countEl = $("index-count");
   var noResults = $("no-results");
 
+  /* ---- 3D wheel: page scroll spins a cylinder of project cards ---- */
+  var pin = $("wheel-pin"), wheel = $("wheel");
+  var W = { list: [], cards: [], step: 0, cur: 0, target: 0, active: -1, R: 0, raf: 0 };
+
+  function cardW() { return Math.max(220, Math.min(420, window.innerWidth * 0.3)); }
+
   function buildRows() {
     var list = filterList();
-    rowsEl.textContent = "";
+    W.list = list;
+    wheel.textContent = "";
+    W.cards = [];
+    W.active = -1;
+
+    var n = list.length;
+    W.step = n ? 360 / n : 0;
+    var cw = cardW();
+    W.R = n > 1 ? Math.max(cw * 1.5, (cw * 1.18 / 2) / Math.tan(Math.PI / n)) : 0;
+    wheel.style.setProperty("--cw", cw + "px");
 
     list.forEach(function (p, i) {
-      var row = el("li", "row");
-      row.tabIndex = 0;
-      row.setAttribute("role", "button");
-      row.setAttribute("aria-label", "Open " + p.title);
-      row.dataset.id = p.id;
+      var card = el("button", "card");
+      card.type = "button";
+      card.setAttribute("aria-label", "Open " + p.title);
+      card.style.transform = "rotateY(" + (i * W.step) + "deg) translateZ(" + W.R + "px)";
 
-      row.appendChild(el("span", "row-num", String(i + 1).padStart(2, "0")));
+      var frame = el("span", "card-frame");
+      var m = p.media;
+      var src = m && (m.type === "video" ? m.poster : m.src);
+      if (src) {
+        var img = document.createElement("img");
+        img.src = src; img.alt = ""; img.loading = "lazy"; img.draggable = false;
+        frame.appendChild(img);
+      } else {
+        frame.appendChild(el("span", "card-empty", p.title));
+      }
+      card.appendChild(frame);
+      card.appendChild(el("span", "card-num", String(i + 1).padStart(2, "0")));
 
-      var main = el("div", "row-main");
-      var title = el("span", "row-title");
-      mark(title, p.title, state.q);
-      main.appendChild(title);
-      main.appendChild(el("span", "row-sub", p.tagline));
-      row.appendChild(main);
-
-      var side = el("div", "row-side");
-      side.appendChild(el("span", "row-cat", CAT[p.category] || p.category));
-      side.appendChild(el("span", "row-year", p.year));
-      var arrow = el("span", "row-arrow", "↗");
-      side.appendChild(arrow);
-      row.appendChild(side);
-
-      row.addEventListener("click", function () { openDetail(p); });
-      row.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetail(p); }
+      card.addEventListener("click", function () {
+        if (i === W.active) openDetail(p); else scrollToCard(i);
       });
-      attachPreview(row, p);
-      if (finePointer) row.addEventListener("mouseenter", function () { if (!state.q) scramble(title, p.title); });
-
-      rowsEl.appendChild(row);
+      wheel.appendChild(card);
+      W.cards.push({ el: card, frame: frame, p: p });
     });
 
-    countEl.textContent = list.length === data.projects.length
-      ? data.projects.length + " works"
-      : list.length + " / " + data.projects.length;
+    countEl.textContent = n === data.projects.length
+      ? n + " works"
+      : n + " / " + data.projects.length;
 
-    noResults.hidden = list.length !== 0;
-    rowsEl.hidden = list.length === 0;
+    noResults.hidden = n !== 0;
+    pin.hidden = n === 0;
+    sizePin();
+    spin(true);
   }
 
+  function sizePin() {
+    var n = W.list.length;
+    pin.style.height = n ? (window.innerHeight + Math.max(0, n - 1) * window.innerHeight * 0.38) + "px" : "0";
+  }
+
+  function pinProgress() {
+    var top = pin.getBoundingClientRect().top + window.scrollY;
+    var span = pin.offsetHeight - window.innerHeight;
+    return span > 0 ? Math.max(0, Math.min(1, (window.scrollY - top) / span)) : 0;
+  }
+
+  function scrollToCard(i) {
+    var top = pin.getBoundingClientRect().top + window.scrollY;
+    var span = pin.offsetHeight - window.innerHeight;
+    window.scrollTo({ top: top + (W.list.length > 1 ? i / (W.list.length - 1) : 0) * span, behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function spin(snap) {
+    var n = W.list.length;
+    if (!n) return;
+    W.target = pinProgress() * (n - 1);
+    if (snap || reduce) W.cur = W.target;
+    else W.cur += (W.target - W.cur) * 0.14;
+    var ang = W.cur * W.step;
+    wheel.style.transform = "translateZ(" + (-W.R) + "px) rotateX(-5deg) rotateY(" + (-ang) + "deg)";
+
+    var act = Math.round(W.cur);
+    W.cards.forEach(function (c, i) {
+      var d = Math.abs(i - W.cur);
+      d = Math.min(d, n - d);
+      var o = Math.max(0, 1 - d / 4.5);
+      c.el.style.opacity = o.toFixed(2);
+      c.el.style.pointerEvents = d < 3 ? "auto" : "none";
+      c.el.classList.toggle("is-active", i === act);
+    });
+    if (act !== W.active) setActive(act);
+    if (Math.abs(W.target - W.cur) > 0.002) W.raf = requestAnimationFrame(function () { spin(false); });
+    else W.raf = 0;
+  }
+
+  function setActive(i) {
+    var c = W.cards[i];
+    if (!c) return;
+    // only the front card plays video
+    W.cards.forEach(function (o) { var v = o.frame.querySelector("video"); if (v) { v.pause(); v.remove(); } });
+    var m = c.p.media;
+    if (m && m.type === "video") {
+      var v = document.createElement("video");
+      v.src = m.src; v.muted = true; v.loop = true; v.playsInline = true;
+      c.frame.appendChild(v);
+      v.play().catch(function () {});
+    }
+    W.active = i;
+    $("wheel-num").textContent = String(i + 1).padStart(2, "0") + " / " + String(W.list.length).padStart(2, "0");
+    $("wheel-title").textContent = c.p.title;
+    $("wheel-tag").textContent = c.p.tagline + "  ·  " + (CAT[c.p.category] || "") + " · " + c.p.year;
+  }
+
+  $("wheel-open").addEventListener("click", function () { if (W.list[W.active]) openDetail(W.list[W.active]); });
+  window.addEventListener("scroll", function () { if (!W.raf) W.raf = requestAnimationFrame(function () { spin(false); }); }, { passive: true });
+  window.addEventListener("resize", function () { buildRows(); });
   function buildCats() {
     var wrap = $("cats");
     data.categories.forEach(function (c) {

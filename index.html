@@ -80,7 +80,18 @@
         <div class="cats" id="cats" role="group" aria-label="Filter by discipline"></div>
       </div>
 
-      <ol class="rows" id="rows"></ol>
+      <div class="wheel-pin" id="wheel-pin">
+        <div class="wheel-sticky">
+          <div class="wheel-scene"><div class="wheel" id="wheel"></div></div>
+          <div class="wheel-info" aria-live="polite">
+            <span class="wheel-num" id="wheel-num"></span>
+            <h3 class="wheel-title" id="wheel-title"></h3>
+            <p class="wheel-tag" id="wheel-tag"></p>
+            <button class="textbtn" id="wheel-open" type="button">Open ↗</button>
+          </div>
+          <p class="wheel-hint" aria-hidden="true">Scroll to spin</p>
+        </div>
+      </div>
       <p class="no-results" id="no-results" hidden>No works match that. <button class="inlinebtn" type="button" id="reset">Reset</button></p>
     </section>
 
