@@ -237,6 +237,14 @@
   function setupCursor() {
     if (!finePointer || reduce) return;
 
+    // the custom dot replaces the system cursor everywhere
+    document.body.classList.add("has-cursor");
+    document.addEventListener("pointerover", function (e) {
+      var t = e.target.closest ? e.target : e.target.parentElement;
+      document.body.classList.toggle("cursor-link", !!(t && t.closest("a,button,input,[role=button],.row")));
+      document.body.classList.toggle("cursor-drag", !!(t && t.closest(".gallery-viewport")));
+    });
+
     window.addEventListener("pointermove", function (e) {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
@@ -320,6 +328,16 @@
     function by(d) { vp.scrollBy({ left: d * vp.clientWidth * 0.7, behavior: reduce ? "auto" : "smooth" }); }
     $("gallery-prev").addEventListener("click", function () { by(-1); });
     $("gallery-next").addEventListener("click", function () { by(1); });
+
+    // Wheel over the strip scrolls it sideways; at either end it hands off to the page.
+    vp.addEventListener("wheel", function (e) {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      var max = vp.scrollWidth - vp.clientWidth;
+      var next = vp.scrollLeft + e.deltaY;
+      if (e.deltaY === 0 || next < 0 && vp.scrollLeft <= 0 || next > max && vp.scrollLeft >= max) return;
+      e.preventDefault();
+      vp.scrollLeft = next;
+    }, { passive: false });
 
     var down = null;
     vp.addEventListener("pointerdown", function (e) {

@@ -20,7 +20,6 @@ window.PORTFOLIO = {
     { src: "media/wuxia.mp4", type: "video", label: "Wuxia — trailer", note: "LLM narrates · engine decides" },
     { src: "media/appraiser.jpg", type: "image", label: "The Appraiser — first wall", note: "Playable · browser" },
     { src: "media/broadcast.jpg", type: "image", label: "Broadcast — studio", note: "Fastify · WebRTC" },
-    { src: "media/trlp.mp4", type: "video", label: "TRLP — Hong Kong in three days", note: "AutoGen · GraphRAG" },
     { src: "media/travel-cv.jpg", type: "image", label: "Travel-CV — predictions", note: "Faster R-CNN" },
     { src: "media/huddle.jpg", type: "image", label: "Huddle — web preview", note: "Team project" }
   ],
@@ -97,20 +96,6 @@ window.PORTFOLIO = {
       summary: "A desktop realtime voice changer chasing commercial-grade latency on top of open-source RVC, with a written case for where the milliseconds actually go.",
       detail: "Two repositories: a product shell and an engine that extends an existing voice-changer fork rather than rewriting one. The research note is the interesting artefact — it inventories what the engine already does (TF32, scripted inference, GPU-resident FAISS, five pitch extractors) and concludes that CUDA-graph capture around the inference call is the highest-leverage, lowest-risk latency win, since buffer sizes are fixed per session.",
       media: null,
-      links: []
-    },
-    {
-      id: "trlp",
-      title: "TRLP",
-      category: "ai",
-      year: "2026",
-      status: "local",
-      commits: null,
-      tagline: "A travel planner that reasons over a graph it just built",
-      stack: ["Python", "AutoGen", "Neo4j", "MCP", "Streamlit"],
-      summary: "A multi-agent travel planner that reads social-travel notes, builds a live knowledge graph, then reasons over it instead of hallucinating an itinerary.",
-      detail: "Each run rebuilds the graph from freshly retrieved notes, extracting places, food and prices as entities so multi-hop questions like \"a hotel near the night market under ¥50 a head\" can be answered against structure rather than vibes. Search, budget, figure and writing agents split the work; a Graphviz pass draws the route, Pandas does the budget, and retrieval degrades to cached data when an upstream API fails.",
-      media: { type: "video", src: "media/trlp.mp4", poster: "media/trlp-poster.jpg", alt: "TRLP planning a three-day Hong Kong trip" },
       links: []
     },
     {
