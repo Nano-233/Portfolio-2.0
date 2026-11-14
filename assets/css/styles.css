@@ -4,18 +4,19 @@
    ========================================================================== */
 
 :root {
-  --paper: #f2efe7;
-  --paper-2: #eae6dc;
-  --paper-3: #e0dbcf;
-  --ink: #14130f;
-  --ink-2: #3d3a33;
-  --ink-3: #6f6a5f;
-  --ink-4: #9a9488;
-  --rule: #cfc9bb;
-  --rule-strong: #a9a292;
-  --accent: #c8401f;
-  --accent-ink: #a8331a;
-  --highlight: #e8dfc3;
+  /* warm dark — the default. Charcoal and bone, never blue-violet. */
+  --paper: #14120d;
+  --paper-2: #1b1812;
+  --paper-3: #241f17;
+  --ink: #d6d0c2;
+  --ink-2: #c8c1b2;
+  --ink-3: #948d7e;
+  --ink-4: #6a6458;
+  --rule: #2c2820;
+  --rule-strong: #433d33;
+  --accent: #e2552f;
+  --accent-ink: #ff6f47;
+  --highlight: #2a2118;
 
   --serif: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
   --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -28,19 +29,19 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-[data-theme="ink"] {
-  --paper: #121110;
-  --paper-2: #1a1917;
-  --paper-3: #24221f;
-  --ink: #f2efe7;
-  --ink-2: #d4cfc2;
-  --ink-3: #9b968a;
-  --ink-4: #6b665c;
-  --rule: #322f2a;
-  --rule-strong: #4a463f;
-  --accent: #f0603a;
-  --accent-ink: #ff7a52;
-  --highlight: #2a2620;
+[data-theme="paper"] {
+  --paper: #e7e2d4;
+  --paper-2: #ded8c8;
+  --paper-3: #d3ccba;
+  --ink: #17150f;
+  --ink-2: #3d3a33;
+  --ink-3: #6f6a5f;
+  --ink-4: #938d81;
+  --rule: #c6bfae;
+  --rule-strong: #a39b8a;
+  --accent: #b83318;
+  --accent-ink: #97290f;
+  --highlight: #d9d0b6;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -110,12 +111,10 @@ kbd {
   inset: 0;
   z-index: 400;
   pointer-events: none;
-  opacity: 0.5;
-  mix-blend-mode: multiply;
+  opacity: 0.12;
+  mix-blend-mode: screen;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
 }
-
-[data-theme="ink"] .grain { mix-blend-mode: screen; opacity: 0.28; }
 
 /* ---------- scroll progress ---------- */
 
@@ -302,7 +301,8 @@ kbd {
 .hero-name .line {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.06em;
+  padding-bottom: 0.26em;
+  margin-bottom: -0.16em;
 }
 .hero-name .line > span,
 .hero-name .line > em {
@@ -346,7 +346,7 @@ main { position: relative; z-index: 1; }
 
 .hero-name {
   font-size: clamp(3.6rem, 13.5vw, 12rem);
-  line-height: 0.86;
+  line-height: 0.95;
   letter-spacing: -0.045em;
   font-weight: 400;
   margin-bottom: clamp(2rem, 5vh, 3.6rem);
@@ -579,7 +579,7 @@ main { position: relative; z-index: 1; }
   right: calc(var(--gutter) * -1);
   top: 0;
   bottom: 0;
-  background: var(--ink);
+  background: var(--paper-3);
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform 0.45s var(--ease);
@@ -641,10 +641,7 @@ main { position: relative; z-index: 1; }
 
 @media (hover: hover) {
   .row:hover::before { transform: scaleY(1); }
-  .row:hover { color: var(--paper); }
-  .row:hover .row-num,
-  .row:hover .row-sub,
-  .row:hover .row-side { color: color-mix(in srgb, var(--paper) 62%, transparent); }
+  .row:hover .row-title { color: var(--accent-ink); }
   .row:hover .row-title { transform: translateX(0.45rem); }
   .row:hover .row-arrow { opacity: 1; transform: none; }
 }
@@ -659,7 +656,7 @@ main { position: relative; z-index: 1; }
   color: inherit;
   padding: 0 0.08em;
 }
-.row:hover mark { background: var(--accent); color: var(--paper); }
+
 
 .no-results {
   padding: 2.4rem 0;
@@ -688,17 +685,6 @@ main { position: relative; z-index: 1; }
   transition: background-color 0.5s var(--ease);
 }
 
-.gallery-sticky {
-  position: sticky;
-  top: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: clamp(4rem, 9vh, 7rem) 0;
-  overflow: hidden;
-}
-
 .gallery-label {
   max-width: var(--max);
   margin: 0 auto 2rem;
@@ -706,12 +692,44 @@ main { position: relative; z-index: 1; }
   width: 100%;
 }
 
+.gallery { padding: clamp(4rem, 9vh, 7rem) 0; }
+
+.gallery-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain; /* vertical wheel is never captured: page scrolls normally */
+  scrollbar-width: none;
+  cursor: grab;
+  padding-bottom: 3.5rem;
+}
+.gallery-viewport::-webkit-scrollbar { display: none; }
+.gallery-viewport.is-drag { cursor: grabbing; user-select: none; }
+
 .gallery-track {
   display: flex;
+  align-items: flex-start;
   gap: clamp(1rem, 2.4vw, 2.2rem);
   padding: 0 var(--gutter);
-  will-change: transform;
+  width: max-content;
 }
+
+/* staggered plates, like prints pinned unevenly on a wall */
+.plate:nth-child(even) { margin-top: 3.2rem; }
+.plate:nth-child(3n) .plate-frame { transform: rotate(-0.6deg); }
+.plate-frame { transition: transform 0.6s var(--ease); }
+.plate:hover .plate-frame { transform: rotate(0); }
+
+.gallery-foot {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.gallery-scrollbar { position: relative; flex: 1; height: 1px; background: var(--rule-strong); }
+.gallery-scrollbar span { position: absolute; top: -1px; height: 3px; background: var(--accent); }
+.gallery-arrows { display: flex; gap: 1.2rem; font-size: 0.9rem; }
 
 .plate {
   flex: 0 0 auto;
@@ -880,7 +898,7 @@ main { position: relative; z-index: 1; }
   display: grid;
   place-items: center;
   padding: clamp(1rem, 4vw, 3rem);
-  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  background: rgba(8, 7, 5, 0.72);
   backdrop-filter: blur(6px);
   animation: fade 0.3s var(--ease) both;
 }
@@ -1030,7 +1048,7 @@ main { position: relative; z-index: 1; }
   display: flex;
   justify-content: center;
   padding: 12vh 1rem 1rem;
-  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  background: rgba(8, 7, 5, 0.65);
   backdrop-filter: blur(5px);
   animation: fade 0.2s var(--ease) both;
 }

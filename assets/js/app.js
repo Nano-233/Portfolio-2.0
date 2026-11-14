@@ -263,7 +263,6 @@
 
   function buildGallery() {
     var track = $("gallery-track");
-    $("gallery-total").textContent = String(data.plates.length).padStart(2, "0");
 
     data.plates.forEach(function (plate, i) {
       var fig = el("figure", "plate");
@@ -277,7 +276,7 @@
         media.loop = true;
         media.playsInline = true;
         media.setAttribute("playsinline", "");
-        media.preload = "none";
+        media.preload = "metadata";;
         frame.appendChild(media);
         frame.addEventListener("mouseenter", function () { media.play().catch(function () {}); });
         frame.addEventListener("mouseleave", function () { media.pause(); });
@@ -300,8 +299,40 @@
       fig.appendChild(cap);
       track.appendChild(fig);
     });
+    strip();
   }
 
+  // Native horizontal scroll (vertical wheel passes through to the page); add drag, arrows, thumb.
+  function strip() {
+    var vp = $("gallery-viewport"), thumb = $("gallery-thumb");
+    function sync() {
+      var max = vp.scrollWidth - vp.clientWidth;
+      var w = vp.clientWidth / vp.scrollWidth;
+      thumb.style.width = (w * 100) + "%";
+      thumb.style.left = (max > 0 ? (vp.scrollLeft / max) * (1 - w) * 100 : 0) + "%";
+    }
+    vp.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    window.addEventListener("load", sync);
+    sync();
+
+    function by(d) { vp.scrollBy({ left: d * vp.clientWidth * 0.7, behavior: reduce ? "auto" : "smooth" }); }
+    $("gallery-prev").addEventListener("click", function () { by(-1); });
+    $("gallery-next").addEventListener("click", function () { by(1); });
+
+    var down = null;
+    vp.addEventListener("pointerdown", function (e) {
+      if (e.pointerType !== "mouse" || e.button) return;
+      down = { x: e.clientX, left: vp.scrollLeft };
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (!down) return;
+      vp.classList.add("is-drag");
+      vp.scrollLeft = down.left - (e.clientX - down.x);
+    });
+    window.addEventListener("pointerup", function () { down = null; vp.classList.remove("is-drag"); });
+    vp.addEventListener("dragstart", function (e) { e.preventDefault(); });
+  }
   /* ------------------------------------------------------------------ *
    * scroll-driven behaviours: rail, progress, marquee, gallery
    * ------------------------------------------------------------------ */
@@ -313,7 +344,7 @@
     var defs = [
       { id: "hero", label: "Top" },
       { id: "index", label: "Index" },
-      { id: "gallery", label: "Evidence" },
+      { id: "gallery", label: "Take a look" },
       { id: "about", label: "Colophon" },
       { id: "contact", label: "Contact" }
     ];
@@ -344,20 +375,8 @@
     var bar = $("progress-bar");
     var topbar = document.querySelector(".topbar");
     var marqueeTrack = $("marquee-track");
-    var gallery = $("gallery");
-    var galleryTrack = $("gallery-track");
-    var galleryPos = $("gallery-pos");
-    var gallerySticky = document.querySelector(".gallery-sticky");
     var lastScrollY = window.scrollY;
-    var galleryMax = 0;
     var ticking = false;
-
-    function measure() {
-      if (galleryTrack && gallerySticky) {
-        galleryMax = Math.max(0, galleryTrack.scrollWidth - window.innerWidth + 1);
-        gallery.style.height = (window.innerHeight + galleryMax) + "px";
-      }
-    }
 
     function update() {
       var y = window.scrollY;
@@ -384,16 +403,6 @@
         marqueeTrack.style.transform = "translate3d(" + marqueeOffset.toFixed(1) + "px,0,0)";
       }
       lastScrollY = y;
-
-      // gallery horizontal mapping
-      if (galleryTrack && galleryMax > 0) {
-        var start = gallery.offsetTop;
-        var progress = (y - start) / galleryMax;
-        progress = Math.max(0, Math.min(1, progress));
-        galleryTrack.style.transform = "translate3d(" + (-progress * galleryMax).toFixed(1) + "px,0,0)";
-        galleryPos.textContent = String(Math.min(data.plates.length, Math.floor(progress * (data.plates.length - 1)) + 1)).padStart(2, "0");
-      }
-
       ticking = false;
     }
 
@@ -407,12 +416,8 @@
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", function () { measure(); update(); });
-    measure();
+    window.addEventListener("resize", update);
     update();
-
-    // re-measure once media settles
-    window.addEventListener("load", function () { measure(); update(); });
   }
 
   /* ------------------------------------------------------------------ *
@@ -534,7 +539,7 @@
   function commands() {
     var list = [
       { kind: "Go", title: "Index of works", run: function () { jump("#index"); } },
-      { kind: "Go", title: "Evidence", run: function () { jump("#gallery"); } },
+      { kind: "Go", title: "Take a look", run: function () { jump("#gallery"); } },
       { kind: "Go", title: "Colophon", run: function () { jump("#about"); } },
       { kind: "Go", title: "Contact", run: function () { jump("#contact"); } },
       { kind: "Act", title: "Invert theme", run: toggleTheme },
@@ -628,11 +633,11 @@
 
   function applyTheme(t) {
     document.documentElement.setAttribute("data-theme", t);
-    $("theme-toggle").textContent = t === "ink" ? "Paper" : "Invert";
+    $("theme-toggle").textContent = t === "paper" ? "Darken" : "Lighten";
   }
 
   function toggleTheme() {
-    var next = document.documentElement.getAttribute("data-theme") === "ink" ? "paper" : "ink";
+    var next = document.documentElement.getAttribute("data-theme") === "paper" ? "ink" : "paper";
     applyTheme(next);
     try { localStorage.setItem("hw-theme", next); } catch (e) { /* ignore */ }
   }
@@ -640,7 +645,7 @@
   function initTheme() {
     var stored = null;
     try { stored = localStorage.getItem("hw-theme"); } catch (e) { /* ignore */ }
-    applyTheme(stored || "paper");
+    applyTheme(stored || "ink");
     $("theme-toggle").addEventListener("click", toggleTheme);
   }
 
