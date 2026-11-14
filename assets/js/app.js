@@ -276,7 +276,7 @@
    * ------------------------------------------------------------------ */
 
   var pin = $("wheel-pin"), wheel = $("wheel");
-  var W = { list: data.plates, cards: [], step: 0, cur: 0, target: 0, active: -1, R: 0, raf: 0 };
+  var W = { list: data.plates, cards: [], step: 0, cur: 0, target: 0, pos: 0, active: -1, R: 0, raf: 0 };
 
   function cardW() { return Math.max(240, Math.min(760, window.innerWidth * 0.31, window.innerHeight * 0.6)); }
 
@@ -310,20 +310,24 @@
     spin(true);
   }
 
-  // ponytail: no pinning. The section is only as tall as its content; rotation follows it crossing the viewport (top at 90% -> bottom at 10%).
+  // ponytail: no pinning. Section is content-height; wheel over it spins the cylinder, and hands the page back at either end.
   function sizePin() { pin.style.height = ""; }
 
-  function pinSpan() { return window.innerHeight * 0.8 + pin.offsetHeight; }
-  function pinTop() { return pin.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.9; }
+  function kick() { if (!W.raf) W.raf = requestAnimationFrame(function () { spin(false); }); }
+  function scrollToCard(i) { W.pos = i; kick(); }
 
-  function scrollToCard(i) {
-    window.scrollTo({ top: pinTop() + i / (W.list.length - 1) * pinSpan(), behavior: reduce ? "auto" : "smooth" });
-  }
+  pin.addEventListener("wheel", function (e) {
+    if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+    var last = W.list.length - 1, next = W.pos + e.deltaY / 160;
+    if ((e.deltaY < 0 && W.pos <= 0) || (e.deltaY > 0 && W.pos >= last)) return; // at an end: page scrolls
+    e.preventDefault();
+    W.pos = Math.max(0, Math.min(last, next));
+    kick();
+  }, { passive: false });
 
   function spin(snap) {
     var n = W.list.length;
-    var p = Math.max(0, Math.min(1, (window.scrollY - pinTop()) / pinSpan()));
-    W.target = p * (n - 1);
+    W.target = W.pos;
     if (snap || reduce) W.cur = W.target;
     else W.cur += (W.target - W.cur) * 0.14;
 
@@ -353,7 +357,6 @@
     $("wheel-tag").textContent = c.plate.note;
   }
 
-  window.addEventListener("scroll", function () { if (!W.raf) W.raf = requestAnimationFrame(function () { spin(false); }); }, { passive: true });
   window.addEventListener("resize", buildGallery);
 
   /* ------------------------------------------------------------------ *
