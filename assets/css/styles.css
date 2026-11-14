@@ -1221,3 +1221,4 @@ main { position: relative; z-index: 1; }
   .row::before { box-shadow: 0 40px 60px -20px rgba(0,0,0,0.95), 0 0 0 1px var(--rule-strong); }
   .cursor-preview { width: 460px; }
 }
+@media (hover: hover) { .row:hover { transform: perspective(700px) translateZ(80px) scale(1.02); } }
