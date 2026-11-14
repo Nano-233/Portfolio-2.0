@@ -1,0 +1,5 @@
+﻿_raw/
+_shots/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Harbour Wang — Index of Works</title>
+  <meta name="description" content="Harbour Wang: AI systems, computer vision, games and full-stack products. Computer Science at the National University of Singapore.">
+  <meta property="og:title" content="Harbour Wang — Index of Works">
+  <meta property="og:description" content="AI systems, computer vision, games and full-stack products.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body class="is-loading">
+  <a class="skip" href="#index">Skip to the index</a>
+
+  <div class="grain" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <div class="cursor-dot"></div>
+    <div class="cursor-preview" id="cursor-preview">
+      <video class="cursor-media cursor-media--video" muted loop playsinline preload="none"></video>
+      <img class="cursor-media cursor-media--image" alt="">
+    </div>
+  </div>
+
+  <header class="topbar">
+    <a class="wordmark" href="#top">Harbour Wang</a>
+    <p class="topbar-meta">Index of Works — 2026</p>
+    <div class="topbar-actions">
+      <button class="textbtn" id="search-open" type="button">Search <kbd>⌘K</kbd></button>
+      <button class="textbtn" id="theme-toggle" type="button">Invert</button>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Section index">
+    <ol id="rail-list"></ol>
+  </nav>
+
+  <main id="top">
+    <section class="hero" id="hero">
+      <p class="kicker" data-reveal>Singapore — <span id="hero-year">2026</span></p>
+
+      <h1 class="hero-name">
+        <span class="line"><span>Harbour</span></span>
+        <span class="line"><span>Wang</span><em>.</em></span>
+      </h1>
+
+      <div class="hero-foot">
+        <p class="hero-blurb" data-reveal>
+          I build AI systems, computer vision, games and full-stack products —
+          and the deterministic plumbing that keeps them honest.
+        </p>
+        <dl class="hero-facts" data-reveal>
+          <div><dt>Study</dt><dd>Computer Science, NUS</dd></div>
+          <div><dt>Now</dt><dd>Microsoft Inside the Game</dd></div>
+          <div><dt>Status</dt><dd><span class="dot"></span> Open to internships</dd></div>
+        </dl>
+      </div>
+
+      <p class="scroll-hint" data-reveal><span>Scroll</span><span class="scroll-line" aria-hidden="true"></span></p>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marquee-track"></div>
+    </div>
+
+    <section class="index" id="index" aria-labelledby="index-title">
+      <div class="section-label">
+        <span class="num">01</span>
+        <h2 id="index-title">Index</h2>
+        <span class="aside" id="index-count"></span>
+      </div>
+
+      <div class="index-controls" data-reveal>
+        <input id="filter" type="search" placeholder="Filter — name, stack, keyword" autocomplete="off" spellcheck="false" aria-label="Filter works">
+        <div class="cats" id="cats" role="group" aria-label="Filter by discipline"></div>
+      </div>
+
+      <ol class="rows" id="rows"></ol>
+      <p class="no-results" id="no-results" hidden>No works match that. <button class="inlinebtn" type="button" id="reset">Reset</button></p>
+    </section>
+
+    <section class="gallery" id="gallery" aria-labelledby="gallery-title">
+      <div class="gallery-sticky">
+        <div class="section-label gallery-label">
+          <span class="num">02</span>
+          <h2 id="gallery-title">Evidence</h2>
+          <span class="aside">Drag or scroll — <span id="gallery-pos">01</span>/<span id="gallery-total">08</span></span>
+        </div>
+        <div class="gallery-track" id="gallery-track"></div>
+      </div>
+    </section>
+
+    <section class="about" id="about" aria-labelledby="about-title">
+      <div class="section-label">
+        <span class="num">03</span>
+        <h2 id="about-title">Colophon</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-body" data-reveal>
+          <p>
+            Computer Science at the National University of Singapore, born in New Zealand,
+            based in Singapore. My work sits where AI engineering meets product: LLM agents,
+            computer vision, and the unglamorous plumbing that makes either of them usable.
+          </p>
+          <p>
+            Recently that has meant an AI newsroom that explains a football match, a realtime
+            voice changer, and an on-device assistant for criminal defence barristers. Before
+            that: YOLO detectors, an award-winning Unity roguelike, and a lot of Pygame.
+          </p>
+          <p>
+            I care about systems that hold up when the model is wrong — deterministic engines,
+            ground-truth evaluation, and interfaces that tell you what is actually happening.
+          </p>
+        </div>
+
+        <div class="about-skills" data-reveal>
+          <div><h3>Languages</h3><p>Python · TypeScript · Java · C# · Rust · C++</p></div>
+          <div><h3>AI / ML</h3><p>PyTorch · OpenCV · YOLO · LangGraph · LLM agents · RAG</p></div>
+          <div><h3>Web / cloud</h3><p>React · Next.js · Fastify · FastAPI · Postgres · AWS CDK</p></div>
+          <div><h3>Games / tools</h3><p>Unity · Godot · Pygame · Tauri · ffmpeg · Playwright</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="section-label">
+        <span class="num">04</span>
+        <h2 id="contact-title">Contact</h2>
+      </div>
+
+      <p class="contact-big" data-reveal>Let's build<br>something<span class="mark">.</span></p>
+
+      <div class="contact-row" data-reveal>
+        <a class="contact-mail" href="mailto:harbourw05@gmail.com">harbourw05@gmail.com</a>
+        <ul class="contact-links">
+          <li><a href="https://github.com/Nano-233" target="_blank" rel="noopener noreferrer">GitHub ↗</a></li>
+          <li><a href="https://www.linkedin.com/in/harbour-wang-a51743281/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></li>
+          <li><a href="https://nano-233.itch.io/" target="_blank" rel="noopener noreferrer">itch.io ↗</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <p>Set in Palatino and SF Mono. Built with hand-written HTML, CSS and JavaScript — no framework, no trackers.</p>
+    <p>&copy; <span id="year">2026</span> Harbour Wang</p>
+  </footer>
+
+  <div class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
+    <div class="detail-inner">
+      <div class="detail-head">
+        <span class="detail-kicker" id="detail-kicker"></span>
+        <button class="detail-close" id="detail-close" type="button" aria-label="Close">Close <kbd>Esc</kbd></button>
+      </div>
+
+      <h2 class="detail-title" id="detail-title"></h2>
+      <p class="detail-meta" id="detail-meta"></p>
+      <p class="detail-summary" id="detail-summary"></p>
+      <div class="detail-media" id="detail-media"></div>
+      <div class="detail-body" id="detail-body"></div>
+      <div class="detail-links" id="detail-links"></div>
+
+      <div class="detail-foot">
+        <button class="textbtn" id="detail-prev" type="button">← Previous</button>
+        <button class="textbtn" id="detail-next" type="button">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Search" hidden>
+    <div class="palette-box">
+      <input id="palette-input" type="text" placeholder="Search works, sections, links…" autocomplete="off" spellcheck="false">
+      <ul id="palette-results" role="listbox" aria-label="Results"></ul>
+      <p class="palette-hint">↑↓ to move · ↵ to open · esc to close</p>
+    </div>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
