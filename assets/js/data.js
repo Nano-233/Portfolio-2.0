@@ -9,19 +9,19 @@ window.PORTFOLIO = {
 
   /* gallery plates: real captures, in narrative order */
   plates: [
-    { src: "media/kit-detector.mp4", type: "video", p: "kit-detector", label: "Kit detector — live webcam", note: "YOLOv11s · 6 classes" },
-    { src: "media/live-speed-tarot.jpg", type: "image", p: "speed-tarot", label: "Speed Tarot — card view", note: "Next.js · live" },
-    { src: "media/kaleidoscope-fan.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope — fan feed", note: "Agent framework" },
-    { src: "media/pixel-stuck.mp4", type: "video", p: "pixel-stuck", label: "Pixel Stuck — gameplay", note: "Pygame · Swap & Hook" },
-    { src: "media/kaleidoscope-analyst.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope — tactics board", note: "Analyst view" },
-    { src: "media/live-biocore.jpg", type: "image", p: "biolab-arg", label: "BioCore ARG — facade", note: "AWS CDK · level 1" },
-    { src: "media/kaleidoscope-recap.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope — full-time recap", note: "Generated report" },
-    { src: "media/live-pitchprobe.jpg", type: "image", p: "pitchprobe", label: "PitchProbe — query UI", note: "LangGraph · live" },
-    { src: "media/wuxia.mp4", type: "video", p: "wuxia", label: "Wuxia — trailer", note: "LLM narrates · engine decides" },
-    { src: "media/appraiser.jpg", type: "image", p: "the-appraiser", label: "The Appraiser — first wall", note: "Playable · browser" },
-    { src: "media/broadcast.jpg", type: "image", p: "broadcast", label: "Broadcast — studio", note: "Fastify · WebRTC" },
-    { src: "media/travel-cv.jpg", type: "image", p: "travel-cv", label: "Travel-CV — predictions", note: "Faster R-CNN" },
-    { src: "media/huddle.jpg", type: "image", p: "huddle", label: "Huddle — web preview", note: "Team project" }
+    { src: "media/kit-detector.mp4", type: "video", p: "kit-detector", label: "Kit detector: live webcam", note: "YOLOv11s · 6 classes" },
+    { src: "media/live-speed-tarot.jpg", type: "image", p: "speed-tarot", label: "Speed Tarot: card view", note: "Next.js · live" },
+    { src: "media/kaleidoscope-fan.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope: fan feed", note: "Agent framework" },
+    { src: "media/pixel-stuck.mp4", type: "video", p: "pixel-stuck", label: "Pixel Stuck: gameplay", note: "Pygame · Swap & Hook" },
+    { src: "media/kaleidoscope-analyst.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope: tactics board", note: "Analyst view" },
+    { src: "media/live-biocore.jpg", type: "image", p: "biolab-arg", label: "BioCore ARG: facade", note: "AWS CDK · level 1" },
+    { src: "media/kaleidoscope-recap.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope: full-time recap", note: "Generated report" },
+    { src: "media/live-pitchprobe.jpg", type: "image", p: "pitchprobe", label: "PitchProbe: query UI", note: "LangGraph · live" },
+    { src: "media/wuxia.mp4", type: "video", p: "wuxia", label: "Wuxia: trailer", note: "LLM narrates · engine decides" },
+    { src: "media/appraiser.jpg", type: "image", p: "the-appraiser", label: "The Appraiser: first wall", note: "Playable · browser" },
+    { src: "media/broadcast.jpg", type: "image", p: "broadcast", label: "Broadcast: studio", note: "Fastify · WebRTC" },
+    { src: "media/travel-cv.jpg", type: "image", p: "travel-cv", label: "Travel-CV: predictions", note: "Faster R-CNN" },
+    { src: "media/huddle.jpg", type: "image", p: "huddle", label: "Huddle: web preview", note: "Team project" }
   ],
 
   projects: [
@@ -52,7 +52,7 @@ window.PORTFOLIO = {
       tagline: "An LLM narrates; a deterministic engine owns the truth",
       stack: ["Python", "uv", "FastAPI", "SQLite", "Godot"],
       summary: "A Chinese-language wuxia RPG where an LLM narrates freely while a deterministic engine owns every number, every roll and every consequence.",
-      detail: "The split is the whole design: prose is generated, state is not. Time is action-costed in 时辰 units, and a timeline of conditional world events fires whether or not you are present — so the world has history without simulating it. Randomness runs through named seeded streams, rewind restores a snapshot while eroding only a personal layer, and free-text input is paced by a currency whose price the engine sets, never the model. The LLM sits behind a port with a fake implementation, so whole turns are golden-tested without a network call.",
+      detail: "The split is the whole design: prose is generated, state is not. Time is action-costed in 时辰 units, and a timeline of conditional world events fires whether or not you are present, so the world has history without simulating it. Randomness runs through named seeded streams, rewind restores a snapshot while eroding only a personal layer, and free-text input is paced by a currency whose price the engine sets, never the model. The LLM sits behind a port with a fake implementation, so whole turns are golden-tested without a network call.",
       media: { type: "video", src: "media/wuxia.mp4", poster: "media/wuxia-poster.jpg", alt: "Wuxia trailer" },
       links: []
     },
@@ -66,7 +66,7 @@ window.PORTFOLIO = {
       tagline: "On-device assistant for criminal defence barristers",
       stack: ["Rust", "Tauri", "React", "SQLite"],
       summary: "An on-device assistant that files mail, reads scans locally and redacts identifiers before anything reaches a model.",
-      detail: "Privacy is a constraint, not a setting: one Rust core owns ingest, parse, OCR, matching, redaction and calendar export, so the React UI never touches client files. State lives in SQLCipher with the key in Windows Credential Manager. The product rule is \"nothing leaves your laptop\" — including the model, which runs locally. Across eight documented use cases it proposes and cites, and never writes substantive legal text.",
+      detail: "Privacy is a constraint, not a setting: one Rust core owns ingest, parse, OCR, matching, redaction and calendar export, so the React UI never touches client files. State lives in SQLCipher with the key in Windows Credential Manager. The product rule is \"nothing leaves your laptop\", including the model, which runs locally. Across eight documented use cases it proposes and cites, and never writes substantive legal text.",
       media: { type: "image", src: "media/ture-aid.jpg", alt: "Ture Aid dashboard, empty state: needs you, dates to confirm, matters, activity" },
       links: []
     },
@@ -80,7 +80,7 @@ window.PORTFOLIO = {
       tagline: "A corporate site that stops pretending",
       stack: ["AWS CDK", "Lambda", "DynamoDB", "React"],
       summary: "A serverless bio-horror alternate-reality game in which a corporate website slowly stops pretending to be a corporate website.",
-      detail: "Rather than a REST API, a single endpoint takes JSON commands that a state-machine router dispatches by the player's current location — so puzzles hide inside pastebins, PDFs, recovery flows and a chat widget instead of obvious menus. A second Python microservice implements a small string-manipulation puzzle language (LYSE, LIGATE, EXPRESS, CATALYZE). Sessions live in DynamoDB, and a BroadcastChannel policy enforces one tab at a time.",
+      detail: "Rather than a REST API, a single endpoint takes JSON commands that a state-machine router dispatches by the player's current location, so puzzles hide inside pastebins, PDFs, recovery flows and a chat widget instead of obvious menus. A second Python microservice implements a small string-manipulation puzzle language (LYSE, LIGATE, EXPRESS, CATALYZE). Sessions live in DynamoDB, and a BroadcastChannel policy enforces one tab at a time.",
       media: { type: "image", src: "media/live-biocore.jpg", alt: "BioCore ARG landing page, a green corporate biotech facade" },
       links: [{ label: "Live site", href: "https://biocore-inky.vercel.app/leak" }]
     },
@@ -94,7 +94,7 @@ window.PORTFOLIO = {
       tagline: "Realtime voice changing, with the latency argument written down",
       stack: ["Python", "RVC", "PyTorch", "PowerShell"],
       summary: "A desktop realtime voice changer chasing commercial-grade latency on top of open-source RVC, with a written case for where the milliseconds actually go.",
-      detail: "Two repositories: a product shell and an engine that extends an existing voice-changer fork rather than rewriting one. The research note is the interesting artefact — it inventories what the engine already does (TF32, scripted inference, GPU-resident FAISS, five pitch extractors) and concludes that CUDA-graph capture around the inference call is the highest-leverage, lowest-risk latency win, since buffer sizes are fixed per session.",
+      detail: "Two repositories: a product shell and an engine that extends an existing voice-changer fork rather than rewriting one. The research note is the interesting artefact, it inventories what the engine already does (TF32, scripted inference, GPU-resident FAISS, five pitch extractors) and concludes that CUDA-graph capture around the inference call is the highest-leverage, lowest-risk latency win, since buffer sizes are fixed per session.",
       media: null,
       links: []
     },
@@ -107,7 +107,7 @@ window.PORTFOLIO = {
       commits: 8,
       tagline: "Group streaming picks, ported to Amazon's Vega OS",
       stack: ["React Native", "Vega OS", "Bedrock"],
-      summary: "A group-decision streaming app whose screens run unchanged in a browser preview and on Amazon's Vega Virtual Device — built in a team hackathon.",
+      summary: "A group-decision streaming app whose screens run unchanged in a browser preview and on Amazon's Vega Virtual Device, built in a team hackathon.",
       detail: "My contribution was the Group Pick engine: a shared-taste recommendation flow that models each person's preferences, proposes a common-ground movie or game, supports voting and alternatives, and answers a local AI-ideas endpoint backed by Claude on Bedrock. The UI was built by two teammates and the Vega OS port by a third; I built on their foundation.",
       media: { type: "image", src: "media/huddle.jpg", alt: "Huddle web preview home: tonight's pick and games to play after the movie" },
       links: []
@@ -122,7 +122,7 @@ window.PORTFOLIO = {
       tagline: "Football trivia answered by tools, not recall",
       stack: ["Python", "LangGraph", "FastAPI", "PostgreSQL"],
       summary: "A football trivia agent that answers multi-club, career-spanning questions by calling tools instead of recalling facts.",
-      detail: "A LangGraph state machine routes between a model node and football-specific tools — players shared across clubs, career paths, career stats, seasonal splits and per-club records — over a Postgres question bank built by a separate importer.",
+      detail: "A LangGraph state machine routes between a model node and football-specific tools, players shared across clubs, career paths, career stats, seasonal splits and per-club records, over a Postgres question bank built by a separate importer.",
       media: { type: "image", src: "media/live-pitchprobe.jpg", alt: "PitchProbe landing page with an ask-a-question field" },
       links: [
         { label: "Live site", href: "https://pitch-probe.vercel.app" },
@@ -167,7 +167,7 @@ window.PORTFOLIO = {
       tagline: "Sequence transcription with a custom CTC loss",
       stack: ["TensorFlow", "Keras", "CRNN", "CTC"],
       summary: "A convolutional-recurrent network with CTC loss that transcribes alphanumeric CAPTCHA images sequence by sequence.",
-      detail: "A custom CTC loss written for Keras 3, GPU-side augmentation, and held-out evaluation presented as side-by-side actual-versus-predicted samples — including the failures.",
+      detail: "A custom CTC loss written for Keras 3, GPU-side augmentation, and held-out evaluation presented as side-by-side actual-versus-predicted samples, including the failures.",
       media: { type: "image", src: "media/ocr-captcha.jpg", alt: "A noisy captcha the CRNN reads as 0dx9" },
       links: [{ label: "Repo", href: "https://github.com/Nano-233/OCRCaptcha" }]
     },
@@ -180,8 +180,8 @@ window.PORTFOLIO = {
       commits: null,
       tagline: "Self-hosted screenshare with a studio mixer",
       stack: ["Node.js", "Fastify", "WebRTC", "HLS"],
-      summary: "A self-hosted screenshare site with a local studio mixer and a public viewer page — nothing runs unless you start it.",
-      detail: "The studio composites sources, scenes and audio on canvas and pushes WebRTC (WHIP) to mediamtx, which republishes as HLS renditions behind a session; a Fastify server proxies the whole thing through a Cloudflare tunnel with AltCHA and rate limiting. Liveness is derived from the media server rather than trusted from the studio page — a small detail that prevents the classic \"it says live but nobody sees anything\" bug.",
+      summary: "A self-hosted screenshare site with a local studio mixer and a public viewer page, nothing runs unless you start it.",
+      detail: "The studio composites sources, scenes and audio on canvas and pushes WebRTC (WHIP) to mediamtx, which republishes as HLS renditions behind a session; a Fastify server proxies the whole thing through a Cloudflare tunnel with AltCHA and rate limiting. Liveness is derived from the media server rather than trusted from the studio page, a small detail that prevents the classic \"it says live but nobody sees anything\" bug.",
       media: { type: "image", src: "media/broadcast.jpg", alt: "Broadcast local studio: scenes, sources, audio mixer, chat moderation" },
       links: []
     },
@@ -208,7 +208,7 @@ window.PORTFOLIO = {
       commits: null,
       tagline: "Orbital Artemis · Judges' Choice Award",
       stack: ["Unity", "C#"],
-      summary: "A procedurally generated roguelike platformer with dash combat and A* enemy AI — NUS Orbital Artemis, Judges' Choice Award.",
+      summary: "A procedurally generated roguelike platformer with dash combat and A* enemy AI, NUS Orbital Artemis, Judges' Choice Award.",
       detail: "Procedural level sequencing with randomised trap and enemy placement, dynamic difficulty balancing, and an enemy architecture built on composite and observer patterns. Playable in the browser on itch.io.",
       media: { type: "image", src: "media/rogue-run.jpg", alt: "Rogue Run main menu" },
       links: [
@@ -241,7 +241,7 @@ window.PORTFOLIO = {
       tagline: "Every placard either tells the truth or lies",
       stack: ["JavaScript", "HTML", "CSS"],
       summary: "A deduction roguelike set in an art gallery where every placard either tells the truth or lies, and Scrutiny is the only way to find out which.",
-      detail: "The generator guarantees a unique solution, so no wall is ever beaten by guessing. Placards constrain two unknowns at once — where a work hangs and whether it is fake — and four investigations (Authenticate, Cross-examine, Hunch, Provenance) spend a scarce pool to reveal facts while you deduce the rest. Each cleared wall physically grows the museum, with a Hades-style meta layer that redecorates it.",
+      detail: "The generator guarantees a unique solution, so no wall is ever beaten by guessing. Placards constrain two unknowns at once, where a work hangs and whether it is fake, and four investigations (Authenticate, Cross-examine, Hunch, Provenance) spend a scarce pool to reveal facts while you deduce the rest. Each cleared wall physically grows the museum, with a Hades-style meta layer that redecorates it.",
       media: { type: "image", src: "media/appraiser.jpg", alt: "The Appraiser: a wall of four paintings with placards and an investigation bench" },
       links: [{ label: "Play fullscreen", href: "play/appraiser.html" }],
       embed: "play/appraiser.html"
@@ -299,7 +299,7 @@ window.PORTFOLIO = {
       tagline: "Timestamped match moments into labelled clips",
       stack: ["Python", "ffmpeg"],
       summary: "Turns a list of timestamped match moments into labelled clips and a single \"all actions\" compilation.",
-      detail: "Built for real scouting work: clips are numbered and named after their label in any language, numbering continues across runs so a second pass never overwrites the first, and the output feeds the accompanying analysis boards — heatmaps, duel maps and cover-area diagrams.",
+      detail: "Built for real scouting work: clips are numbered and named after their label in any language, numbering continues across runs so a second pass never overwrites the first, and the output feeds the accompanying analysis boards, heatmaps, duel maps and cover-area diagrams.",
       media: { type: "image", src: "media/reels-lineups.jpg", alt: "Match lineup boards with ratings, annotated for scouting" },
       links: []
     },
@@ -327,7 +327,7 @@ window.PORTFOLIO = {
       tagline: "Reply-voting, classified by a model",
       stack: ["Python", "Playwright", "Tkinter"],
       summary: "A desktop tool that scrapes a comment thread and works out what each commenter actually voted for, then scores the result several ways.",
-      detail: "Comments vote by replying rather than tapping, so the tool asks a model to derive the candidate options from the thread itself and classify every comment against them. Scoring is configurable — plurality, consensus and engagement-weighted formulas — because those rank the same thread very differently.",
+      detail: "Comments vote by replying rather than tapping, so the tool asks a model to derive the candidate options from the thread itself and classify every comment against them. Scoring is configurable, plurality, consensus and engagement-weighted formulas, because those rank the same thread very differently.",
       media: { type: "image", src: "media/alignment.jpg", alt: "Daily 40-cell anime grid filled by weighted comment votes" },
       links: []
     }
