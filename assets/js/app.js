@@ -464,6 +464,7 @@
   function setupScroll() {
     var bar = $("progress-bar");
     var topbar = document.querySelector(".topbar");
+    var heroName = document.querySelector(".hero-name");
     var marqueeTrack = $("marquee-track");
     var lastScrollY = window.scrollY;
     var ticking = false;
@@ -474,6 +475,11 @@
       bar.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
 
       topbar.classList.toggle("is-solid", y > 40);
+      if (heroName && !reduce) {
+        var hf = Math.min(1, y / window.innerHeight);
+        heroName.style.transform = "translateY(" + (y * 0.28).toFixed(1) + "px) scale(" + (1 - hf * 0.18).toFixed(3) + ")";
+        heroName.style.opacity = Math.max(0, 1 - hf * 1.15).toFixed(2);
+      }
 
       // rail active section
       var mid = y + window.innerHeight * 0.35;
@@ -525,6 +531,18 @@
   var openList = [];
   var openIndex = -1;
   var lastFocus = null;
+
+  // the detail panel grows out of the wheel card it was opened from
+  function zoomFromCard(project) {
+    var c = W.cards[W.active];
+    if (reduce || !c || c.p.id !== project.id) return;
+    var inner = detail.querySelector(".detail-inner"), cr = c.el.getBoundingClientRect(), ir = inner.getBoundingClientRect();
+    var dx = cr.left + cr.width / 2 - (ir.left + ir.width / 2), dy = cr.top + cr.height / 2 - (ir.top + ir.height / 2);
+    inner.animate([
+      { transform: "translate(" + dx + "px," + dy + "px) scale(" + (cr.width / ir.width) + ")", opacity: 0 },
+      { transform: "none", opacity: 1 }
+    ], { duration: 650, easing: "cubic-bezier(0.19, 1, 0.22, 1)" });
+  }
 
   function openDetail(project) {
     openList = filterList();
@@ -760,6 +778,14 @@
       if (!palette.hidden) closePalette();
       else if (!detail.hidden) closeDetail();
       return;
+    }
+    if (detail.hidden && palette.hidden && !typing && W.list.length && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+      var wr = pin.getBoundingClientRect();
+      if (wr.top < window.innerHeight * 0.5 && wr.bottom > window.innerHeight * 0.5) {
+        e.preventDefault();
+        scrollToCard(Math.max(0, Math.min(W.list.length - 1, W.active + (e.key === "ArrowRight" ? 1 : -1))));
+        return;
+      }
     }
     if (!detail.hidden) {
       if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
