@@ -10,3 +10,12 @@
 - Gotcha: edit files as UTF-8 (PowerShell 5 `Set-Content` mangles non-ASCII).
 
 Open: video plates show a blank frame until hovered/loaded.
+
+## 2026-11-14 (populate pass)
+Every project now has media except EchoForge and st-tg-bridge (nothing visual exists to show).
+- **Playable:** The Appraiser (embedded in the detail view, `play/appraiser.html`, copied from Gallery-puzzle; needs Google Fonts online). Rogue Run was already an itch.io embed.
+- **Video clips (ffmpeg, silent, <1MB each):** Wuxia trailer, TRLP demo, Football Kaleidoscope demo.
+- **Screenshots (captured from the real local apps):** Ture Aid (empty state, no client data), Broadcast studio (chat history removed before capture), Huddle web preview (demo data), Spotting Sheet (also openable as `play/spotting-sheet.html`), Alignment Vote grid, Travel-CV and ELEGY card sheet, Scouting lineup boards, Rogue Run menu, TETR.IO bot calibration overlay, CAPTCHA sample.
+- Strip grew from 8 to 14 plates.
+- Deliberately not used: raw match footage from Brighton-Bilibili (broadcast rights).
+- Raw captures live in git-ignored `_raw/`.

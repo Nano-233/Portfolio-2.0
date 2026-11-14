@@ -15,7 +15,8 @@
     public: "Live",
     private: "Private repo",
     local: "Not published",
-    team: "Team project"
+    team: "Team project",
+    playable: "Playable"
   };
 
   var state = { cat: "all", q: "" };

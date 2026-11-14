@@ -16,7 +16,13 @@ window.PORTFOLIO = {
     { src: "media/kaleidoscope-analyst.jpg", type: "image", label: "Kaleidoscope — tactics board", note: "Analyst view" },
     { src: "media/live-biocore.jpg", type: "image", label: "BioCore ARG — facade", note: "AWS CDK · level 1" },
     { src: "media/kaleidoscope-recap.jpg", type: "image", label: "Kaleidoscope — full-time recap", note: "Generated report" },
-    { src: "media/live-pitchprobe.jpg", type: "image", label: "PitchProbe — query UI", note: "LangGraph · live" }
+    { src: "media/live-pitchprobe.jpg", type: "image", label: "PitchProbe — query UI", note: "LangGraph · live" },
+    { src: "media/wuxia.mp4", type: "video", label: "Wuxia — trailer", note: "LLM narrates · engine decides" },
+    { src: "media/appraiser.jpg", type: "image", label: "The Appraiser — first wall", note: "Playable · browser" },
+    { src: "media/broadcast.jpg", type: "image", label: "Broadcast — studio", note: "Fastify · WebRTC" },
+    { src: "media/trlp.mp4", type: "video", label: "TRLP — Hong Kong in three days", note: "AutoGen · GraphRAG" },
+    { src: "media/travel-cv.jpg", type: "image", label: "Travel-CV — predictions", note: "Faster R-CNN" },
+    { src: "media/huddle.jpg", type: "image", label: "Huddle — web preview", note: "Team project" }
   ],
 
   projects: [
@@ -31,7 +37,7 @@ window.PORTFOLIO = {
       stack: ["Python", "Microsoft Foundry", "Agent Framework", "Azure"],
       summary: "A newsroom of AI agents that watches a synthetic football match and turns it into fact-checked commentary, tactical breakdowns and what-if replays.",
       detail: "Built for Microsoft's \"Inside the Game\" hackathon on Foundry and the Agent Framework, deployed to Azure Container Apps. Because a custom match engine generates every event, the newsroom can be graded against ground truth. The same match reads differently for a fan, an analyst and a scout, in nine languages.",
-      media: { type: "image", src: "media/kaleidoscope-fan.jpg", alt: "Football Kaleidoscope fan view with live feed and win probability" },
+      media: { type: "video", src: "media/kaleidoscope-demo.mp4", poster: "media/kaleidoscope-fan.jpg", alt: "Football Kaleidoscope demo reel" },
       links: [
         { label: "Live demo", href: "https://football-kaleidoscope.ashywave-faaedb6c.eastus2.azurecontainerapps.io" },
         { label: "Repo", href: "https://github.com/Nano-233/football-kaleidoscope" }
@@ -48,7 +54,7 @@ window.PORTFOLIO = {
       stack: ["Python", "uv", "FastAPI", "SQLite", "Godot"],
       summary: "A Chinese-language wuxia RPG where an LLM narrates freely while a deterministic engine owns every number, every roll and every consequence.",
       detail: "The split is the whole design: prose is generated, state is not. Time is action-costed in 时辰 units, and a timeline of conditional world events fires whether or not you are present — so the world has history without simulating it. Randomness runs through named seeded streams, rewind restores a snapshot while eroding only a personal layer, and free-text input is paced by a currency whose price the engine sets, never the model. The LLM sits behind a port with a fake implementation, so whole turns are golden-tested without a network call.",
-      media: null,
+      media: { type: "video", src: "media/wuxia.mp4", poster: "media/wuxia-poster.jpg", alt: "Wuxia trailer" },
       links: []
     },
     {
@@ -62,7 +68,7 @@ window.PORTFOLIO = {
       stack: ["Rust", "Tauri", "React", "SQLite"],
       summary: "An on-device assistant that files mail, reads scans locally and redacts identifiers before anything reaches a model.",
       detail: "Privacy is a constraint, not a setting: one Rust core owns ingest, parse, OCR, matching, redaction and calendar export, so the React UI never touches client files. State lives in SQLCipher with the key in Windows Credential Manager. The product rule is \"nothing leaves your laptop\" — including the model, which runs locally. Across eight documented use cases it proposes and cites, and never writes substantive legal text.",
-      media: null,
+      media: { type: "image", src: "media/ture-aid.jpg", alt: "Ture Aid dashboard, empty state: needs you, dates to confirm, matters, activity" },
       links: []
     },
     {
@@ -104,7 +110,7 @@ window.PORTFOLIO = {
       stack: ["Python", "AutoGen", "Neo4j", "MCP", "Streamlit"],
       summary: "A multi-agent travel planner that reads social-travel notes, builds a live knowledge graph, then reasons over it instead of hallucinating an itinerary.",
       detail: "Each run rebuilds the graph from freshly retrieved notes, extracting places, food and prices as entities so multi-hop questions like \"a hotel near the night market under ¥50 a head\" can be answered against structure rather than vibes. Search, budget, figure and writing agents split the work; a Graphviz pass draws the route, Pandas does the budget, and retrieval degrades to cached data when an upstream API fails.",
-      media: null,
+      media: { type: "video", src: "media/trlp.mp4", poster: "media/trlp-poster.jpg", alt: "TRLP planning a three-day Hong Kong trip" },
       links: []
     },
     {
@@ -118,7 +124,7 @@ window.PORTFOLIO = {
       stack: ["React Native", "Vega OS", "Bedrock"],
       summary: "A group-decision streaming app whose screens run unchanged in a browser preview and on Amazon's Vega Virtual Device — built in a team hackathon.",
       detail: "My contribution was the Group Pick engine: a shared-taste recommendation flow that models each person's preferences, proposes a common-ground movie or game, supports voting and alternatives, and answers a local AI-ideas endpoint backed by Claude on Bedrock. The UI was built by two teammates and the Vega OS port by a third; I built on their foundation.",
-      media: null,
+      media: { type: "image", src: "media/huddle.jpg", alt: "Huddle web preview home: tonight's pick and games to play after the movie" },
       links: []
     },
     {
@@ -163,7 +169,7 @@ window.PORTFOLIO = {
       stack: ["PyTorch", "Faster R-CNN", "OpenCV"],
       summary: "A fine-tuned Faster R-CNN that finds ten travel-related objects, from suitcases to surfboards, in ordinary photographs.",
       detail: "COCO 2017 annotations parsed through a custom Dataset and DataLoader, the classification head swapped for ten classes, and the notebook refactored into a modular repository with a standalone inference script that places labels so they never leave the frame.",
-      media: null,
+      media: { type: "image", src: "media/travel-cv.jpg", alt: "Faster R-CNN predictions on a beach scene" },
       links: [{ label: "Repo", href: "https://github.com/Nano-233/Travel-CV" }]
     },
     {
@@ -177,7 +183,7 @@ window.PORTFOLIO = {
       stack: ["TensorFlow", "Keras", "CRNN", "CTC"],
       summary: "A convolutional-recurrent network with CTC loss that transcribes alphanumeric CAPTCHA images sequence by sequence.",
       detail: "A custom CTC loss written for Keras 3, GPU-side augmentation, and held-out evaluation presented as side-by-side actual-versus-predicted samples — including the failures.",
-      media: null,
+      media: { type: "image", src: "media/ocr-captcha.jpg", alt: "A noisy captcha the CRNN reads as 0dx9" },
       links: [{ label: "Repo", href: "https://github.com/Nano-233/OCRCaptcha" }]
     },
     {
@@ -191,7 +197,7 @@ window.PORTFOLIO = {
       stack: ["Node.js", "Fastify", "WebRTC", "HLS"],
       summary: "A self-hosted screenshare site with a local studio mixer and a public viewer page — nothing runs unless you start it.",
       detail: "The studio composites sources, scenes and audio on canvas and pushes WebRTC (WHIP) to mediamtx, which republishes as HLS renditions behind a session; a Fastify server proxies the whole thing through a Cloudflare tunnel with AltCHA and rate limiting. Liveness is derived from the media server rather than trusted from the studio page — a small detail that prevents the classic \"it says live but nobody sees anything\" bug.",
-      media: null,
+      media: { type: "image", src: "media/broadcast.jpg", alt: "Broadcast local studio: scenes, sources, audio mixer, chat moderation" },
       links: []
     },
     {
@@ -219,7 +225,7 @@ window.PORTFOLIO = {
       stack: ["Unity", "C#"],
       summary: "A procedurally generated roguelike platformer with dash combat and A* enemy AI — NUS Orbital Artemis, Judges' Choice Award.",
       detail: "Procedural level sequencing with randomised trap and enemy placement, dynamic difficulty balancing, and an enemy architecture built on composite and observer patterns. Playable in the browser on itch.io.",
-      media: null,
+      media: { type: "image", src: "media/rogue-run.jpg", alt: "Rogue Run main menu" },
       links: [
         { label: "Play on itch.io", href: "https://nano-233.itch.io/rogue-run" },
         { label: "Repo", href: "https://github.com/Nano-233/Rogue-Run" }
@@ -245,15 +251,17 @@ window.PORTFOLIO = {
       title: "The Appraiser",
       category: "games",
       year: "2026",
-      status: "local",
+      status: "playable",
       commits: 15,
       tagline: "Every placard either tells the truth or lies",
       stack: ["JavaScript", "HTML", "CSS"],
       summary: "A deduction roguelike set in an art gallery where every placard either tells the truth or lies, and Scrutiny is the only way to find out which.",
       detail: "The generator guarantees a unique solution, so no wall is ever beaten by guessing. Placards constrain two unknowns at once — where a work hangs and whether it is fake — and four investigations (Authenticate, Cross-examine, Hunch, Provenance) spend a scarce pool to reveal facts while you deduce the rest. Each cleared wall physically grows the museum, with a Hades-style meta layer that redecorates it.",
-      media: null,
-      links: []
+      media: { type: "image", src: "media/appraiser.jpg", alt: "The Appraiser: a wall of four paintings with placards and an investigation bench" },
+      links: [{ label: "Play fullscreen", href: "play/appraiser.html" }],
+      embed: "play/appraiser.html"
     },
+    
     {
       id: "elegy",
       title: "ELEGY",
@@ -265,7 +273,7 @@ window.PORTFOLIO = {
       stack: ["Python", "Markdown", "PDF"],
       summary: "An original card game with 115 cards, a full rulebook, and a toolchain that renders print-ready rules and cuts sprite sheets.",
       detail: "Nine card types, sigil tiers, corruption, a veiled state and a four-phase turn structure, all authored in structured Markdown so balance changes stay diffable. A Python pipeline turns the source into the rulebook PDF and the card art exports.",
-      media: null,
+      media: { type: "image", src: "media/elegy.jpg", alt: "ELEGY card sheet: five Sigil cards with Awakened and Ascendant effects" },
       links: []
     },
     {
@@ -279,7 +287,7 @@ window.PORTFOLIO = {
       stack: ["Python", "OpenCV"],
       summary: "A TETR.IO bot that reads the board by colour matching and searches for optimal back-to-back and T-spin placements.",
       detail: "A macOS port of an existing pixel bot, with calibration and debug tooling added so it survives resolution and theme changes, and multiprocessing to keep search ahead of the game.",
-      media: null,
+      media: { type: "image", src: "media/tetrio.jpg", alt: "TETR.IO bot board-reader debug overlay: playfield grid and next-queue slots" },
       links: [{ label: "Repo", href: "https://github.com/Nano-233/yilinho-tetrio-bot" }]
     },
     {
@@ -293,8 +301,8 @@ window.PORTFOLIO = {
       stack: ["Python", "API-Football", "HTML"],
       summary: "Turns a manual Excel routine into one command that renders a broadcast-style, formation-correct lineup board an hour before kickoff.",
       detail: "Squad bios are built once and cached, so a single run before kickoff only pulls lineups, transfers and season stats. The output carries number, name, age, height, club and flagged statistics in a dark broadcast theme, laid out to the actual formation.",
-      media: null,
-      links: []
+      media: { type: "image", src: "media/spotting-sheet.jpg", alt: "Brazil vs Morocco spotting sheet on a pitch" },
+      links: [{ label: "Open sample sheet", href: "play/spotting-sheet.html" }]
     },
     {
       id: "scouting-reels",
@@ -307,7 +315,7 @@ window.PORTFOLIO = {
       stack: ["Python", "ffmpeg"],
       summary: "Turns a list of timestamped match moments into labelled clips and a single \"all actions\" compilation.",
       detail: "Built for real scouting work: clips are numbered and named after their label in any language, numbering continues across runs so a second pass never overwrites the first, and the output feeds the accompanying analysis boards — heatmaps, duel maps and cover-area diagrams.",
-      media: null,
+      media: { type: "image", src: "media/reels-lineups.jpg", alt: "Match lineup boards with ratings, annotated for scouting" },
       links: []
     },
     {
@@ -335,7 +343,7 @@ window.PORTFOLIO = {
       stack: ["Python", "Playwright", "Tkinter"],
       summary: "A desktop tool that scrapes a comment thread and works out what each commenter actually voted for, then scores the result several ways.",
       detail: "Comments vote by replying rather than tapping, so the tool asks a model to derive the candidate options from the thread itself and classify every comment against them. Scoring is configurable — plurality, consensus and engagement-weighted formulas — because those rank the same thread very differently.",
-      media: null,
+      media: { type: "image", src: "media/alignment.jpg", alt: "Daily 40-cell anime grid filled by weighted comment votes" },
       links: []
     }
   ]

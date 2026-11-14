@@ -1,0 +1,2614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Appraiser</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wall:#ece4d2; --wall-lo:#ddd2ba;
+    --ink:#241d16; --ink-soft:#6a5f4d;
+    --frame:#2b2016; --mat:#f6efdd;
+    --brass:#a8792b; --gold:#a8792b; --sage:#4c7450; --ox:#9a3b2f;
+    --dim:#8c8069; --card:#fbf5e6;
+    --line:#2b201622;
+    --disp:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+    --body:'EB Garamond',Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:19px/1.55 var(--body);color:var(--ink);min-height:100vh;padding:24px 22px 48px;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #fff6e4 0%, transparent 55%),
+      radial-gradient(140% 120% at 50% 120%, #00000018 0%, transparent 60%),
+      linear-gradient(180deg,var(--wall),var(--wall-lo));
+    background-attachment:fixed;}
+  h1{font:600 42px/1.1 var(--disp);margin:0 0 5px;letter-spacing:.3px}
+  h2{font:600 15px/1 var(--disp);text-transform:uppercase;letter-spacing:2.5px;margin:0 0 11px;
+    color:var(--brass);display:flex;align-items:center;gap:12px}
+  h2::after{content:"";flex:1;height:1px;background:var(--line)}
+  .centre h2{justify-content:center}
+  .centre h2::before{content:"";flex:1;height:1px;background:var(--line)}
+  .sub{color:var(--ink-soft);margin:0 0 18px;font:italic 400 18px/1.5 var(--body)}
+  .wrap{max-width:1340px;margin:0 auto}
+  #app{animation:fade .3s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+
+  .hud{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin-bottom:18px;
+    padding:12px 22px;background:linear-gradient(180deg,#fdf8ec,#f3ead2);
+    border:1px solid var(--frame);border-radius:3px;box-shadow:0 2px 0 #0000000f,0 10px 24px -18px #000;
+    font-size:15px}
+  .hud .h-wall{font:600 20px var(--disp);letter-spacing:.5px}
+  .hud .h-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-right:6px}
+  .hud .rep{color:var(--ox);letter-spacing:3px;font-size:19px}
+  .hud .scr{color:var(--brass);font-weight:600;letter-spacing:2px;font-size:17px}
+  .hud .coin{color:var(--ink)}
+  .hud .mod{color:var(--frame);font-style:italic}
+  .hud .seed{color:var(--dim);font-style:italic;margin-left:auto}
+  .hud .hudbtns{display:flex;gap:6px}
+
+  .bench{border:1px solid var(--frame);border-radius:3px;padding:15px 17px;margin-bottom:20px;
+    background:linear-gradient(180deg,#fdf8ec,#f2e7cd);box-shadow:0 2px 0 #0000000f,0 10px 24px -20px #000}
+  .bench-top{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:13px}
+  .bench-title{font:600 15px var(--disp);text-transform:uppercase;letter-spacing:2.5px;color:var(--brass)}
+  .scr-meter{font-size:14px;color:var(--ink-soft);letter-spacing:3px}
+  .scr-meter .scr-num{color:var(--brass);font-weight:600;font-size:18px;letter-spacing:0;margin:0 4px}
+  .tools{display:flex;gap:10px;flex-wrap:wrap}
+  .tool{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:124px;
+    padding:9px 13px;border:1px solid var(--frame);border-radius:3px;cursor:pointer;text-align:left;
+    background:linear-gradient(180deg,#fff,#f2e8cf);color:var(--ink);
+    transition:transform .1s,box-shadow .12s,background .12s}
+  .tool:hover:not(:disabled){background:#fff;box-shadow:0 5px 14px -6px #0007;transform:translateY(-1px)}
+  .tool:disabled{opacity:.35;cursor:not-allowed}
+  .tool.arm{background:linear-gradient(180deg,#c39235,var(--brass));border-color:var(--brass);color:#fff;
+    box-shadow:0 0 0 3px #a8792b33}
+  .tool.arm .tool-tag{color:#fff2d8}
+  .tool-name{font:600 15px var(--disp);letter-spacing:.2px}
+  .tool-tag{font:600 9.5px var(--body);text-transform:uppercase;letter-spacing:1.2px;color:var(--dim)}
+  .bench-staff{margin-top:13px;padding-top:11px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)}
+  .bench-staff b{color:var(--ink);font-weight:600;cursor:help;border-bottom:1px dotted var(--dim)}
+  .arm-hint{display:inline-block;margin-top:11px;font:italic 500 15px var(--body);color:var(--brass);
+    background:#a8792b1a;padding:5px 12px;border-radius:14px}
+  .appraise-note{font:italic 400 13px var(--body);color:var(--dim)}
+
+  .tip{position:absolute;z-index:2000;max-width:280px;background:var(--frame);color:var(--mat);
+    padding:12px 14px;border-radius:4px;box-shadow:0 14px 34px -8px #000c;pointer-events:none;display:none}
+  .tip b{display:block;font:600 15px var(--disp);margin-bottom:5px;color:#fff}
+  .tip span{display:block;font:400 13.5px/1.45 var(--body)}
+  .kw{border-bottom:1px dotted currentColor;cursor:help}
+  .painting .claim .kw{border-bottom-color:var(--brass)}
+  .notes .kw{border-bottom-color:var(--dim)}
+
+  .layout{display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap}
+  .main{flex:1 1 640px;min-width:340px}
+  .side{flex:0 1 320px;min-width:280px}
+
+  .rail{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+    padding:34px 14px 26px;border-radius:3px;margin-bottom:8px;
+    background:linear-gradient(180deg,#0000 0,#00000010 100%),
+      repeating-linear-gradient(90deg,#0000 0 56px,#00000008 56px 58px);
+    border-top:5px solid var(--frame);
+    box-shadow:0 14px 26px -20px #000 inset, 0 -1px 0 #fff6 inset;
+    scrollbar-width:thin;cursor:grab}
+  .rail:active{cursor:grabbing}
+  .rail-track{display:flex;gap:16px;align-items:flex-start;width:max-content;margin:0 auto}
+  .zoombar{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:13px;color:var(--dim)}
+  .zoombar button{width:26px;height:26px;border:1px solid var(--frame);background:linear-gradient(180deg,#fdf8ec,#f0e5cb);
+    color:var(--ink);border-radius:3px;cursor:pointer;font:600 15px var(--body);line-height:1}
+  .zoombar button:hover{background:#fff}
+  .zoombar .zhint{font-style:italic}
+  .slot{width:190px;min-height:284px;border:1px dashed #00000033;border-radius:2px;
+    display:flex;align-items:flex-start;justify-content:center;position:relative;
+    background:#00000008;transition:border-color .12s,background .12s}
+  .slot .n{position:absolute;top:-22px;left:2px;font:11px/1 var(--body);text-transform:uppercase;
+    letter-spacing:1.5px;color:var(--dim)}
+  .slot.hover{border-color:var(--brass);border-style:solid;background:#a8792b1f;box-shadow:0 0 0 2px #a8792b33}
+
+  .roomgrp{display:flex;flex-direction:column;gap:26px}
+  .roomlbl{font:600 13px var(--disp);text-transform:uppercase;letter-spacing:3px;color:var(--brass);
+    text-align:center;padding:3px 10px;background:#a8792b1a;border-radius:12px;align-self:center}
+  .roomslots{display:flex;gap:16px;flex-wrap:nowrap}
+  .wallgrid{display:grid;gap:16px;justify-content:center}
+  .doorway{align-self:center;display:flex;flex-direction:column;align-items:center;gap:5px;
+    color:var(--frame);opacity:.55;padding:0 8px}
+  .doorway::before{content:"";width:18px;height:100px;border:2px solid currentColor;border-bottom:0;
+    border-radius:18px 18px 0 0}
+  .doorway::after{content:"doorway";font:10px/1 var(--body);text-transform:uppercase;letter-spacing:1.5px}
+
+  .tray{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;min-height:150px;
+    padding:16px 12px;border:1px dashed #00000026;border-radius:3px;background:#00000006}
+  .tray-h{font:600 13px var(--disp);text-transform:uppercase;letter-spacing:3px;color:var(--dim);
+    text-align:center;margin:10px 0 4px}
+
+  .painting{width:190px;background:linear-gradient(160deg,#3a2c1e,#241a11);padding:7px;border-radius:2px;
+    box-shadow:0 8px 20px -8px #000a, 0 0 0 1px #0006;position:relative;cursor:grab;
+    touch-action:none;user-select:none;transition:transform .12s,box-shadow .15s}
+  .painting:hover{transform:translateY(-3px);box-shadow:0 16px 30px -10px #000b,0 0 0 1px #0006}
+  .painting.target{outline:3px solid var(--brass);outline-offset:3px;cursor:pointer;
+    box-shadow:0 0 0 6px #a8792b22, 0 8px 20px -8px #000a}
+  .painting.notarget{opacity:.35;filter:grayscale(.6);pointer-events:none}
+  .painting.picked{outline:3px solid var(--sage);outline-offset:3px;box-shadow:0 0 0 6px #4c745022,0 8px 20px -8px #000a}
+  .painting.accused{box-shadow:0 0 0 3px var(--ox),0 10px 24px -10px #000b}
+  .painting:active{cursor:grabbing}
+  .painting .art{height:134px;border:5px solid var(--mat);box-shadow:0 0 0 1px #0004 inset;overflow:hidden;background-size:cover;background-position:center}
+  .painting .art img{width:100%;height:100%;object-fit:cover;display:block}
+  .painting .meta{background:var(--mat);color:var(--ink);padding:6px 7px 5px;margin-top:6px;text-align:center}
+  .painting .meta b{display:block;font:600 14.5px/1.15 var(--disp)}
+  .painting .meta .who{color:var(--ink-soft);font:italic 400 11.5px var(--body)}
+  .painting .claim{font:400 12.5px/1.35 var(--body);background:#efe4c8;color:var(--ink);
+    padding:6px 7px;margin-top:6px;border-left:3px solid var(--brass);min-height:46px}
+  .painting .claim.none{background:#e4dcc6;color:var(--dim);font-style:italic;border-left-color:#00000022}
+  .painting .tag{font:700 11px var(--body);letter-spacing:1px;margin-top:6px;padding:4px 4px;text-align:center;text-transform:uppercase}
+  .painting .tag.g{background:var(--sage);color:#fff}
+  .painting .tag.f{background:var(--ox);color:#fff}
+  .painting .tag.s{background:var(--brass);color:#fff}
+  .painting .fmark{width:100%;margin-top:6px;font:700 11px var(--body);letter-spacing:1px;
+    padding:6px 4px;text-align:center;text-transform:uppercase;background:var(--ox);color:#fff;border-radius:2px}
+  .wall-how{text-align:center;font:italic 400 14px var(--body);color:var(--ink-soft);margin:2px 0 14px}
+  .wall-how b{font-style:normal;font-weight:600;color:var(--ink)}
+  .tutbox{background:#fdf6e3;border:1px solid var(--frame);border-left:5px solid var(--gold);
+    border-radius:3px;padding:13px 16px;margin:0 0 16px;font-size:14.5px;line-height:1.55}
+  .tutbox b{font:600 15px var(--disp);color:var(--brass);display:block;margin-bottom:6px;letter-spacing:.3px}
+  .tutbox p{margin:0}
+
+  .notes{list-style:none;padding:0;margin:0 0 18px}
+  .notes li{background:#fdf7e6;border:1px solid var(--line);border-left:4px solid var(--brass);
+    padding:10px 12px;margin:7px 0;font-size:15.5px;line-height:1.42}
+  .notes li i{color:var(--ink-soft)}
+  .info{font-size:15.5px;color:var(--ink-soft);background:#fdf7e6;padding:13px 15px;
+    border:1px solid var(--line);border-radius:2px;margin-bottom:18px;line-height:1.5}
+  .log{list-style:none;padding:0;margin:0}
+  .log li{font:400 14px/1.4 var(--body);padding:8px 11px;margin:6px 0;background:#2b2016;color:#f1e6cf;
+    border-radius:2px;border-left:3px solid var(--brass);animation:fade .25s ease both}
+  .log li.warn{background:#4e241d;border-left-color:var(--ox)}
+
+  .bar{text-align:center;margin:20px 0;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  button.big{font:500 17px var(--body);padding:11px 26px;border:1px solid var(--frame);
+    background:linear-gradient(180deg,#fdf8ec,#f0e5cb);color:var(--ink);cursor:pointer;border-radius:2px;
+    transition:transform .1s,background .12s,box-shadow .12s}
+  button.big:hover:not(:disabled){background:#fff;box-shadow:0 4px 12px -5px #0007}
+  button.big:active:not(:disabled){transform:translateY(1px)}
+  button.big:disabled{opacity:.4;cursor:not-allowed}
+
+  .verdict{max-width:760px;margin:18px auto 0;padding:18px 24px;text-align:center;font-size:16.5px;
+    border-radius:3px;animation:pop .3s ease both;line-height:1.5}
+  .verdict b{font:600 20px var(--disp)}
+  .verdict.win{background:linear-gradient(180deg,#5a8a5c,#436b46);color:#fff;box-shadow:0 10px 30px -12px #4c745088}
+  .verdict.lose{background:linear-gradient(180deg,#a8463a,#7f2e26);color:#fff;box-shadow:0 10px 30px -12px #9a3b2f88}
+  .verdict.hint{background:#f3e8cc;color:var(--ink);border:1px solid var(--brass)}
+
+  .centre{max-width:720px;margin:48px auto;text-align:center}
+  .centre input{font:400 17px var(--body);padding:10px 14px;border:1px solid var(--frame);
+    border-radius:2px;width:220px;background:var(--card)}
+  .seg{display:inline-flex;border:1px solid var(--frame);border-radius:2px;overflow:hidden}
+  .seg button{font:500 15.5px var(--body);padding:9px 18px;border:0;border-right:1px solid var(--frame);
+    background:var(--card);color:var(--ink);cursor:pointer;transition:background .1s}
+  .seg button:last-child{border-right:0}
+  .seg button:hover:not(.on){background:#fff}
+  .seg button.on{background:var(--frame);color:var(--mat)}
+
+  .choices{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+  .choice{width:258px;background:var(--card);border:1px solid var(--frame);border-left:4px solid var(--dim);
+    padding:17px;cursor:pointer;border-radius:2px;text-align:left;transition:transform .12s,box-shadow .12s,border-color .12s}
+  .choice:hover{transform:translateY(-3px);box-shadow:0 14px 26px -12px #0008;border-left-color:var(--brass)}
+  .choice.rar-uncommon{border-left-color:var(--brass)}
+  .choice.rar-rare{border-left-color:var(--ox)}
+  .choice b{display:block;margin-bottom:7px;font:600 18px var(--disp)}
+  .choice span{display:block;font-size:14.5px;color:var(--ink-soft);line-height:1.45}
+  .choice .rar{display:block;margin-top:10px;font:600 10.5px var(--body);text-transform:uppercase;
+    letter-spacing:1.5px;color:var(--dim)}
+  .choice.dim{opacity:.3;pointer-events:none}
+  .choice button{margin-top:12px;font:500 14px var(--body);padding:6px 16px;border:1px solid var(--frame);
+    background:var(--frame);color:var(--mat);cursor:pointer;border-radius:2px}
+  .choice button:disabled{opacity:.4;cursor:not-allowed}
+  .choice s{font-weight:normal;opacity:.6}
+
+  .kitbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{font:500 13.5px var(--body);padding:6px 13px;border:1px solid var(--frame);border-radius:16px;
+    background:linear-gradient(180deg,#fdf8ec,#f0e5cb);color:var(--ink)}
+  .chip.act{cursor:pointer;transition:background .1s,transform .1s}
+  .chip.act:hover{background:#fff;transform:translateY(-1px)}
+
+  .floorplan{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:20px auto 28px;
+    padding:16px;background:#00000010;border:1px solid var(--line);border-radius:3px;max-width:900px}
+  .room{width:120px;min-height:118px;border:1px solid var(--frame);border-radius:2px;padding:11px 5px;
+    display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--card);
+    transition:background .15s,box-shadow .15s}
+  .room .g{font-size:26px;opacity:.28;transition:opacity .15s}
+  .room .rn{font:600 11px var(--disp);text-transform:uppercase;letter-spacing:.5px;text-align:center;color:var(--ink-soft)}
+  .room .dots{font-size:10px;letter-spacing:2px;color:var(--brass)}
+  .room.lvl1{background:#f8edd0} .room.lvl1 .g{opacity:.5}
+  .room.lvl2{background:#f2e2ba} .room.lvl2 .g{opacity:.75}
+  .room.lvl3{background:#ecd6a2;border-color:var(--brass);box-shadow:0 0 0 2px #a8792b33} .room.lvl3 .g{opacity:1}
+  .faclist{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  .fac{width:282px;background:var(--card);border:1px solid var(--frame);border-radius:2px;padding:16px;text-align:left}
+  .fac-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .fac-h b{font:600 18px var(--disp)}
+  .fac-h .dots{font-size:12px;letter-spacing:2px;color:var(--brass)}
+  .forkseg{display:flex;width:100%;margin-bottom:10px;border:1px solid var(--frame);border-radius:2px;overflow:hidden}
+  .forkseg button{flex:1;font:500 12.5px var(--body);padding:7px 2px;border:0;border-right:1px solid var(--frame);
+    background:var(--card);color:var(--ink);cursor:pointer}
+  .forkseg button:last-child{border-right:0}
+  .forkseg button.on{background:var(--frame);color:var(--mat)}
+  .fac-eff{font-size:14px;color:var(--ink-soft);min-height:56px;margin:0 0 10px;line-height:1.45}
+  .fac .big{width:100%;font-size:14px;padding:8px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+// ============================================================ helpers
+let RAND = Math.random;
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function hashSeed(s){ let h=1779033703^s.length;
+  for(let i=0;i<s.length;i++){ h=Math.imul(h^s.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
+  return (h^h>>>16)>>>0; }
+const rnd = n => Math.floor(RAND()*n);
+const pick = a => a[rnd(a.length)];
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];} return a; };
+const clone = o => JSON.parse(JSON.stringify(o));
+function permutations(a){ if(a.length<=1) return [a];
+  return a.flatMap((x,i)=>permutations([...a.slice(0,i),...a.slice(i+1)]).map(r=>[x,...r])); }
+function kcombos(a,k){ if(k===0) return [[]]; if(k>a.length) return [];
+  const [h,...t]=a; return [...kcombos(t,k-1).map(c=>[h,...c]), ...kcombos(t,k)]; }
+
+// ============================================================ content
+// public-domain works; images hot-linked from Wikimedia thumbnails, with the
+// solid colour as an offline / load-failure fallback.
+function wthumb(file,w,wiki){
+  const host = wiki==="en" ? "en.wikipedia.org" : "commons.wikimedia.org";
+  return `https://${host}/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${w}`;
+}
+// `file` is the Wikimedia file name (Commons unless wiki:"en"); the solid colour
+// is the offline / load-failure fallback. Types: landscape · portrait · still-life · abstract.
+const _P = [
+  {id:"starry",   title:"The Starry Night",            artist:"van Gogh",   year:1889, type:"landscape",  color:"#22406b", file:"Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"},
+  {id:"wave",     title:"The Great Wave off Kanagawa",  artist:"Hokusai",    year:1831, type:"landscape",  color:"#2f6c86", file:"Tsunami_by_hokusai_19th_century.jpg"},
+  {id:"redfuji",  title:"Fine Wind, Clear Morning",    artist:"Hokusai",    year:1831, type:"landscape",  color:"#a0492f", file:"Red_Fuji_southern_wind_clear_morning.jpg"},
+  {id:"scream",   title:"The Scream",                   artist:"Munch",      year:1893, type:"abstract",   color:"#c8631d", file:"Edvard_Munch,_1893,_The_Scream,_oil,_tempera_and_pastel_on_cardboard,_91_x_73_cm,_National_Gallery_of_Norway.jpg"},
+  {id:"madonna",  title:"Madonna",                      artist:"Munch",      year:1894, type:"portrait",   color:"#5a2f38", file:"Edvard_Munch_-_Madonna_-_Google_Art_Project.jpg"},
+  {id:"pearl",    title:"Girl with a Pearl Earring",    artist:"Vermeer",    year:1665, type:"portrait",   color:"#2f4d7a", file:"1665_Girl_with_a_Pearl_Earring.jpg"},
+  {id:"milkmaid", title:"The Milkmaid",                 artist:"Vermeer",    year:1658, type:"still-life", color:"#b0902f", file:"Johannes_Vermeer_-_Het_melkmeisje_-_Google_Art_Project.jpg"},
+  {id:"delft",    title:"View of Delft",                artist:"Vermeer",    year:1661, type:"landscape",  color:"#7a888a", file:"Vermeer-view-of-delft.jpg"},
+  {id:"astronomer",title:"The Astronomer",              artist:"Vermeer",    year:1668, type:"portrait",   color:"#6a5a37", file:"Johannes_Vermeer_-_The_Astronomer_-_WGA24685.jpg"},
+  {id:"square",   title:"Black Square",                 artist:"Malevich",   year:1915, type:"abstract",   color:"#1c1c1c", file:"Kazimir_Malevich,_1915,_Black_Suprematic_Square,_oil_on_linen_canvas,_79.5_x_79.5_cm,_Tretyakov_Gallery,_Moscow.jpg"},
+  {id:"stacks",   title:"Stacks of Wheat",              artist:"Monet",      year:1891, type:"landscape",  color:"#c98a34", file:"Claude_Monet_-_Stacks_of_Wheat_(End_of_Summer)_-_1985.1103_-_Art_Institute_of_Chicago.jpg"},
+  {id:"lilies",   title:"Water Lilies",                 artist:"Monet",      year:1920, type:"landscape",  color:"#5c8f6f", file:"Reflections_of_Clouds_on_the_Water-Lily_Pond.jpg"},
+  {id:"impression",title:"Impression, Sunrise",         artist:"Monet",      year:1872, type:"landscape",  color:"#6a7a86", file:"Monet_-_Impression,_Sunrise.jpg"},
+  {id:"sunflower",title:"Sunflowers",                   artist:"van Gogh",   year:1888, type:"still-life", color:"#d9a81c", file:"Vincent_Willem_van_Gogh_127.jpg"},
+  {id:"cafe",     title:"Café Terrace at Night",        artist:"van Gogh",   year:1888, type:"landscape",  color:"#b8963f", file:"Vincent_Willem_van_Gogh_-_Cafe_Terrace_at_Night_(Yorck).jpg"},
+  {id:"bedroom",  title:"Bedroom in Arles",             artist:"van Gogh",   year:1888, type:"still-life", color:"#7a8a5a", file:"Vincent_van_Gogh_-_De_slaapkamer_-_Google_Art_Project.jpg"},
+  {id:"irises",   title:"Irises",                       artist:"van Gogh",   year:1889, type:"still-life", color:"#3f6a5a", file:"Irises-Vincent_van_Gogh.jpg"},
+  {id:"crows",    title:"Wheatfield with Crows",        artist:"van Gogh",   year:1890, type:"landscape",  color:"#3f5a7a", file:"Vincent_van_Gogh_-_Wheatfield_with_crows_-_Google_Art_Project.jpg"},
+  {id:"bandaged", title:"Self-Portrait with Bandaged Ear",artist:"van Gogh", year:1889, type:"portrait",   color:"#3f5a4a", file:"Vincent_van_Gogh_-_Self-portrait_with_bandaged_ear_(1889,_Courtauld_Institute).jpg"},
+  {id:"watch",    title:"The Night Watch",              artist:"Rembrandt",  year:1642, type:"portrait",   color:"#4a3821", file:"The_Night_Watch_-_HD.jpg"},
+  {id:"tulp",     title:"The Anatomy Lesson of Dr Tulp",artist:"Rembrandt",  year:1632, type:"portrait",   color:"#4a3a2a", file:"Rembrandt_-_The_Anatomy_Lesson_of_Dr_Nicolaes_Tulp.jpg"},
+  {id:"galilee",  title:"The Storm on the Sea of Galilee",artist:"Rembrandt",year:1633, type:"landscape",  color:"#48483a", file:"Rembrandt_Christ_in_the_Storm_on_the_Lake_of_Galilee.jpg"},
+  {id:"jatte",    title:"A Sunday on La Grande Jatte",   artist:"Seurat",     year:1884, type:"landscape",  color:"#5f8a4c", file:"A_Sunday_on_La_Grande_Jatte,_Georges_Seurat,_1884.jpg"},
+  {id:"olympia",  title:"Olympia",                      artist:"Manet",      year:1863, type:"portrait",   color:"#7c3a3a", file:"Edouard_Manet_-_Olympia_-_Google_Art_Project_3.jpg"},
+  {id:"dejeuner", title:"The Luncheon on the Grass",     artist:"Manet",      year:1863, type:"portrait",   color:"#47543a", file:"Édouard_Manet_-_Le_Déjeuner_sur_l'herbe.jpg"},
+  {id:"folies",   title:"A Bar at the Folies-Bergère",   artist:"Manet",      year:1882, type:"portrait",   color:"#6a5a44", file:"Edouard_Manet,_A_Bar_at_the_Folies-Bergère.jpg"},
+  {id:"guitar",   title:"The Old Guitarist",             artist:"Picasso",    year:1904, type:"portrait",   color:"#33627a", file:"Old_guitarist_chicago.jpg", wiki:"en"},
+  {id:"kiss",     title:"The Kiss",                     artist:"Klimt",      year:1908, type:"portrait",   color:"#b48a1e", file:"The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg"},
+  {id:"adele",    title:"Portrait of Adele Bloch-Bauer I",artist:"Klimt",     year:1907, type:"portrait",   color:"#b8962f", file:"Gustav_Klimt_046.jpg"},
+  {id:"boating",  title:"Luncheon of the Boating Party", artist:"Renoir",     year:1881, type:"portrait",   color:"#7a5a44", file:"Pierre-Auguste_Renoir_-_Luncheon_of_the_Boating_Party_-_Google_Art_Project.jpg"},
+  {id:"galette",  title:"Bal du moulin de la Galette",   artist:"Renoir",     year:1876, type:"portrait",   color:"#6a5a5a", file:"Pierre-Auguste_Renoir,_Le_Moulin_de_la_Galette.jpg"},
+  {id:"balletclass",title:"The Ballet Class",            artist:"Degas",      year:1874, type:"portrait",   color:"#9a9a7a", file:"Edgar_Degas_-_The_Ballet_Class_-_Google_Art_Project.jpg"},
+  {id:"absinthe", title:"L'Absinthe",                    artist:"Degas",      year:1876, type:"portrait",   color:"#8a7a5a", file:"Edgar_Degas_-_In_a_Café_-_Google_Art_Project.jpg"},
+  {id:"cardplayers",title:"The Card Players",             artist:"Cézanne",    year:1895, type:"portrait",   color:"#6a5a4a", file:"Les_Joueurs_de_cartes,_par_Paul_Cézanne.jpg"},
+  {id:"saintevictoire",title:"Mont Sainte-Victoire",     artist:"Cézanne",    year:1902, type:"landscape",  color:"#8a9a7a", file:"1904,_Cézanne,_Mont_Sainte-Victoire.jpg"},
+  {id:"apples",   title:"The Basket of Apples",          artist:"Cézanne",    year:1893, type:"still-life", color:"#9a8a6a", file:"Paul_Cézanne,_The_Basket_of_Apples.jpg"},
+  {id:"moulinrouge",title:"At the Moulin Rouge",         artist:"Toulouse-Lautrec",year:1895,type:"portrait",color:"#5a4a5a", file:"Henri_de_Toulouse-Lautrec_-_At_the_Moulin_Rouge_-_Google_Art_Project.jpg"},
+  {id:"gypsy",    title:"The Sleeping Gypsy",             artist:"Rousseau",   year:1897, type:"landscape",  color:"#3f5a6a", file:"WLA_moma_Henri_Rousseau_The_Sleeping_Gypsy.jpg"},
+  {id:"sermon",   title:"Vision after the Sermon",       artist:"Gauguin",    year:1888, type:"abstract",   color:"#8a3a3a", file:"Paul_Gauguin_-_Vision_of_the_Sermon_(Jacob_Wrestling_with_the_Angel)_-_NG_1643_-_National_Galleries_of_Scotland.jpg"},
+  {id:"wheredowe",title:"Where Do We Come From?",        artist:"Gauguin",    year:1898, type:"landscape",  color:"#5a7a6a", file:"Gauguin_-_Where_Do_We_Come_From?_What_Are_We?_Where_Are_We_Going?_(1897-98).jpg"},
+  {id:"haywain",  title:"The Hay Wain",                  artist:"Constable",  year:1821, type:"landscape",  color:"#6a7a4c", file:"John_Constable_-_The_Hay_Wain_(1821).jpg"},
+  {id:"temeraire",title:"The Fighting Temeraire",        artist:"Turner",     year:1839, type:"landscape",  color:"#b8963f", file:"The_Fighting_Temeraire,_JMW_Turner,_National_Gallery.jpg"},
+  {id:"wanderer", title:"Wanderer above the Sea of Fog", artist:"Friedrich",  year:1818, type:"landscape",  color:"#8b8b83", file:"Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg"},
+  {id:"gleaners", title:"The Gleaners",                  artist:"Millet",     year:1857, type:"landscape",  color:"#9a8a5a", file:"Jean-François_Millet_-_Gleaners_-_Google_Art_Project_2.jpg"},
+  {id:"liberty",  title:"Liberty Leading the People",    artist:"Delacroix",  year:1830, type:"portrait",   color:"#7a6a4a", file:"Eugène_Delacroix_-_Le_28_Juillet._La_Liberté_guidant_le_peuple.jpg"},
+  {id:"thirdmay", title:"The Third of May 1808",         artist:"Goya",       year:1814, type:"portrait",   color:"#5a4a3a", file:"El_Tres_de_Mayo,_by_Francisco_de_Goya,_from_Prado_thin_black_margin.jpg"},
+  {id:"saturn",   title:"Saturn Devouring His Son",      artist:"Goya",       year:1823, type:"abstract",   color:"#3a2a20", file:"Francisco_de_Goya,_Saturno_devorando_a_su_hijo_(1819-1823).jpg"},
+  {id:"nightmare",title:"The Nightmare",                 artist:"Fuseli",     year:1781, type:"portrait",   color:"#4a3a34", file:"John_Henry_Fuseli_-_The_NightmareFXD.jpg"},
+  {id:"napoleon", title:"Napoleon Crossing the Alps",    artist:"David",      year:1801, type:"portrait",   color:"#7a5a3a", file:"David_-_Napoleon_crossing_the_Alps_-_Malmaison2.jpg"},
+  {id:"meninas",  title:"Las Meninas",                   artist:"Velázquez",  year:1656, type:"portrait",   color:"#5a4a3a", file:"Las_Meninas,_by_Diego_Velázquez,_from_Prado_in_Google_Earth.jpg"},
+  {id:"delights", title:"The Garden of Earthly Delights",artist:"Bosch",      year:1505, type:"abstract",   color:"#7a6a4a", file:"The_Garden_of_earthly_delights.jpg"},
+  {id:"hunters",  title:"The Hunters in the Snow",       artist:"Bruegel",    year:1565, type:"landscape",  color:"#7a8288", file:"Pieter_Bruegel_the_Elder_-_Hunters_in_the_Snow_(Winter)_-_Google_Art_Project.jpg"},
+  {id:"babel",    title:"The Tower of Babel",            artist:"Bruegel",    year:1563, type:"landscape",  color:"#8a7a5a", file:"Pieter_Bruegel_the_Elder_-_The_Tower_of_Babel_(Vienna)_-_Google_Art_Project_-_edited.jpg"},
+  {id:"arnolfini",title:"The Arnolfini Portrait",        artist:"van Eyck",   year:1434, type:"portrait",   color:"#6a4a3a", file:"Van_Eyck_-_Arnolfini_Portrait.jpg"},
+  {id:"ophelia",  title:"Ophelia",                       artist:"Millais",    year:1852, type:"landscape",  color:"#5a6a4a", file:"John_Everett_Millais_-_Ophelia_-_Google_Art_Project.jpg"},
+  {id:"shalott",  title:"The Lady of Shalott",           artist:"Waterhouse", year:1888, type:"landscape",  color:"#6a7a6a", file:"John_William_Waterhouse_-_The_Lady_of_Shalott_-_Google_Art_Project_edit.jpg"},
+  {id:"venus",    title:"The Birth of Venus",            artist:"Botticelli", year:1485, type:"portrait",   color:"#8a9a7b", file:"Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg"},
+  {id:"primavera",title:"Primavera",                     artist:"Botticelli", year:1480, type:"portrait",   color:"#5a6a4a", file:"Botticelli-primavera.jpg"},
+  {id:"athens",   title:"The School of Athens",          artist:"Raphael",    year:1511, type:"portrait",   color:"#7a6a5a", file:"Raffael_058.jpg"},
+  {id:"ariadne",  title:"Bacchus and Ariadne",           artist:"Titian",     year:1523, type:"portrait",   color:"#4a5a7a", file:"Titian_Bacchus_and_Ariadne.jpg"},
+  {id:"urbino",   title:"Venus of Urbino",               artist:"Titian",     year:1534, type:"portrait",   color:"#7a5a4a", file:"Tiziano_-_Venere_di_Urbino_-_Google_Art_Project.jpg"},
+  {id:"matthew",  title:"The Calling of Saint Matthew",  artist:"Caravaggio", year:1600, type:"portrait",   color:"#4a3a2a", file:"Caravaggio_-_La_vocazione_di_San_Matteo.jpg"},
+  {id:"judith",   title:"Judith Beheading Holofernes",   artist:"Caravaggio", year:1599, type:"portrait",   color:"#3a2a2a", file:"Caravaggio_Judith_Beheading_Holofernes.jpg"},
+  {id:"monalisa", title:"Mona Lisa",                     artist:"da Vinci",   year:1503, type:"portrait",   color:"#6b5a3a", file:"Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg"},
+  {id:"lastsupper",title:"The Last Supper",              artist:"da Vinci",   year:1498, type:"portrait",   color:"#5a5a4a", file:"Leonardo_da_Vinci_(1452-1519)_-_The_Last_Supper_(1495-1498).jpg"},
+];
+const POOL = _P.map(p=>({ ...p, img: wthumb(p.file, 320, p.wiki) }));   // 320 is a standard MediaWiki thumb size
+
+// ============================================================ eval core
+const Pmap = arr => new Map(arr.map(p=>[p.id,p]));
+// rooms: puz.rooms is an array of room sizes (default: one room spanning the wall).
+function roomRanges(puz){
+  const sizes = puz.rooms || [puz.N];
+  const out=[]; let s=0;
+  for(const sz of sizes){ out.push([s, s+sz-1]); s+=sz; }
+  return out;
+}
+function roomOfSlot(i,puz){
+  if(!puz.rooms) return 0;
+  const r=roomRanges(puz);
+  for(let k=0;k<r.length;k++) if(i>=r[k][0] && i<=r[k][1]) return k;
+  return 0;
+}
+const sameRoom = (i,j,puz)=> !puz.rooms || roomOfSlot(i,puz)===roomOfSlot(j,puz);
+// puz.grid = {cols, rows}: a 2-D wall. Slots are row-major; adjacency is 4-connected.
+function neighbours(i,puz){
+  if(puz.grid){
+    const {cols,rows}=puz.grid, r=(i/cols)|0, c=i%cols, out=[];
+    if(c>0) out.push(i-1);
+    if(c<cols-1) out.push(i+1);
+    if(r>0) out.push(i-cols);
+    if(r<rows-1) out.push(i+cols);
+    return out;
+  }
+  return [i-1,i+1].filter(k=>k>=0 && k<puz.N && sameRoom(i,k,puz));
+}
+function nbrInDir(i,dir,puz){
+  if(puz.grid){
+    const {cols,rows}=puz.grid, r=(i/cols)|0, c=i%cols;
+    if(dir==="left")  return c>0 ? i-1 : -1;
+    if(dir==="right") return c<cols-1 ? i+1 : -1;
+    if(dir==="above") return r>0 ? i-cols : -1;
+    if(dir==="below") return r<rows-1 ? i+cols : -1;
+    return -1;
+  }
+  const k = dir==="right" ? i+1 : i-1;
+  return (k>=0 && k<puz.N && sameRoom(i,k,puz)) ? k : -1;
+}
+const isCorner = (i,puz)=> puz.grid ? neighbours(i,puz).length===2 : (i===0 || i===puz.N-1);
+function bandSlots(axis,idx,puz){                       // grid row or column, as a Set of slot indices
+  const {cols}=puz.grid, out=new Set();
+  for(let i=0;i<puz.N;i++){ const b = axis==="row" ? (i/cols)|0 : i%cols; if(b===idx) out.add(i); }
+  return out;
+}
+const BAND_ROW=["top row","middle row","bottom row"], BAND_COL=["left column","centre column","right column"];
+const bandName=(axis,idx)=> (axis==="row"?BAND_ROW:BAND_COL)[idx] || (axis+" "+(idx+1));
+const adjSlot  = (i,j,puz)=> puz.grid ? neighbours(i,puz).includes(j) : (Math.abs(i-j)===1 && sameRoom(i,j,puz));
+function resolveClaim(c,order,fg,selfId,puz){
+  const P=puz.P, N=puz.N, j=order.indexOf(selfId), me=P.get(selfId);
+  switch(c.kind){
+    case "onEnd":    return isCorner(j,puz);
+    case "notOnEnd": return !isCorner(j,puz);
+    case "leftOf":   return j < order.indexOf(c.targetId);
+    case "rightOf":  return j > order.indexOf(c.targetId);
+    case "adjacentTo": return adjSlot(j, order.indexOf(c.targetId), puz);
+    case "neighborArtist":{
+      const k = nbrInDir(j, c.dir, puz);
+      return k>=0 && P.get(order[k]).artist===c.artist;
+    }
+    case "neighborType":{
+      const k = nbrInDir(j, c.dir, puz);
+      return k>=0 && P.get(order[k]).type===c.t;
+    }
+    case "olderThanNeighbors":
+      return neighbours(j,puz).every(k=> me.year < P.get(order[k]).year);
+    case "youngerThanNeighbors":
+      return neighbours(j,puz).every(k=> me.year > P.get(order[k]).year);
+    case "slotForged":  return fg.has(order[c.slot-1]);
+    case "slotGenuine": return !fg.has(order[c.slot-1]);
+    case "countForgedHere": return fg.size===c.k;
+    // --- social: claims about other works' authenticity, by name ---
+    case "accuse":   return fg.has(c.targetId);
+    case "vouch":    return !fg.has(c.targetId);
+    case "sameFate": return fg.has(selfId) === fg.has(c.targetId);
+    case "pairOneForged": return fg.has(c.a) !== fg.has(c.b);
+    case "neighbourForged": return neighbours(j,puz).some(k=> fg.has(order[k]));
+    case "cliqueForged":{ // "exactly N of [these named works] are forgeries"
+      let n=0; for(const id of c.ids) if(fg.has(id)) n++; return n===c.n; }
+    // --- checkable: facts about the works themselves (year/artist on the card) ---
+    case "inBand":{ const {cols}=puz.grid; return c.axis==="row" ? ((j/cols)|0)===c.idx : (j%cols)===c.idx; }
+    case "olderThan":    return me.year < P.get(c.targetId).year;
+    case "sharesArtist": return me.artist === P.get(c.targetId).artist;
+    case "soleArtist":   return [...P.values()].every(q=>q.id===selfId || q.artist!==me.artist);
+    case "oldestHere":   return [...P.values()].every(q=> q.id===selfId || q.year >= me.year);
+    case "newestHere":   return [...P.values()].every(q=> q.id===selfId || q.year <= me.year);
+    case "otherRoomForgeries":{
+      const my=roomOfSlot(j,puz); let cnt=0;
+      roomRanges(puz).forEach((rg,ri)=>{ if(ri===my) return;
+        for(let i=rg[0];i<=rg[1];i++) if(fg.has(order[i])) cnt++; });
+      return cnt===c.n;
+    }
+    case "pastiche":{ const t=P.get(c.targetId);
+      return t && t.claim ? resolveClaim(t.claim,order,fg,selfId,puz) : true; }
+  }
+  return false;
+}
+function testRule(r,order,fg,puz){
+  const P=puz.P, N=puz.N;
+  const adjPairs = f=>{
+    for(let i=0;i<N;i++) for(const k of neighbours(i,puz))
+      if(k>i && f(order[i],order[k],i)) return true;
+    return false;
+  };
+  switch(r.kind){
+    case "countForged": return fg.size===r.n;
+    case "typeAtEnd":   return P.get(order[0]).type===r.t || P.get(order[N-1]).type===r.t;
+    case "leftmostType":  return P.get(order[0]).type===r.t;
+    case "rightmostType": return P.get(order[N-1]).type===r.t;
+    case "artistNotAdjacent": return !adjPairs((a,b)=>P.get(a).artist===r.artist && P.get(b).artist===r.artist);
+    case "typeNotAdjacent":   return !adjPairs((a,b)=>P.get(a).type===r.t && P.get(b).type===r.t);
+    case "orderPair":    return order.indexOf(r.a) < order.indexOf(r.b);
+    case "adjacentPair": return adjSlot(order.indexOf(r.a), order.indexOf(r.b), puz);
+    case "inHalf":{
+      const i=order.indexOf(r.id);
+      return r.half==="left" ? i < Math.floor(N/2) : i >= Math.ceil(N/2);
+    }
+    case "bandForgeries":{                              // grid: a whole row or column
+      const {cols}=puz.grid; let c=0;
+      for(let i=0;i<N;i++){ const b = r.axis==="row" ? (i/cols)|0 : i%cols;
+        if(b===r.idx && fg.has(order[i])) c++; }
+      return c===r.n; }
+    case "roomForgeries":{
+      const rg=roomRanges(puz)[r.room]; let c=0;
+      for(let i=rg[0];i<=rg[1];i++) if(fg.has(order[i])) c++;
+      return c===r.n;
+    }
+  }
+  return false;
+}
+function evalWorld(puz,order,fg){
+  for(let i=0;i<puz.N;i++){
+    const p=puz.P.get(order[i]);
+    if(!p.claim) continue;                              // unattributed: no testimony
+    const truth=resolveClaim(p.claim,order,fg,order[i],puz);
+    if(p.nature==="masterforger"){ if(!truth) return false; }  // a perfect fake — its placard reads true
+    else if(truth === fg.has(order[i])) return false;          // genuine ⇔ placard true
+  }
+  for(const r of puz.rules) if(!testRule(r,order,fg,puz)) return false;
+  return true;
+}
+function solve(puz,limit){
+  const ids=[...puz.P.keys()], out=[];
+  const fgSets = kcombos(ids,puz.forgeryCount);
+  for(const order of permutations(ids))
+    for(const combo of fgSets){
+      if(evalWorld(puz,order,new Set(combo))){ out.push({order:order.slice(),forged:combo.slice()});
+        if(out.length>limit) return out; }
+    }
+  return out;
+}
+
+// ---- propagation solver: solves ONLY by forced moves, never guessing.
+// Used as a fairness gate — a wall ships only if pure logic cracks it.
+function range(n){ return Array.from({length:n},(_,i)=>i); }
+function propSolve(puz, givenNat, givenPos, ignoreClaims){
+  const ids=[...puz.P.keys()], N=puz.N, F=puz.forgeryCount;
+  const pos={}, nat={};
+  ids.forEach(w=>{ pos[w]=new Set(range(N)); nat[w]=new Set(["g","f"]); });
+  if(givenNat) for(const w in givenNat) if(nat[w]) nat[w]=new Set([givenNat[w]]);
+  if(givenPos) for(const w in givenPos) if(pos[w]) pos[w]=new Set([givenPos[w]]);
+  const dead=()=> ids.some(w=>pos[w].size===0||nat[w].size===0);
+  const slotOf=w=> pos[w].size===1 ? [...pos[w]][0] : -1;
+  const rangeOf=w=>{ const a=[...pos[w]]; return [Math.min(...a),Math.max(...a)]; };
+  const ownerOf=k=>{ const c=ids.filter(w=>pos[w].has(k)); return c.length===1 ? c[0] : null; };
+  const rmPos=(w,k)=> pos[w].delete(k);
+  const keepPos=(w,keep)=>{ let ch=false; for(const k of [...pos[w]]) if(!keep.has(k)){ pos[w].delete(k); ch=true; } return ch; };
+  const setNat=(w,v)=>{ if(nat[w].size===1) return false; nat[w]=new Set(nat[w].has(v)?[v]:[]); return true; };
+
+  const cornerSet = puz.grid
+    ? new Set([0, puz.grid.cols-1, N-puz.grid.cols, N-1])
+    : new Set([0, N-1]);
+  function claimStatus(c,w){
+    switch(c.kind){
+      case "onEnd":{ const s=[...pos[w]], on=s.some(x=>cornerSet.has(x)), off=s.some(x=>!cornerSet.has(x));
+        return on&&!off?"T":(!on?"F":"?"); }
+      case "notOnEnd":{ const r=claimStatus({kind:"onEnd"},w); return r==="T"?"F":r==="F"?"T":"?"; }
+      case "leftOf":{ const [aL,aH]=rangeOf(w),[bL,bH]=rangeOf(c.targetId); return aH<bL?"T":aL>=bH?"F":"?"; }
+      case "rightOf":{ const [aL,aH]=rangeOf(w),[bL,bH]=rangeOf(c.targetId); return aL>bH?"T":aH<=bL?"F":"?"; }
+      case "adjacentTo":{ const a=slotOf(w),b=slotOf(c.targetId);
+        if(a>=0&&b>=0) return adjSlot(a,b,puz)?"T":"F";
+        if(puz.grid) return "?";
+        const [aL,aH]=rangeOf(w),[bL,bH]=rangeOf(c.targetId);
+        return (aH+1<bL||bH+1<aL)?"F":"?"; }
+      case "neighborArtist": case "neighborType":{
+        const j=slotOf(w); if(j<0) return "?";
+        const k=nbrInDir(j,c.dir,puz); if(k<0) return "F";
+        const o=ownerOf(k); if(!o) return "?";
+        return (c.kind==="neighborArtist"?puz.P.get(o).artist===c.artist:puz.P.get(o).type===c.t)?"T":"F"; }
+      case "olderThanNeighbors": case "youngerThanNeighbors":{
+        const j=slotOf(w); if(j<0) return "?";
+        const me=puz.P.get(w).year; let unknown=false, ok=true;
+        for(const k of neighbours(j,puz)){
+          const o=ownerOf(k); if(!o){ unknown=true; continue; }
+          const good=c.kind==="olderThanNeighbors"? me<puz.P.get(o).year : me>puz.P.get(o).year;
+          if(!good) ok=false; }
+        return !ok?"F":(unknown?"?":"T"); }
+      case "slotForged": case "slotGenuine":{
+        const o=ownerOf(c.slot-1); if(!o||nat[o].size>1) return "?";
+        const f=nat[o].has("f"); return (c.kind==="slotForged"?f:!f)?"T":"F"; }
+      case "countForgedHere": return c.k===F?"T":"F";
+      case "otherRoomForgeries":{
+        const j=slotOf(w); if(j<0) return "?";
+        const my=roomOfSlot(j,puz), rr=roomRanges(puz);
+        let must=0, can=0, allFull=true;
+        rr.forEach((rg,ri)=>{ if(ri===my) return;
+          const defIn=ids.filter(x=>[...pos[x]].every(k=>k>=rg[0]&&k<=rg[1]));
+          if(defIn.length!==rg[1]-rg[0]+1) allFull=false;
+          must+=defIn.filter(x=>nat[x].size===1&&nat[x].has("f")).length;
+          can +=defIn.filter(x=>nat[x].has("f")).length; });
+        if(must>c.n||can<c.n) return "F";
+        return (allFull && must===c.n && can===c.n) ? "T" : "?"; }
+      case "accuse": case "vouch":{
+        const t=c.targetId; if(nat[t].size>1) return "?";
+        const f=nat[t].has("f");
+        return (c.kind==="accuse"?f:!f)?"T":"F"; }
+      case "sameFate":{
+        if(nat[w].size>1 || nat[c.targetId].size>1) return "?";
+        return nat[w].has("f")===nat[c.targetId].has("f") ? "T" : "F"; }
+      case "pairOneForged":{
+        if(nat[c.a].size>1 || nat[c.b].size>1) return "?";
+        return nat[c.a].has("f")!==nat[c.b].has("f") ? "T" : "F"; }
+      case "neighbourForged":{
+        const j=slotOf(w); if(j<0) return "?";
+        let anyForged=false, allGenuine=true;
+        for(const k of neighbours(j,puz)){ const o=ownerOf(k);
+          if(!o){ allGenuine=false; continue; }
+          if(nat[o].size===1 && nat[o].has("f")) anyForged=true;
+          if(!(nat[o].size===1 && nat[o].has("g"))) allGenuine=false; }
+        return anyForged?"T":(allGenuine?"F":"?"); }
+      case "cliqueForged":{
+        const must=c.ids.filter(x=>nat[x].size===1&&nat[x].has("f")).length;
+        const can =c.ids.filter(x=>nat[x].has("f")).length;
+        if(must>c.n||can<c.n) return "F";
+        return (must===c.n && can===c.n) ? "T" : "?"; }
+      case "inBand":{ const bs=bandSlots(c.axis,c.idx,puz), s=[...pos[w]];
+        const on=s.some(x=>bs.has(x)), off=s.some(x=>!bs.has(x));
+        return on&&!off?"T":(!on?"F":"?"); }
+      case "olderThan":    return puz.P.get(w).year < puz.P.get(c.targetId).year ? "T":"F";
+      case "sharesArtist": return puz.P.get(w).artist===puz.P.get(c.targetId).artist ? "T":"F";
+      case "soleArtist":   return [...puz.P.values()].filter(q=>q.artist===c.artist).length===1 ? "T":"F";
+      case "oldestHere":   return [...puz.P.values()].every(q=>q.id===w||q.year>=puz.P.get(w).year) ? "T":"F";
+      case "newestHere":   return [...puz.P.values()].every(q=>q.id===w||q.year<=puz.P.get(w).year) ? "T":"F";
+      case "pastiche":{ const t=puz.P.get(c.targetId);
+        return t && t.claim ? claimStatus(t.claim,w) : "?"; }
+    }
+    return "?";
+  }
+  function pruneClaim(c,w,wantTrue){
+    let ch=false;
+    const other=c.targetId;
+    switch(c.kind){
+      case "onEnd":    ch = wantTrue ? keepPos(w,cornerSet) : [...cornerSet].reduce((a,k)=>rmPos(w,k)||a,false); break;
+      case "notOnEnd": ch = wantTrue ? [...cornerSet].reduce((a,k)=>rmPos(w,k)||a,false) : keepPos(w,cornerSet); break;
+      case "leftOf": if(wantTrue){ const bH=rangeOf(other)[1], aL=rangeOf(w)[0];
+        ch = keepPos(w,new Set([...pos[w]].filter(k=>k<bH))) | keepPos(other,new Set([...pos[other]].filter(k=>k>aL))); } break;
+      case "rightOf": if(wantTrue){ const bL=rangeOf(other)[0], aH=rangeOf(w)[1];
+        ch = keepPos(w,new Set([...pos[w]].filter(k=>k>bL))) | keepPos(other,new Set([...pos[other]].filter(k=>k<aH))); } break;
+      case "adjacentTo": if(wantTrue){ const b=slotOf(other), a=slotOf(w);
+        const near=s=>new Set(neighbours(s,puz));
+        if(b>=0) ch = keepPos(w,near(b)) || ch;
+        if(a>=0) ch = keepPos(other,near(a)) || ch; } break;
+      case "neighborArtist": case "neighborType":{
+        const j=slotOf(w); if(j<0) break;
+        const k=nbrInDir(j,c.dir,puz); if(k<0) break;
+        const match=o=>c.kind==="neighborArtist"?puz.P.get(o).artist===c.artist:puz.P.get(o).type===c.t;
+        for(const o of ids){ if(o===w) continue;
+          if(wantTrue ? !match(o) : match(o)){ if(rmPos(o,k)) ch=true; } }
+        break; }
+      case "olderThanNeighbors": case "youngerThanNeighbors": if(wantTrue){
+        const j=slotOf(w); if(j<0) break;
+        const me=puz.P.get(w).year;
+        for(const o of ids){ if(o===w) continue;
+          const bad=c.kind==="olderThanNeighbors" ? puz.P.get(o).year<=me : puz.P.get(o).year>=me;
+          if(bad){ for(const k of neighbours(j,puz)) if(rmPos(o,k)) ch=true; } }
+        break; }
+      case "slotForged":  { const o=ownerOf(c.slot-1); if(o) ch=setNat(o, wantTrue?"f":"g"); break; }
+      case "slotGenuine": { const o=ownerOf(c.slot-1); if(o) ch=setNat(o, wantTrue?"g":"f"); break; }
+      case "inBand":{ const bs=bandSlots(c.axis,c.idx,puz);
+        ch = wantTrue ? keepPos(w,bs) : [...bs].reduce((a,k)=>rmPos(w,k)||a,false); break; }
+      case "accuse":  ch=setNat(other, wantTrue?"f":"g"); break;
+      case "vouch":   ch=setNat(other, wantTrue?"g":"f"); break;
+      case "sameFate":{
+        const want = v => wantTrue ? v : (v==="f"?"g":"f");
+        if(nat[w].size===1) ch=setNat(other, want(nat[w].has("f")?"f":"g"))||ch;
+        if(nat[other].size===1) ch=setNat(w, want(nat[other].has("f")?"f":"g"))||ch;
+        break; }
+      case "pairOneForged":{
+        const opp = v => v==="f"?"g":"f";
+        const knownV = x => nat[x].size===1 ? (nat[x].has("f")?"f":"g") : null;
+        const va=knownV(c.a), vb=knownV(c.b);
+        if(wantTrue){   // exactly one forged
+          if(va) ch=setNat(c.b, opp(va))||ch;
+          if(vb) ch=setNat(c.a, opp(vb))||ch;
+        } else {        // both same
+          if(va) ch=setNat(c.b, va)||ch;
+          if(vb) ch=setNat(c.a, vb)||ch;
+        }
+        break; }
+      case "cliqueForged":{
+        const must=c.ids.filter(x=>nat[x].size===1&&nat[x].has("f"));
+        const can =c.ids.filter(x=>nat[x].has("f"));
+        if(wantTrue){
+          if(can.length===c.n) for(const x of can) if(setNat(x,"f")) ch=true;
+          if(must.length===c.n) for(const x of c.ids) if(!must.includes(x) && setNat(x,"g")) ch=true;
+        }
+        break; }
+      case "pastiche":{ const t=puz.P.get(c.targetId);
+        if(t && t.claim) ch=pruneClaim(t.claim,w,wantTrue); break; }
+    }
+    return !!ch;
+  }
+  function pruneRule(r){
+    let ch=false; const P=id=>puz.P.get(id);
+    switch(r.kind){
+      case "leftmostType":  for(const w of ids) if(P(w).type!==r.t && rmPos(w,0)) ch=true; break;
+      case "rightmostType": for(const w of ids) if(P(w).type!==r.t && rmPos(w,N-1)) ch=true; break;
+      case "inHalf":{ const half=r.half==="left"
+        ? new Set(range(Math.floor(N/2))) : new Set(range(N).slice(Math.ceil(N/2)));
+        ch=keepPos(r.id,half); break; }
+      case "orderPair":{ const bH=rangeOf(r.b)[1], aL=rangeOf(r.a)[0];
+        ch = keepPos(r.a,new Set([...pos[r.a]].filter(k=>k<bH))) | keepPos(r.b,new Set([...pos[r.b]].filter(k=>k>aL))); break; }
+      case "adjacentPair":{ const a=slotOf(r.a), b=slotOf(r.b);
+        const near=s=>new Set(neighbours(s,puz));
+        if(a>=0) ch=keepPos(r.b,near(a))||ch;
+        if(b>=0) ch=keepPos(r.a,near(b))||ch; break; }
+      case "artistNotAdjacent": for(const w of ids){ if(P(w).artist!==r.artist) continue; const s=slotOf(w); if(s<0) continue;
+        for(const o of ids) if(o!==w && P(o).artist===r.artist)
+          for(const k of neighbours(s,puz)) if(rmPos(o,k)) ch=true; } break;
+      case "typeNotAdjacent": for(const w of ids){ if(P(w).type!==r.t) continue; const s=slotOf(w); if(s<0) continue;
+        for(const o of ids) if(o!==w && P(o).type===r.t)
+          for(const k of neighbours(s,puz)) if(rmPos(o,k)) ch=true; } break;
+      case "roomForgeries": case "bandForgeries":{
+        const bs = r.kind==="bandForgeries" ? bandSlots(r.axis,r.idx,puz)
+          : (()=>{ const rg=roomRanges(puz)[r.room], s=new Set(); for(let k=rg[0];k<=rg[1];k++) s.add(k); return s; })();
+        const defIn=ids.filter(w=>[...pos[w]].every(k=>bs.has(k)));
+        if(defIn.length===bs.size){
+          const mustF=defIn.filter(w=>nat[w].size===1&&nat[w].has("f"));
+          const canF =defIn.filter(w=>nat[w].has("f"));
+          if(mustF.length>r.n||canF.length<r.n){ nat[defIn[0]]=new Set(); ch=true; }
+          else{
+            if(canF.length===r.n)  for(const w of canF) if(setNat(w,"f")) ch=true;
+            if(mustF.length===r.n) for(const w of defIn) if(!mustF.includes(w) && setNat(w,"g")) ch=true;
+          }
+        }
+        break; }
+    }
+    return !!ch;
+  }
+
+  const bail=()=>({ solved:false, contradiction:true, order:null, forged:null, nat, pos });
+  let changed=true, guard=0;
+  while(changed && guard++<300){
+    changed=false;
+    if(dead()) return bail();
+    for(const w of ids) if(pos[w].size===1){ const k=[...pos[w]][0];
+      for(const o of ids) if(o!==w && rmPos(o,k)) changed=true; }
+    for(let k=0;k<N;k++){ const c=ids.filter(w=>pos[w].has(k));
+      if(c.length===0) return bail();
+      if(c.length===1 && pos[c[0]].size>1){ pos[c[0]]=new Set([k]); changed=true; } }
+    const mustF=ids.filter(w=>nat[w].size===1 && nat[w].has("f"));
+    const canF =ids.filter(w=>nat[w].has("f"));
+    if(mustF.length>F || canF.length<F) return bail();
+    if(canF.length===F)  for(const w of canF) if(setNat(w,"f")) changed=true;
+    if(mustF.length===F) for(const w of ids) if(!mustF.includes(w) && setNat(w,"g")) changed=true;
+    for(const w of ids){ const p=puz.P.get(w); if(ignoreClaims || !p.claim || p.nature==="masterforger") continue;
+      const st=claimStatus(p.claim,w);
+      if(st==="T" && setNat(w,"g")) changed=true;
+      if(st==="F" && setNat(w,"f")) changed=true;
+      if(nat[w].size===1 && pruneClaim(p.claim,w,nat[w].has("g"))) changed=true;
+    }
+    for(const r of puz.rules) if(pruneRule(r)) changed=true;
+  }
+  const contradiction=dead();
+  const solved = !contradiction && ids.every(w=>pos[w].size===1 && nat[w].size===1);
+  let order=null;
+  if(solved){ order=Array(N); ids.forEach(w=> order[[...pos[w]][0]]=w ); }
+  return { solved, contradiction, order,
+           forged: solved ? ids.filter(w=>nat[w].has("f")) : null, nat, pos };
+}
+// the Scrutiny a perfect deducer must still spend on reveals before pure logic
+// finishes: an Authenticate (nature) costs 1 the first time each wall, 2 after;
+// a Provenance (position) costs 1. A wall ships only if this fits the budget.
+function fairReveals(puz, seedNat, seedPos, ignoreClaims){
+  const sol=puz.solution, solF=new Set(sol.forged), ids=[...puz.P.keys()];
+  const gNat=Object.assign({},seedNat||null), gPos=Object.assign({},seedPos||null);
+  let cost=0, natCount=0;
+  for(let step=0;step<=ids.length*3;step++){
+    const r=propSolve(puz,gNat,gPos,ignoreClaims);
+    if(r.contradiction) return Infinity;
+    if(r.solved) return JSON.stringify(r.order)===JSON.stringify(sol.order) ? cost : Infinity;
+    const ambN=ids.filter(w=>!(w in gNat) && r.nat[w].size>1);
+    const ambP=ids.filter(w=>!(w in gPos) && r.pos[w].size>1);
+    if(ambN.length){ gNat[ambN[0]] = solF.has(ambN[0]) ? "f" : "g";
+      cost += (natCount===0 ? 1 : 2); natCount++; }
+    else if(ambP.length){ gPos[ambP[0]] = sol.order.indexOf(ambP[0]); cost += 1; }
+    else return Infinity;
+  }
+  return Infinity;
+}
+
+// ============================================================ generator
+function claimText(c,P,puz){
+  const T=id=>P.get(id).title;
+  const grid = puz && puz.grid;
+  const dirPhrase = d => (d==="above"||d==="below") ? `directly ${d} me` : `directly to my ${d}`;
+  switch(c.kind){
+    case "onEnd": return grid ? "I hang in a corner of the grid." : "I hang at one end of the wall.";
+    case "notOnEnd": return grid ? "I do not hang in a corner." : "I do not hang at either end.";
+    case "leftOf": return grid ? `I hang before ${T(c.targetId)}, reading left-to-right, top-to-bottom.` : `I hang somewhere to the left of ${T(c.targetId)}.`;
+    case "rightOf": return grid ? `I hang after ${T(c.targetId)}, reading left-to-right, top-to-bottom.` : `I hang somewhere to the right of ${T(c.targetId)}.`;
+    case "adjacentTo": return `I hang directly beside ${T(c.targetId)}.`;
+    case "neighborArtist": return `A work by ${c.artist} hangs ${dirPhrase(c.dir)}.`;
+    case "neighborType": return `A ${c.t} work hangs ${dirPhrase(c.dir)}.`;
+    case "olderThanNeighbors": return "I am older than every painting touching me.";
+    case "youngerThanNeighbors": return "I am younger than every painting touching me.";
+    case "slotForged": return `The painting in Slot ${c.slot} is a forgery.`;
+    case "slotGenuine": return `The painting in Slot ${c.slot} is genuine.`;
+    case "countForgedHere": return `Exactly ${c.k} ${c.k===1?"forgery hangs":"forgeries hang"} on this wall.`;
+    case "otherRoomForgeries": return `Outside this room, exactly ${c.n} ${c.n===1?"work is a forgery":"works are forgeries"}.`;
+    case "accuse":   return `${T(c.targetId)} is a forgery.`;
+    case "vouch":    return `${T(c.targetId)} is genuine — I'd stake my name on it.`;
+    case "sameFate": return `${T(c.targetId)} and I stand together: both honest, or both frauds.`;
+    case "pairOneForged": return `Exactly one of ${T(c.a)} and ${T(c.b)} is a forgery.`;
+    case "neighbourForged": return `A forgery hangs right beside me.`;
+    case "cliqueForged":{
+      const list=c.ids.map(T); const last=list.pop();
+      return `Among ${list.join(", ")} and ${last}, exactly ${c.n} ${c.n===1?"is a forgery":"are forgeries"}.`; }
+    case "olderThan":    return `I was painted before ${T(c.targetId)}.`;
+    case "sharesArtist": return `${T(c.targetId)} and I came from the same hand.`;
+    case "soleArtist":   return `I am the only ${c.artist} on this wall.`;
+    case "oldestHere":   return `No painting on this wall is older than me.`;
+    case "newestHere":   return `I am the most recent work on this wall.`;
+    case "inBand":       return `I hang in the ${bandName(c.axis,c.idx)}.`;
+    case "pastiche": return `My placard is copied word for word from ${T(c.targetId)}: “${c.echo}”`;
+  }
+}
+const ROOM_LETTER = ["A","B","C","D"];
+function ruleText(r,P){
+  const T=id=>P.get(id).title;
+  switch(r.kind){
+    case "countForged": return `Exactly ${r.n} ${r.n===1?"work is a forgery":"works are forgeries"} on this wall.`;
+    case "typeAtEnd": return `A ${r.t} work hangs at one end of the wall.`;
+    case "leftmostType": return `The wall opens, at the far left, with a ${r.t} work.`;
+    case "rightmostType": return `The wall closes, at the far right, with a ${r.t} work.`;
+    case "artistNotAdjacent": return `No two works by ${r.artist} hang side by side.`;
+    case "typeNotAdjacent": return `No two ${r.t} works hang side by side.`;
+    case "orderPair": return `${T(r.a)} hangs somewhere to the left of ${T(r.b)}.`;
+    case "adjacentPair": return `${T(r.a)} and ${T(r.b)} hang side by side.`;
+    case "inHalf": return `${T(r.id)} hangs in the ${r.half} half of the wall.`;
+    case "roomForgeries": return `Room ${ROOM_LETTER[r.room]} holds exactly ${r.n} ${r.n===1?"forgery":"forgeries"}.`;
+    case "bandForgeries": return `The ${bandName(r.axis,r.idx)} holds exactly ${r.n} ${r.n===1?"forgery":"forgeries"}.`;
+  }
+}
+function genClaim(p,order,fg,arr,puz,desired){
+  const others = arr.filter(q=>q.id!==p.id);
+  // in a multi-room wall, "left of X" across a doorway is trivially true/false —
+  // keep positional targets within the speaker's own room.
+  const near = (puz.rooms && puz.rooms.length>1)
+    ? others.filter(q=> roomOfSlot(order.indexOf(q.id),puz)===roomOfSlot(order.indexOf(p.id),puz))
+    : others;
+  const nearPick = () => (near.length?near:others);
+  const types=[...new Set(arr.map(q=>q.type))];
+  const dirs = puz.grid ? ["left","right","above","below"] : ["left","right"];
+  const cornerTrivial = puz.grid && puz.N>0 && [...Array(puz.N).keys()].every(i=>isCorner(i,puz));
+  const gens=[
+    ...(cornerTrivial ? [] : [()=>({kind:"onEnd"}), ()=>({kind:"notOnEnd"})]),
+    ()=>({kind:"leftOf",targetId:pick(nearPick()).id}),
+    ()=>({kind:"rightOf",targetId:pick(nearPick()).id}),
+    ()=>({kind:"adjacentTo",targetId:pick(nearPick()).id}),
+    ()=>({kind:"neighborArtist",dir:pick(dirs),artist:pick(others).artist}),
+    ()=>({kind:"neighborType",dir:pick(dirs),t:pick(types)}),
+    ()=>({kind:"olderThanNeighbors"}), ()=>({kind:"youngerThanNeighbors"}),
+    ()=>({kind:"slotForged",slot:1+rnd(puz.N)}),
+    ()=>({kind:"slotGenuine",slot:1+rnd(puz.N)}),
+    ()=>({kind:"countForgedHere",k:rnd(puz.N+1)}),
+    // social — accusations, alibis, pairs, cliques
+    ()=>({kind:"accuse",targetId:pick(others).id}),
+    ()=>({kind:"vouch",targetId:pick(others).id}),
+    ()=>({kind:"sameFate",targetId:pick(others).id}),
+    ()=>{ const two=shuffle(others).slice(0,2); return {kind:"pairOneForged",a:two[0].id,b:two[1].id}; },
+    ()=>({kind:"neighbourForged"}),
+    ()=>{ const grp=[p,...shuffle(others).slice(0,2)]; return {kind:"cliqueForged",ids:grp.map(q=>q.id),n:rnd(grp.length+1)}; },
+    // checkable — facts about the works, read straight off the cards
+    ()=>({kind:"olderThan",targetId:pick(others).id}),
+    ()=>({kind:"sharesArtist",targetId:pick(others).id}),
+    ()=>({kind:"soleArtist",artist:p.artist}),
+    ()=>({kind:"oldestHere"}), ()=>({kind:"newestHere"}),
+  ];
+  if(puz.rooms && puz.rooms.length>1){
+    const myR=roomOfSlot(order.indexOf(p.id),puz);
+    let c=0; roomRanges(puz).forEach((rg,ri)=>{ if(ri===myR) return;
+      for(let i=rg[0];i<=rg[1];i++) if(fg.has(order[i])) c++; });
+    gens.push(()=>({kind:"otherRoomForgeries",n:c}));
+  }
+  if(puz.grid){
+    gens.push(()=>({kind:"inBand",axis:"row",idx:rnd(puz.grid.rows)}));
+    gens.push(()=>({kind:"inBand",axis:"col",idx:rnd(puz.grid.cols)}));
+  }
+  for(let t=0;t<60;t++){
+    const c=pick(gens)();
+    if(resolveClaim(c,order,fg,p.id,puz)===desired) return c;
+  }
+  const j=order.indexOf(p.id), onEnd=isCorner(j,puz);
+  return desired===onEnd ? {kind:"onEnd"} : {kind:"notOnEnd"};
+}
+function genRule(order,fg,arr,puz){
+  const types=[...new Set(arr.map(q=>q.type))];
+  const artists=[...new Set(arr.map(q=>q.artist))];
+  const two=shuffle(arr).slice(0,2);
+  const gens=[
+    ()=>({kind:"typeAtEnd",t:pick(types)}),
+    ()=>({kind:"leftmostType",t:pick(types)}),
+    ()=>({kind:"rightmostType",t:pick(types)}),
+    ()=>({kind:"artistNotAdjacent",artist:pick(artists)}),
+    ()=>({kind:"typeNotAdjacent",t:pick(types)}),
+    ()=>({kind:"orderPair",a:two[0].id,b:two[1].id}),
+    ()=>({kind:"adjacentPair",a:two[0].id,b:two[1].id}),
+    ()=>({kind:"inHalf",id:pick(arr).id,half:pick(["left","right"])}),
+  ];
+  if(puz.rooms && puz.rooms.length>1){
+    gens.push(()=>{ const ri=rnd(puz.rooms.length), rg=roomRanges(puz)[ri];
+      let c=0; for(let i=rg[0];i<=rg[1];i++) if(fg.has(order[i])) c++;
+      return {kind:"roomForgeries",room:ri,n:c}; });
+  }
+  if(puz.grid){
+    gens.push(()=>{ const axis=pick(["row","col"]), idx=rnd(axis==="row"?puz.grid.rows:puz.grid.cols);
+      let c=0; for(const k of bandSlots(axis,idx,puz)) if(fg.has(order[k])) c++;
+      return {kind:"bandForgeries",axis,idx,n:c}; });
+    gens.push(()=>{ const axis=pick(["row","col"]), idx=rnd(axis==="row"?puz.grid.rows:puz.grid.cols);
+      let c=0; for(const k of bandSlots(axis,idx,puz)) if(fg.has(order[k])) c++;
+      return {kind:"bandForgeries",axis,idx,n:c}; });
+  }
+  return pick(gens)();
+}
+function makePuzzle(spec, tries){
+  tries = tries || 0;
+  const maxAttempts = (spec.mf || spec.pa || spec.rooms || spec.grid || spec.f>=3) ? 260 : 80;
+  for(let attempt=0; attempt<maxAttempts; attempt++){
+    const arr = shuffle(spec.works || POOL).slice(0,spec.n).map(clone);
+    const P=Pmap(arr), N=spec.n;
+    const puz={P,N,forgeryCount:spec.f,rules:[],
+               rooms: (spec.rooms && spec.rooms.reduce((a,b)=>a+b,0)===N) ? spec.rooms : null,
+               grid: (spec.grid && spec.grid.cols*spec.grid.rows===N) ? spec.grid : null,
+               fixed: !!spec.fixed};
+    const order=shuffle(arr.map(p=>p.id));
+    const forged=new Set(shuffle(order).slice(0,spec.f));
+    const mute=new Set(shuffle(order).slice(0,spec.u));            // unattributed works
+    const master=new Set(shuffle([...forged]).slice(0, Math.min(spec.mf||0, spec.f)));  // master forgers
+
+    for(const p of arr){
+      if(mute.has(p.id)){ p.claim=null; p.claimText=null; p.nature="unattributed"; continue; }
+      const mf=master.has(p.id);
+      p.nature = mf ? "masterforger" : "attributed";
+      const desired = mf ? true : !forged.has(p.id);              // genuine ⇒ true; master forger ⇒ true
+      p.claim = genClaim(p,order,forged,arr,puz,desired);
+      p.claimText = claimText(p.claim,P,puz);
+    }
+    if(spec.pa){                                                  // pastiche: a work that reuses another's wording
+      const cand=arr.filter(p=>p.nature==="attributed" && !mute.has(p.id));
+      for(const p of shuffle(cand).slice(0,spec.pa)){
+        const want=!forged.has(p.id);
+        const tgts=arr.filter(q=>q.id!==p.id && q.claim && q.nature==="attributed"
+          && q.claim.targetId!==p.id                                // avoid "left of myself"
+          && resolveClaim(q.claim,order,forged,p.id,puz)===want);   // q's wording, read at p's spot
+        if(!tgts.length) continue;
+        const t=pick(tgts);
+        p.nature="pastiche";
+        p.claim={kind:"pastiche", targetId:t.id, echo:t.claimText};
+        p.claimText=claimText(p.claim,P,puz);
+      }
+    }
+    puz.rules=[{kind:"countForged",n:spec.f}];
+    // budget is Scrutiny, not fact count (fairReveals is Scrutiny-weighted now).
+    let budget = 5 + (spec.f>=2?2:0) + (spec.rooms||spec.grid?1:0)
+      + Math.min(3, (spec.f>=3?1:0) + (spec.mf?2:0) + (spec.pa?1:0));
+    if(spec.fixed) budget = Math.min(budget, 7);   // a pre-hung wall is nature-only — every reveal a 2-cost Authenticate
+
+    if(spec.fixed){
+      // the curator has already hung the wall — the whole puzzle is "which are fake".
+      // positions are given; we only need the forgery set to be pinned by pure logic
+      // plus a few reveals. No brute solve() — fairReveals uses propSolve, fast at any n.
+      puz.paintings=arr; puz.solution={order:order.slice(), forged:[...forged]}; puz.spec=spec;
+      const boardPos={}; order.forEach((id,i)=>boardPos[id]=i);
+      for(let g=0; g<40; g++){
+        const fr=fairReveals(puz,null,boardPos);
+        if(fr>=(spec.min||1) && fr<=budget) break;
+        if(fr<(spec.min||1) || fr===0) break;             // too easy — abandon this layout
+        if(puz.rules.length>=6) break;
+        for(let t=0;t<20;t++){ const cand=genRule(order,forged,arr,puz);
+          if(testRule(cand,order,forged,puz)){ puz.rules.push(cand); break; } }
+      }
+      const fr=fairReveals(puz,null,boardPos);
+      if(fr < (spec.min||1) || fr > budget) continue;
+      if(fairReveals(puz,null,boardPos,true) <= budget) continue;   // placards must carry it
+      puz.rules.forEach(r=>r.text=ruleText(r,P));
+      return puz;
+    }
+
+    let sols=solve(puz,240);
+    if(sols.length>240) continue;                 // target too loose — try a fresh layout
+    let guard=0;
+    const noteCap = spec.rooms ? 6 : 4;              // fewer Curator's Notes ⇒ placards must carry the puzzle
+    while(sols.length!==1 && puz.rules.length<noteCap && guard++<50){
+      if(sols.length===0) break;
+      const cand=genRule(order,forged,arr,puz);
+      if(!testRule(cand,order,forged,puz)) continue;
+      const next=sols.filter(s=>testRule(cand,s.order,new Set(s.forged),puz));
+      if(next.length>=1 && next.length<sols.length){ puz.rules.push(cand); sols=next; }
+    }
+    if(sols.length===1){
+      puz.paintings=arr; puz.solution=sols[0]; puz.spec=spec;
+      // fairness window — a perfect deducer must still BUY between spec.min and
+      // `budget` facts. Upper bound keeps it solvable; lower bound (spec.min) stops
+      // notes+placards alone from cracking it.
+      const fr = fairReveals(puz);
+      if(fr > budget || fr < (spec.min||0)) continue;
+      // placards must be load-bearing: with the placards ignored, the Curator's
+      // Notes + a full reveal budget must NOT be enough to solve. (Only meaningful
+      // on n≥5 — a tiny wall's placards carry it regardless.)
+      if(N>=5 && fairReveals(puz, null, null, true) <= budget) continue;
+      puz.rules.forEach(r=>r.text=ruleText(r,P));
+      return puz;
+    }
+  }
+  if(spec.fixed) return makePuzzle({...spec,fixed:false,grid:null,n:Math.min(spec.n,6)}, tries);   // fall back to a normal wall
+  if(spec.grid)  return makePuzzle({...spec,grid:null}, tries);
+  if(spec.rooms) return makePuzzle({...spec,rooms:null}, tries);
+  if(spec.pa>0)  return makePuzzle({...spec,pa:0}, tries);
+  if(spec.mf>0)  return makePuzzle({...spec,mf:0}, tries);
+  if(spec.u>0)   return makePuzzle({...spec,u:spec.u-1}, tries);
+  if(spec.f>1)   return makePuzzle({...spec,f:1}, tries);
+  if(spec.min)   return makePuzzle({...spec,min:0}, tries);   // drop the floor before shrinking the wall
+  if(spec.n>4)   return makePuzzle({...spec,n:spec.n-1}, tries);
+  if(tries<6)    return makePuzzle(spec, tries+1);        // advance RNG, try afresh
+  throw new Error("generator exhausted for "+JSON.stringify(spec));
+}
+// ============================================================ run config
+const WALLS = [
+  {n:4,f:1,u:0},                               // walls 1–2: reading alone may crack it
+  {n:4,f:1,u:1},
+  {n:5,f:1,u:1, min:2},                        // from here, this much Scrutiny of investigation is forced
+  {n:5,f:2,u:1, min:3},
+  {n:6,f:2,u:1,rooms:[3,3], min:3},            // the gallery opens a second room
+  {n:6,f:2,u:1,rooms:[2,2,2], min:3},          // three rooms
+  {n:4,f:2,u:1,grid:{cols:2,rows:2}, min:4},   // a 2×2 wall — up/down neighbours enter the picture
+  {n:9,f:3,u:3,grid:{cols:3,rows:3},fixed:true,hideCount:true, min:4},  // the finale — a full 3×3, pre-hung, count withheld: pure "who lies"
+];
+const STAKES = [
+  { name:"Suspicion",     desc:"Every wall carries one more forgery (minimum two).",
+    wall:s=>({...s, f:Math.max(2,s.f+1)}) },
+  { name:"Fog",           desc:"The forgery count is withheld on every wall.",
+    wall:s=>({...s, hideCount:true}) },
+  { name:"The Committee", desc:"From Wall 4 on, a Master Forger hides among the fakes — its placard reads true.",
+    wall:(s,i)=> i>=3 ? {...s, mf:1, f:Math.max(2,s.f)} : s },
+  { name:"The Circle", desc:"On every wall a pastiche hangs — its placard copies another's wording word for word.",
+    wall:s=>({...s, pa:1}) },
+];
+const RARITY = {common:6, uncommon:3, rare:1};
+// Staff never confirm a work outright — they narrow the field (a pair, a half,
+// a category) and leave the deduction to you.
+const REWARDS = [
+  {id:"scrutinyUp", type:"upgrade", rarity:"common",   name:"Extra Scrutiny",desc:"+1 Scrutiny on every wall."},
+  {id:"firstFree",  type:"upgrade", rarity:"common",   name:"Fresh Eyes",    desc:"Your first investigation each wall is free."},
+  {id:"provFree",   type:"upgrade", rarity:"common",   name:"House Ledger",  desc:"Once per wall, check one work's slot for free."},
+  {id:"surveyWide", type:"upgrade", rarity:"uncommon", name:"Wide Survey",   desc:"Survey may name a fifth work."},
+  {id:"provExact",  type:"upgrade", rarity:"uncommon", name:"Surveyor's Eye",desc:"Provenance names the exact right slot, not just the direction."},
+  {id:"intern",     type:"staff",   rarity:"common",   name:"The Intern",    desc:"+2 coin at the start of every wall — for the shop between walls."},
+  {id:"docent",     type:"staff",   rarity:"common",   name:"The Docent",    desc:"Each wall: names a genre no forgery belongs to."},
+  {id:"aide",       type:"staff",   rarity:"uncommon", name:"Skeptic's Aide",desc:"Each wall: names two works, exactly one of which is a forgery."},
+  {id:"ledger",     type:"staff",   rarity:"uncommon", name:"The Ledger",    desc:"Each wall: tells you where the forgeries sit — which half, or whether they're adjacent."},
+  {id:"guard",      type:"staff",   rarity:"uncommon", name:"Night Guard",   desc:"Once per wall: names a slot that holds no forgery."},
+  {id:"registrar",  type:"staff",   rarity:"uncommon", name:"The Registrar", desc:"Curator's Notes your current hang satisfies show a mark."},
+];
+const CONSUMABLES = [   // priced to be a rare treat — the cheapest is ~three walls of coin
+  {id:"ledger",  rarity:"common",   price:16, name:"Ledger Page",   desc:"A free Provenance."},
+  {id:"rake",    rarity:"common",   price:20, name:"Raking Light",  desc:"A free Authenticate."},
+  {id:"coffee",  rarity:"common",   price:24, name:"Strong Coffee", desc:"+2 Scrutiny this wall."},
+  {id:"opinion", rarity:"uncommon", price:30, name:"Second Opinion",desc:"Your next rejected appraisal costs no reputation."},
+];
+const ITEM = id => CONSUMABLES.find(c=>c.id===id);
+function weightedDraw(pool, n){
+  pool=pool.slice(); const out=[];
+  while(out.length<n && pool.length){
+    let tot=pool.reduce((s,x)=>s+RARITY[x.rarity],0), r=RAND()*tot, i=0;
+    while(i<pool.length-1 && r>=RARITY[pool[i].rarity]){ r-=RARITY[pool[i].rarity]; i++; }
+    out.push(pool.splice(i,1)[0]);
+  }
+  return out;
+}
+
+// ============================================================ meta (persistent)
+const SAVE_KEY = "appraiser.save.v1";
+function defaultSave(){ return { v:1, patronage:0, facilities:{}, bestWall:0, curator:"standard", stake:0, maxStake:0, known:[] }; }
+function loadSave(){
+  try{ const s=JSON.parse(localStorage.getItem(SAVE_KEY)); if(s && s.v===1) return Object.assign(defaultSave(),s); }catch(e){}
+  return defaultSave();
+}
+function saveMeta(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(SAVE)); }catch(e){} }
+let SAVE = loadSave();
+
+const FAC_COST = [10, 18, 28];   // patronage to reach level 1 / 2 / 3
+const FACILITIES = [
+  { id:"reception", name:"Reception", glyph:"▤",
+    forks:{ basic:{name:"Standing",  text:l=>`+${l} reputation and +${l} to the cap at the start of every run.`},
+            alt:  {name:"Concierge", text:l=>`${l} work${l>1?"s are":" is"} pre-hung in the correct slot each wall — unlocked, and not accused.`} } },
+  { id:"guidebook", name:"Guidebook", glyph:"❧",
+    forks:{ basic:{name:"Annotated", text:l=>`${l} Curator's Note${l>1?"s are":" is"} confirmed true at the start of every wall.`},
+            alt:  {name:"Index",     text:l=>`The forgery count is shown even on hidden-count walls${l>1?`; and ${l-1} note${l>2?"s":""} confirmed`:``}.`} } },
+  { id:"archive", name:"Archive", glyph:"▦",
+    forks:{ basic:{name:"Deep Files",   text:l=>`Up to ${2+l} works you appraised in past seasons start authenticated.`},
+            alt:  {name:"Reading Room", text:l=>`${l} reward reroll${l>1?"s":""} available each between-walls.`} } },
+  { id:"security", name:"Security Office", glyph:"◉",
+    forks:{ basic:{name:"Watch",     text:l=>`The first ${l>1?l+" rejected appraisals":"rejected appraisal"} each run ${l>1?"cost":"costs"} no reputation.`},
+            alt:  {name:"Hint Line", text:l=>`${l>1?l+" times":"Once"} per run, a rejected appraisal reveals how many works are misplaced and mis-called.`} } },
+  { id:"cafe", name:"Café", glyph:"☕",
+    forks:{ basic:{name:"Counter", text:l=>`+${l} starting Scrutiny on every wall.`},
+            alt:  {name:"Terrace", text:l=>`Start every run with ${l*4} coin.`} } },
+  { id:"members", name:"Members' Desk", glyph:"✦",
+    forks:{ basic:{name:"Subscriptions", text:l=>`+${l*15}% Patronage from every wall cleared.`},
+            alt:  {name:"Founders",       text:l=>`Start every run with ${l} random consumable${l>1?"s":""} in hand.`} } },
+  { id:"studio", name:"Restoration Studio", glyph:"◈",
+    forks:{ basic:{name:"Loupe Kit", text:l=>`${l} free Authenticate${l>1?"s":""} available on every wall.`},
+            alt:  {name:"Solvents",  text:l=>`Shop consumables cost ${l*15}% less.`} } },
+];
+function facEff(id){
+  const f=SAVE.facilities[id];
+  return (f && f.level>0) ? { lvl:f.level, fork:f.fork||"basic" } : null;
+}
+function facNextCost(id){ const l=(SAVE.facilities[id]||{}).level||0; return l>=3?null:FAC_COST[l]; }
+function buyFacility(id){
+  const c=facNextCost(id); if(c==null || SAVE.patronage<c) return;
+  const cur=SAVE.facilities[id]||{level:0,fork:"basic"};
+  SAVE.facilities[id]={ level:cur.level+1, fork:cur.fork||"basic" };
+  SAVE.patronage-=c; saveMeta(); render();
+}
+function setFork(id,fork){
+  const cur=SAVE.facilities[id]||{level:0,fork:"basic"};
+  SAVE.facilities[id]={ level:cur.level, fork };
+  saveMeta(); render();
+}
+
+const CURATORS = {
+  standard:{ name:"Curator",     blurb:"No modifier — the honest way in.", locked:()=>false },
+  prodigy: { name:"The Prodigy", blurb:"+1 Scrutiny every wall — but you start with 3 reputation, not the usual 5.",
+             locked:()=>(SAVE.bestWall||0) < WALLS.length,
+             apply:()=>{ RUN.scrutinyBase++; RUN.repMax=3; RUN.rep=3; } },
+  skeptic: { name:"The Skeptic", blurb:"Only Survey — no Authenticate, no Provenance. Every wall holds at least two forgeries.",
+             locked:()=>(SAVE.maxStake||0) < 1,
+             apply:()=>{ RUN.actions=["survey"]; RUN.minForgery=2; RUN.scrutinyBase+=1; } },
+  bureaucrat:{ name:"The Bureaucrat", blurb:"Only Provenance — pure logic on a lean Scrutiny pool. But you start with a doubled reputation bar.",
+             locked:()=>(SAVE.maxStake||0) < 2,
+             apply:()=>{ RUN.actions=["provenance"]; RUN.scrutinyBase=3; RUN.repMax*=2; RUN.rep=RUN.repMax; } },
+};
+let chosenCurator = CURATORS[SAVE.curator] && !CURATORS[SAVE.curator].locked() ? SAVE.curator : "standard";
+let chosenStake = Math.min(SAVE.stake||0, SAVE.maxStake||0);
+
+// ============================================================ investigation
+// three tools, three questions: WHAT is this (Authenticate), WHERE does it go
+// (Provenance), HOW rotten is this stretch (Survey). Shared "arm, then click
+// the work(s)" flow. Hanging is drag; marking a forgery is a tap (see endDrag).
+const surveyMax = () => RUN.upgrades.has("surveyWide") ? 5 : 4;
+const picksFor = a => a==="survey" ? 2 : 1;                 // survey minimum; max via surveyMax()
+const authCostNow = () => (fs.authCount>0 ? 2 : 1);
+function toolCost(a){ return a==="authenticate" ? authCostNow() : 1; }
+const TOOLS = {
+  authenticate:{ name:"Authenticate", group:"scr", verb:"choose a work",
+    what:"Name a work — learn outright whether it is genuine or a forgery, and it locks. The first Authenticate each wall costs 1 Scrutiny; every one after costs 2." },
+  survey:{ name:"Survey", group:"scr", verb:"choose 2 to 4 works",
+    what:"Name two to four works — learn how many are forgeries. A set that comes back all-genuine or all-forged locks every work in it. 1 Scrutiny, whatever the width — a narrow set gives a sharper read." },
+  provenance:{ name:"Provenance", group:"scr", verb:"choose a hung work",
+    what:"Name a work you have hung — learn whether it sits in its correct slot, and if not, which way it must move. 1 Scrutiny." },
+};
+function toolTag(k){
+  if(k==="authenticate"){
+    if(fs.freeAuth>0) return "free ×"+fs.freeAuth;
+    if(RUN.upgrades.has("firstFree") && fs.firstFreeAvail) return "first free";
+    return authCostNow()+" scrutiny";
+  }
+  if(k==="provenance" && RUN.upgrades.has("provFree") && !fs.freeProvUsed) return "free";
+  if(RUN.upgrades.has("firstFree") && fs.firstFreeAvail) return "first free";
+  return "1 scrutiny";
+}
+let _tip;
+function tipShow(anchor, title, body){
+  if(!_tip){ _tip=document.createElement("div"); _tip.className="tip"; document.body.appendChild(_tip); }
+  _tip.innerHTML=`<b>${title}</b><span>${body}</span>`;
+  _tip.style.display="block";
+  const r=anchor.getBoundingClientRect(), w=_tip.offsetWidth;
+  _tip.style.left=Math.max(8, Math.min(window.scrollX+r.left, window.scrollX+innerWidth-w-8))+"px";
+  _tip.style.top=(window.scrollY+r.bottom+8)+"px";
+}
+function tipHide(){ if(_tip) _tip.style.display="none"; }
+function attachTip(elm, title, body){
+  elm.addEventListener("mouseenter",()=>tipShow(elm,title,body));
+  elm.addEventListener("mouseleave",tipHide);
+}
+// -- glossary: every game term in a placard / note / finding is hoverable
+const GLOSSARY = [
+  {key:"masterforger", re:/master forger/gi, title:"Master Forger",
+   def:"A forgery whose placard reads TRUE — it imitates an honest work. Only a contradiction with the others, or an Authenticate, exposes it."},
+  {key:"forgery", re:/forger(?:y|ies)?|frauds?|fakes?/gi, title:"Forgery",
+   def:"A fake. Its placard reads FALSE where it hangs. Flag every forgery before you Appraise."},
+  {key:"genuine", re:/genuine|honest/gi, title:"Genuine",
+   def:"A real work. Its placard reads TRUE where it hangs."},
+  {key:"unattributed", re:/unattributed/gi, title:"Unattributed",
+   def:"Carries no placard — judged only by what other works and the Curator's Notes say about it."},
+  {key:"pastiche", re:/pastiche/gi, title:"Pastiche",
+   def:"Its placard is copied word-for-word from another work, but read at its own position."},
+  {key:"corner", re:/\bcorner\b/gi, title:"Corner",
+   def:"On a grid wall, a slot with only two neighbours."},
+  {key:"reading", re:/reading left-to-right,? top-to-bottom|reading order/gi, title:"Reading order",
+   def:"Left to right, then top to bottom — the way you read a page. Slot 1 is the top-left."},
+  {key:"adjacent", re:/side by side|\bbeside\b|next to me|touching me|neighbours?/gi, title:"Beside / touching",
+   def:"Directly adjacent — never diagonal. On a row it's left/right; on a grid it's all four directions; a doorway breaks it."},
+  {key:"band", re:/(?:top|middle|bottom) row|(?:left|centre|right) column/gi, title:"Row / column",
+   def:"One straight line of the grid."},
+  {key:"grid", re:/\bgrid\b/gi, title:"Grid wall",
+   def:"A rectangular wall. Each work has up to four neighbours — above, below, left, right — never diagonal. A doorway or the wall edge breaks adjacency."},
+  {key:"slot", re:/\bSlot \d+/g, title:"Slot",
+   def:"A numbered hanging position — counted left to right, then top to bottom."},
+  {key:"half", re:/(?:left|right) half/gi, title:"Half of the wall",
+   def:"The wall split down the middle by slot number."},
+  {key:"ends", re:/at (?:one|either) end|the far (?:left|right)/gi, title:"The ends",
+   def:"The leftmost and rightmost slots of the row."},
+  {key:"room", re:/Room [A-D]|this room|the other room|\brooms?\b/gi, title:"Rooms",
+   def:"The wall is divided into rooms by doorways. Works in different rooms are not neighbours."},
+  {key:"scrutiny2", re:/\bScrutiny\b/g, title:"Scrutiny",
+   def:"The wall's investigation budget. Each Authenticate / Cross-examine / Hunch / Provenance costs 1. It does not carry between walls."},
+  {key:"rep2", re:/\breputation\b/gi, title:"Reputation",
+   def:"Your run's lifeline — it never refills. A rejected Appraisal costs 1. At zero, the season ends."},
+  {key:"patronage", re:/\bPatronage\b/g, title:"Patronage",
+   def:"The between-runs currency. Every wall you clear banks some; spend it in the Museum on permanent upgrades. Practice runs bank none."},
+];
+const escHtml = s => s.replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function glossify(text){
+  const hits=[];
+  for(const g of GLOSSARY){ g.re.lastIndex=0; let m;
+    while((m=g.re.exec(text))){ hits.push({s:m.index,e:m.index+m[0].length,g});
+      if(m.index===g.re.lastIndex) g.re.lastIndex++; } }
+  hits.sort((a,b)=> a.s-b.s || (b.e-b.s)-(a.e-a.s));
+  let out="", pos=0;
+  for(const h of hits){
+    if(h.s<pos) continue;
+    out += escHtml(text.slice(pos,h.s));
+    out += `<span class="kw" data-g="${h.g.key}">${escHtml(text.slice(h.s,h.e))}</span>`;
+    pos=h.e;
+  }
+  return out + escHtml(text.slice(pos));
+}
+function wireGlossary(root){
+  if(!root) return;
+  root.querySelectorAll(".kw").forEach(elm=>{
+    const g=GLOSSARY.find(x=>x.key===elm.dataset.g);
+    if(g) attachTip(elm, g.title, g.def);
+  });
+}
+function truthInSolution(id){
+  const p=fs.puz.P.get(id); if(!p.claim) return null;
+  return resolveClaim(p.claim, fs.puz.solution.order, new Set(fs.puz.solution.forged), id, fs.puz);
+}
+
+// ============================================================ state
+let RUN, fs, screen="title", overWin=false, rewardMsg="", rewardOffer=[], shopOffer=[], rewardTaken=false;
+let railZoom=1;   // wall zoom, persists across re-renders
+let DEV={inf:false};   // dev console — infinite mode (see the dev block near the bottom)
+function newRun(seed){
+  const given = seed && String(seed).trim();
+  const s = given || Math.random().toString(36).slice(2,8);
+  RAND = mulberry32(hashSeed(s));
+  // a run on a seed you chose (typed in, or "replay") is practice — it banks no
+  // Patronage and unlocks nothing, so a solved seed can't be farmed.
+  RUN={ seed:s, practice:!!given, wall:0, rep:5, repMax:5, coin:0, scrutinyBase:4,
+        actions:["authenticate","survey","provenance"], upgrades:new Set(), staff:[], items:[],
+        deck:shuffle(POOL), deckPos:0,
+        curator:chosenCurator, stake:chosenStake, minForgery:0,
+        patronMult:1, apprGrace:0, hintCharges:0, freeAuthPerWall:0, shopDiscount:0,
+        catCap:1, rerollsPerShop:0, notesConfirm:0, showHidden:false, shopOpen:false };
+  const cu=CURATORS[chosenCurator]; if(cu && cu.apply) cu.apply();
+  if(RUN.stake>=2){ RUN.rep += 1; RUN.repMax += 1; }   // a small standing buffer once Stakes get heavy
+  applyFacilities();
+  enterWall();
+}
+// ============================================================ tutorial
+// five walls the generator built (seeds locked) that walk through every mechanic.
+// hand-authoring produced non-unique puzzles; a locked seed + makePuzzle keeps
+// each wall unique and fair by the same gate a real wall passes.
+function tutBuild(d){
+  RAND = mulberry32(hashSeed(d.seed));
+  return makePuzzle(d.spec);
+}
+const TUT_REWARD_AT = 2;   // show the between-walls reward screen once, before lesson 3
+const TUTORIAL = [
+  { title:"1 · The rule",
+    seed:"tutL1_1", spec:{n:4,f:1,u:1},
+    intro:`Every placard is a claim. A <span class="kw" data-g="genuine">genuine</span> work's placard is TRUE where it hangs; a <span class="kw" data-g="forgery">forgery</span>'s placard is FALSE. One work here bears no placard — it is <span class="kw" data-g="unattributed">unattributed</span>, judged only by what the others say. The Curator's Notes on the right are always true.<br><br>
+      <b>Do:</b> drag all four into the slots so every placard holds and the Notes check out. Exactly one work is a <span class="kw" data-g="forgery">forgery</span> — <b>tap</b> it to flag it, then press <b>Appraise</b>. This wall is pure logic; no investigation needed.`},
+  { title:"2 · Investigation",
+    seed:"tutL2_139", spec:{n:5,f:2,u:1,min:3},
+    intro:`These placards won't crack the wall on their own. Spend <span class="kw" data-g="scrutiny2">Scrutiny</span> on the Investigation bench above — three tools, three questions:<br>
+      • <b>Authenticate</b> — <i>is this one real?</i> Names a work outright and locks it. First one each wall costs 1 Scrutiny, any after cost 2.<br>
+      • <b>Survey</b> — <i>how rotten is this stretch?</i> Point at 2 to 4 works, learn how many are forgeries. A set that's all-genuine or all-forged locks every work in it. 1 Scrutiny at any width.<br>
+      • <b>Provenance</b> — <i>does this belong here?</i> Checks a hung work's slot and, if it's wrong, which way to move it.<br>
+      Every fact lands in <b>Findings</b>. Low on Scrutiny? <b>Buy Scrutiny</b> for one point of <span class="kw" data-g="rep2">reputation</span> — your run's lifeline, so spend it carefully.<br><br>
+      Two <span class="kw" data-g="forgery">forgeries</span> here. Hang the wall, investigate what you can't deduce, flag both fakes, Appraise. A wrong Appraise costs 1 reputation and tells you nothing — be sure first.`},
+  { title:"3 · Rooms, voices & echoes",
+    seed:"tut3_13", spec:{n:6,f:2,u:1,rooms:[3,3],min:3,hideCount:true,pa:1},
+    intro:`The gallery grows. This wall is two <span class="kw" data-g="room">rooms</span> split by a doorway — works in different rooms are <b>not</b> neighbours, so "beside" and "the other room" read across the gap. The <span class="kw" data-g="forgery">forgery</span> count is <b>withheld</b> here — a placard may claim it, and a forgery will lie about it.<br><br>
+      Placards now talk. They <span class="kw" data-g="forgery">accuse</span> and vouch for each other by name (a genuine one tells the truth, a forged one lies), and one here is a <span class="kw" data-g="pastiche">pastiche</span> — its placard is copied word-for-word from another work, but judged where <i>it</i> hangs, so the same sentence can be true on one wall and false on another.`},
+  { title:"4 · The grid & the perfect fake",
+    seed:"tut4_4", spec:{n:4,f:2,u:1,grid:{cols:2,rows:2},min:3,mf:1},
+    intro:`A 2×2 <span class="kw" data-g="grid">grid</span>. Now a work has neighbours <b>above and below</b> as well as left and right, and a <span class="kw" data-g="corner">corner</span> is any slot with only two neighbours — "beside", "touching me", "older than everything touching me" all read in two dimensions.<br><br>
+      One forgery here is a <span class="kw" data-g="masterforger">master forger</span>: a fake whose placard reads <b>TRUE</b>, imitating an honest work. "False means forgery" still holds for ordinary fakes — but a master forger breaks it, and only a contradiction with the other placards, or an Authenticate, will out it. The Curator's Notes flag when one is on the wall.`},
+  { title:"5 · The finale",
+    seed:"tut5_1", spec:{n:9,f:3,u:3,grid:{cols:3,rows:3},fixed:true,hideCount:true,min:4},
+    intro:`The curator has hung this 3×3 wall himself — you <b>can't move anything</b>. Read all nine placards, work out which lie, <b>tap</b> the three <span class="kw" data-g="forgery">forgeries</span>, Appraise. The count is withheld; it's pure who's-telling-the-truth.<br><br>
+      That's every rule. A real season is <b>eight</b> walls like these, growing as you go. Between walls you take one <b>reward</b> and, on some walls, visit the <b>Market</b> to spend coin; <b>staff</b> join your gallery and feed you extra clues. Clearing walls banks <span class="kw" data-g="patronage">Patronage</span> for permanent <b>Museum</b> upgrades, and once you've cleared a season you can raise the <b>Stakes</b> or pick a new <b>Curator</b> for a harder, richer run.`},
+];
+let tutOutro = false;   // museum screen is showing the one-time post-tutorial grant
+function startTutorial(){
+  RUN={ seed:"tutorial", practice:true, tutorial:true, tutIdx:0, wall:0,
+        rep:5, repMax:5, coin:9, scrutinyBase:9,
+        actions:["authenticate","survey","provenance"], upgrades:new Set(), staff:[], items:[],
+        deck:[], deckPos:0, curator:"standard", stake:0, minForgery:0,
+        patronMult:1, apprGrace:99, hintCharges:99, freeAuthPerWall:0, shopDiscount:0,
+        catCap:0, rerollsPerShop:0, rerollsLeft:0, notesConfirm:0, showHidden:false, shopOpen:false };
+  enterTutWall();
+}
+function enterTutWall(){
+  const T=TUTORIAL[RUN.tutIdx];
+  RUN.wall=RUN.tutIdx;
+  const puz=tutBuild(T);
+  fs={ puz, slots:Array(puz.N).fill(null), accused:new Set(),
+       scrutiny:RUN.scrutinyBase, arming:null, armFree:null, _picks:[], reveals:{}, authed:new Set(),
+       log:[], over:false, result:null, verdict:null, clean:false,
+       appraiseTries:0, boughtScr:0, freeAuth:0, authCount:0, freeProvUsed:false,
+       firstFreeAvail:RUN.upgrades.has("firstFree"),
+       guardUsed:false, opinion:false, tutIntro:T.intro, tutTitle:T.title };
+  if(puz.fixed) puz.solution.order.forEach((id,i)=>{ fs.slots[i]=id; });
+  screen="wall"; render();
+}
+function tutRewardBeat(){
+  rewardOffer=[ REWARDS.find(r=>r.id==="scrutinyUp"), REWARDS.find(r=>r.id==="firstFree") ];
+  rewardTaken=false;
+  rewardMsg="Between every wall of a real run you take one reward like these — a permanent upgrade, a new investigation, or a member of staff who feeds you a clue each wall — or skip it for coin. Some walls also open the Market to spend coin here. Pick one and go on; whatever you take helps on the walls ahead.";
+  screen="reward"; render();
+}
+function tutNext(){
+  RUN.tutIdx++;
+  if(RUN.tutIdx>=TUTORIAL.length) return tutFinish();
+  if(RUN.tutIdx===TUT_REWARD_AT) tutRewardBeat();
+  else enterTutWall();
+}
+function tutFinish(){
+  const firstTime = !SAVE.tutorialDone;
+  RUN=null; fs=null;
+  if(firstTime){
+    SAVE.tutorialDone=true;
+    SAVE.patronage+=FAC_COST[0];
+    saveMeta();
+    tutOutro=true;
+    rewardMsg=`Tutorial complete. Your board has released ${FAC_COST[0]} Patronage — enough to open one wing of the Museum. Pick a facility below, choose a fork, and press Upgrade: the perk is permanent and joins every real season. This grant is one-time — replaying the tutorial earns nothing.`;
+    screen="museum";
+  } else {
+    rewardMsg="Tutorial replayed — practice only, nothing banked.";
+    screen="title";
+  }
+  render();
+}
+function applyFacilities(){
+  const rc=facEff("reception");
+  if(rc && rc.fork==="basic"){ RUN.repMax+=rc.lvl; RUN.rep+=rc.lvl; }
+  const gb=facEff("guidebook");
+  if(gb){ RUN.showHidden = gb.fork==="alt";
+    RUN.notesConfirm = gb.fork==="basic" ? gb.lvl : Math.max(0, gb.lvl-1); }
+  const ar=facEff("archive");
+  if(ar){ if(ar.fork==="basic") RUN.catCap = 1+ar.lvl; else RUN.rerollsPerShop = ar.lvl; }
+  const sc=facEff("security");
+  if(sc){ if(sc.fork==="basic") RUN.apprGrace = sc.lvl; else RUN.hintCharges = sc.lvl; }
+  const cf=facEff("cafe");
+  if(cf){ if(cf.fork==="basic") RUN.scrutinyBase+=cf.lvl; else RUN.coin += cf.lvl*4; }
+  const mb=facEff("members");
+  if(mb){ if(mb.fork==="basic") RUN.patronMult = 1 + mb.lvl*0.15;
+    else for(let i=0;i<mb.lvl;i++) RUN.items.push(pick(CONSUMABLES).id); }
+  const st=facEff("studio");
+  if(st){ if(st.fork==="basic") RUN.freeAuthPerWall = st.lvl; else RUN.shopDiscount = st.lvl*0.15; }
+}
+function wallSpec(){
+  let spec = WALLS[RUN.wall];
+  for(let s=0; s<RUN.stake; s++) if(STAKES[s] && STAKES[s].wall) spec = STAKES[s].wall(spec, RUN.wall);
+  if(RUN.minForgery) spec = {...spec, f:Math.max(spec.f, RUN.minForgery)};
+  return spec;
+}
+function enterWall(){
+  // each wall's generator and its helper rolls draw from a stream keyed only by
+  // (seed, wall, stake) — so meta progression never perturbs the puzzle for a seed
+  RAND = mulberry32(hashSeed(RUN.seed + "#w" + RUN.wall + "s" + RUN.stake));
+  const spec = {...wallSpec()};
+  spec.works = RUN.deck.slice(RUN.deckPos, RUN.deckPos + spec.n);   // no work repeats within a run
+  RUN.deckPos += spec.n;
+  if(spec.works.length < spec.n) spec.works = shuffle(POOL).slice(0, spec.n);   // 65 works vs ~42 slots — deck won't run dry
+  const puz=makePuzzle(spec);
+  const solF=new Set(puz.solution.forged), T=id=>puz.P.get(id).title;
+  fs={ puz, slots:Array(puz.N).fill(null), accused:new Set(),
+       scrutiny:RUN.scrutinyBase + (RUN.wall<2?1:0) + (puz.fixed?2:0),   // walls 1-2 get +1; the pre-hung finale gets +2 (every reveal there is a 2-cost Authenticate)
+       arming:null, armFree:null, _picks:[], reveals:{}, authed:new Set(),
+       log:[], over:false, result:null, verdict:null, clean:false,
+       appraiseTries:0, boughtScr:0, freeAuth:RUN.freeAuthPerWall, authCount:0,
+       freeProvUsed:false, firstFreeAvail:RUN.upgrades.has("firstFree"),
+       guardUsed:false, opinion:false };
+  const order=puz.solution.order;
+  if(puz.fixed){
+    // the curator has already hung this wall — you only decide which are fakes.
+    order.forEach((id,i)=>{ fs.slots[i]=id; });
+    logLine(`The curator has hung this wall already. Every painting is in its place — your only task is to name the forgeries. Read every placard.`);
+  }
+  const rc=facEff("reception");
+  if(rc && rc.fork==="alt" && !puz.fixed){
+    // place correct works in their slots — but unlocked and unaccused: you still
+    // have to notice they're right, and decide if any is the forgery.
+    shuffle(order.map((_,i)=>i)).slice(0,rc.lvl).forEach(i=>{
+      const id=order[i];
+      fs.slots[i]=id;
+      logLine(`The concierge has already hung ${T(id)} in Slot ${i+1}.`);
+    });
+  }
+  if(puz.grid) logLine(`This wall is a ${puz.grid.cols}×${puz.grid.rows} grid — a painting has neighbours above and below it, not only left and right. "Beside", "corner" and "older than everything touching me" all read in 2-D.`);
+  if(RUN.staff.includes("intern")){
+    RUN.coin += 2;
+    logLine(`The Intern handled the day's paperwork — +2 coin.`);
+  }
+  if(RUN.staff.includes("aide")){                   // a pair — exactly one is fake
+    const f=[...solF], g=order.filter(id=>!solF.has(id));
+    if(f.length && g.length) logLine(`Skeptic's Aide: exactly one of ${T(pick(f))} and ${T(pick(g))} is a forgery.`);
+  }
+  if(RUN.staff.includes("ledger")){                 // where the forgeries sit
+    const fs2=order.map((id,i)=>solF.has(id)?i:-1).filter(i=>i>=0);
+    if(fs2.length===1){
+      logLine(`The Ledger: the forgery hangs in the ${fs2[0] < puz.N/2 ? "left" : "right"} half of the wall.`);
+    } else {
+      const adj=fs2.some((x,a)=>fs2.slice(a+1).some(y=>adjSlot(x,y,puz)));
+      logLine(`The Ledger: the forgeries ${adj?"hang side by side":"do not hang side by side"}.`);
+    }
+  }
+  if(RUN.staff.includes("docent")){                 // a clean genre / artist
+    const clean=[...new Set(puz.paintings.map(p=>p.type))].filter(t=>!puz.paintings.some(p=>p.type===t&&solF.has(p.id)));
+    if(clean.length) logLine(`The Docent: no forgery on this wall is a ${pick(clean)} work.`);
+    else{ const ca=[...new Set(puz.paintings.map(p=>p.artist))].filter(a=>!puz.paintings.some(p=>p.artist===a&&solF.has(p.id)));
+      if(ca.length) logLine(`The Docent: no forgery on this wall is by ${pick(ca)}.`); }
+  }
+  // your archive: works you've appraised in past seasons — a count, never a name
+  const studied=(SAVE.known||[]).filter(id=>puz.P.has(id));
+  if(studied.length >= Math.max(2, 4-RUN.catCap)){
+    const k=studied.filter(id=>solF.has(id)).length;
+    logLine(`From your archive: of the ${studied.length} works here you've appraised before, ${k} ${k===1?"is a forgery":"are forgeries"}.`);
+  }
+  if(RUN.notesConfirm>0){
+    const shown=puz.rules.filter(r=> !(puz.spec.hideCount && r.kind==="countForged"));
+    shuffle(shown).slice(0,RUN.notesConfirm).forEach(r=>
+      logLine(`The guidebook confirms: “${r.text}” holds in the true hang.`));
+  }
+  if(RUN.wall===0 && (SAVE.bestWall||0)===0) fs.tips=[
+    "A genuine work's placard reads TRUE where it hangs; a forgery's placard reads FALSE. Unattributed works carry no placard.",
+    "Drag a painting to hang it. Tap a painting to mark it a forgery (tap again to unmark).",
+    "The Investigation bench above the wall spends Scrutiny for hard facts. Click a tool, then click the work it names — hover any tool for details.",
+    "Authenticate spends 1 Scrutiny and tells you outright — genuine or forgery. A confirmed work marks itself.",
+    "Every wall must be appraised correctly to move on. A rejected appraisal costs 1 reputation and tells you nothing — so be sure before you commit.",
+    "Reputation is your lifeline: it never regenerates, and at zero the season is over. Spend it carefully.",
+  ];
+  screen="wall"; render();
+}
+function logLine(text,warn){ fs.log.unshift({text,warn:!!warn}); }
+
+// ============================================================ actions
+function move(id,target){
+  if(fs.over||fs.arming||fs.puz.fixed) return;
+  const from=fs.slots.indexOf(id);
+  if(from!==-1) fs.slots[from]=null;
+  if(target!==-1){
+    const disp=fs.slots[target];
+    fs.slots[target]=id;
+    if(disp && from!==-1) fs.slots[from]=disp;
+  }
+  render();
+}
+function toggleAccuse(id){
+  if(fs.over||fs.arming||fs.reveals[id]) return;   // a confirmed work's verdict is fixed to the truth
+  fs.accused.has(id)?fs.accused.delete(id):fs.accused.add(id);
+  render();
+}
+function armAction(a, freeItem){
+  if(fs.over) return;
+  const provFree = a==="provenance" && !freeItem && RUN.upgrades.has("provFree") && !fs.freeProvUsed;
+  const authFree = a==="authenticate" && !freeItem && fs.freeAuth>0;
+  const firstFree = !freeItem && !provFree && !authFree && RUN.upgrades.has("firstFree") && fs.firstFreeAvail;
+  const free = !!freeItem || provFree || authFree || firstFree || DEV.inf;
+  if(fs.arming===a){ fs.arming=null; fs.armFree=null; fs._picks=[]; render(); return; }
+  if(!free && fs.scrutiny < toolCost(a)) return;
+  fs.arming=a; fs.armFree = freeItem || (provFree?"_prov": authFree?"_auth": firstFree?"_first": null); fs._picks=[];
+  render();
+}
+// which works a given tool may be pointed at right now
+function targetOK(a, id){
+  const hung=fs.slots.includes(id);
+  switch(a){
+    case "authenticate": return !fs.reveals[id];
+    case "survey":       return !fs.reveals[id];         // no point surveying a known work
+    case "provenance":   return hung && !fs.puz.fixed;   // fixed wall: every slot is already correct
+  }
+  return false;
+}
+function actionTarget(id){
+  const a=fs.arming;
+  if(!targetOK(a,id)) return;                       // invalid targets are dimmed, not clickable
+  const px=fs._picks.indexOf(id);
+  if(px>=0){ fs._picks.splice(px,1); render(); return; }   // click a chosen work again to un-choose it
+  fs._picks.push(id);
+  if(a==="survey"){
+    if(fs._picks.length>=surveyMax()) fireTool();
+    else render();
+    return;
+  }
+  if(fs._picks.length<picksFor(a)){ render(); return; }
+  fireTool();
+}
+function fireTool(){
+  const a=fs.arming, picks=fs._picks.slice(), free=fs.armFree;
+  if(a==="survey" && picks.length<2) return;
+  fs.arming=null; fs.armFree=null; fs._picks=[];
+  resolveAction(a, picks);
+  if(free==="rake"||free==="ledger") removeItem(free);
+  else if(free==="_prov") fs.freeProvUsed=true;
+  else if(free==="_auth") fs.freeAuth--;
+  else if(free==="_first") fs.firstFreeAvail=false;
+  else if(!DEV.inf) fs.scrutiny -= toolCost(a);
+  if(a==="authenticate") fs.authCount=(fs.authCount||0)+1;   // after the charge — first is cheap
+  render();
+}
+function resolveAction(a, ids){
+  const T=id=>fs.puz.P.get(id).title;
+  const solF=new Set(fs.puz.solution.forged);
+  if(a==="authenticate"){
+    const v=solF.has(ids[0])?"f":"g"; fs.reveals[ids[0]]=v; fs.authed.add(ids[0]);
+    if(v==="f") fs.accused.add(ids[0]); else fs.accused.delete(ids[0]);   // a known fact sets the call for you
+    logLine(`Authenticate — ${T(ids[0])}: ${v==="f"?"FORGERY":"GENUINE"}.`);
+  } else if(a==="survey"){
+    const k=ids.filter(id=>solF.has(id)).length;
+    logLine(`Survey — of ${ids.map(T).join(", ")}: ${k} ${k===1?"is a forgery":"are forgeries"}.`);
+    if(k===0 || k===ids.length){
+      const v=k===0?"g":"f";
+      ids.forEach(id=>{ fs.reveals[id]=v; fs.authed.add(id); v==="f"?fs.accused.add(id):fs.accused.delete(id); });
+      logLine(`A clean read — all ${ids.length} lock as ${k===0?"GENUINE":"FORGERIES"}.`);
+    }
+  } else if(a==="provenance"){
+    const puz=fs.puz, cur=fs.slots.indexOf(ids[0]), want=puz.solution.order.indexOf(ids[0]);
+    if(cur===want){ logLine(`Provenance — ${T(ids[0])} hangs in its CORRECT slot.`); }
+    else if(RUN.upgrades.has("provExact")){
+      logLine(`Provenance — ${T(ids[0])} belongs in Slot ${want+1}, not Slot ${cur+1}.`);
+    }
+    else {
+      let dir;
+      if(puz.grid){
+        const {cols}=puz.grid, cr=(cur/cols)|0, cc=cur%cols, wr=(want/cols)|0, wc=want%cols, p=[];
+        if(wr<cr) p.push("up a row"); else if(wr>cr) p.push("down a row");
+        if(wc<cc) p.push("left"); else if(wc>cc) p.push("right");
+        dir = p.join(" and ");
+      } else if(puz.rooms && roomOfSlot(cur,puz)!==roomOfSlot(want,puz)){
+        dir = `over to Room ${ROOM_LETTER[roomOfSlot(want,puz)]}`;
+      } else {
+        dir = want<cur ? "further left" : "further right";
+      }
+      logLine(`Provenance — ${T(ids[0])} is in the WRONG slot; it belongs ${dir}.`);
+    }
+  }
+}
+function buyScrutiny(){
+  if(fs.over || (!DEV.inf && (RUN.rep<=1||fs.boughtScr>=2))) return;
+  if(!DEV.inf) RUN.rep--;
+  fs.scrutiny++; fs.boughtScr++;
+  logLine("Bought Scrutiny for 1 reputation.",true);
+  render();
+}
+function nightGuard(){
+  if(fs.over||fs.guardUsed||!RUN.staff.includes("guard")) return;
+  fs.guardUsed=true;
+  const sol=fs.puz.solution, solF=new Set(sol.forged);
+  const safe=sol.order.map((id,i)=>i).filter(i=>!solF.has(sol.order[i]));
+  logLine(`Night Guard: no forgery hangs in Slot ${pick(safe)+1}.`);
+  render();
+}
+function removeItem(id){ const i=RUN.items.indexOf(id); if(i>=0) RUN.items.splice(i,1); }
+function useItem(id){
+  if(fs.over) return;
+  if(id==="rake") armAction("authenticate","rake");
+  else if(id==="ledger") armAction("provenance","ledger");
+  else if(id==="coffee"){ fs.scrutiny+=2; removeItem("coffee"); logLine("Strong Coffee — +2 Scrutiny."); render(); }
+  else if(id==="opinion"){ fs.opinion=true; removeItem("opinion"); logLine("Second Opinion in hand — your next rejected appraisal is free."); render(); }
+}
+function appraise(){
+  fs.appraiseTries++;
+  const sol=fs.puz.solution;
+  const misplaced=fs.slots.filter((id,i)=>id!==sol.order[i]).length;
+  const solF=new Set(sol.forged);
+  const miscalled=fs.puz.paintings.filter(p=>fs.accused.has(p.id)!==solF.has(p.id)).length;
+  if(misplaced===0 && miscalled===0){ winWall(); return; }
+  // wrong — the wall is NOT cleared. every wall must be appraised correctly to
+  // advance; a rejection costs 1 reputation and tells you nothing. try again.
+  const hint = RUN.hintCharges>0
+    ? ` (${misplaced} misplaced, ${miscalled} mis-called)` : ``;
+  if(hint) RUN.hintCharges--;
+  if(fs.opinion){
+    fs.opinion=false;
+    logLine(`Appraisal rejected${hint}. Second Opinion absorbed the loss — look again.`,true);
+  } else if(RUN.apprGrace>0){
+    RUN.apprGrace--;
+    logLine(`Appraisal rejected${hint}. The insurance absorbed the loss — look again.`,true);
+  } else {
+    RUN.rep--;
+    logLine(`Appraisal rejected${hint}. (−1 reputation) — the wall still isn't right.`,true);
+    if(RUN.rep<=0){ lose(); return; }
+  }
+  render();
+}
+function winWall(){
+  fs.over=true; fs.result="win";
+  const sol=fs.puz.solution;
+  if(!RUN.practice){ fs.authed.forEach(id=>{ if(!SAVE.known.includes(id)) SAVE.known.push(id); }); saveMeta(); }
+  fs.clean = fs.appraiseTries===1;
+  fs.verdict={cls:"win",html:`<b>Appraisal accepted.</b> ${sol.forged.length>1?"Forgeries":"Forgery"}: <b>${
+    sol.forged.map(id=>fs.puz.P.get(id).title).join(", ")}</b>.${fs.clean?" A clean appraisal.":""}`};
+  render();
+}
+function lose(){
+  fs.over=true; fs.result="lose";
+  const sol=fs.puz.solution;
+  fs.verdict={cls:"lose",html:`<b>Dismissed.</b> Wall ${RUN.wall+1} of ${WALLS.length}. The true hang:<br>${
+    sol.order.map(id=>fs.puz.P.get(id).title).join(" · ")}<br>${sol.forged.length>1?"Forgeries":"Forgery"}: <b>${
+    sol.forged.map(id=>fs.puz.P.get(id).title).join(", ")}</b>.`};
+  screen="wall"; render();
+}
+function afterWall(){
+  const clean=fs.clean;
+  const gain=2+RUN.wall+(clean?2:0);
+  RUN.coin+=gain;
+  rewardMsg=`Wall cleared. +${gain} coin.`;
+  if(!RUN.practice){
+    const patron=Math.round((2+(clean?1:0))*RUN.patronMult);
+    SAVE.patronage+=patron;
+    rewardMsg+=` +${patron} Patronage.`;
+  } else rewardMsg+=` (practice — no Patronage)`;
+  if(clean) rewardMsg+=` A clean appraisal — first try.`;
+  // reputation never regenerates: it is the count of appraise mistakes the run can still absorb.
+  RUN.wall++;
+  if(!RUN.practice){
+    SAVE.bestWall=Math.max(SAVE.bestWall||0, RUN.wall);
+    if(RUN.wall>=WALLS.length && RUN.stake>=(SAVE.maxStake||0))
+      SAVE.maxStake=Math.min(STAKES.length, RUN.stake+1);   // clearing a season unlocks the next Stake
+    saveMeta();
+  }
+  if(RUN.wall>=WALLS.length){ overWin=true; screen="over"; render(); return; }
+  RUN.rerollsLeft=RUN.rerollsPerShop;
+  RUN.shopOpen = RUN.wall%2===0;   // the market runs every other wall (after Walls 2, 4, 6)
+  RAND = mulberry32(hashSeed(RUN.seed + "#r" + RUN.wall));
+  rollRewards(); rewardTaken=false; screen="reward"; render();
+}
+function rewardPool(){
+  const owned=id=>RUN.actions.includes(id)||RUN.upgrades.has(id)||RUN.staff.includes(id);
+  return REWARDS.filter(r=>(r.repeat||!owned(r.id)) && (!r.req||RUN.actions.includes(r.req)));
+}
+function rollRewards(){
+  rewardOffer=weightedDraw(rewardPool(),3);
+  shopOffer = RUN.shopOpen ? weightedDraw(CONSUMABLES.slice(),3) : [];
+}
+function rerollReward(){
+  if(rewardTaken || !RUN.rerollsLeft) return;
+  RUN.rerollsLeft--;
+  RAND = mulberry32(hashSeed(RUN.seed + "#r" + RUN.wall + "." + RUN.rerollsLeft));
+  rewardOffer=weightedDraw(rewardPool(),3);   // reroll the tools only, not the shop
+  render();
+}
+function itemPrice(it){ return Math.max(1, Math.round(it.price*(1-RUN.shopDiscount))); }
+function takeReward(id){
+  if(rewardTaken) return;
+  const r=REWARDS.find(x=>x.id===id);
+  if(r.type==="action") RUN.actions.push(id);
+  else if(r.type==="upgrade"){ RUN.upgrades.add(id);
+    if(id==="scrutinyUp"){ RUN.scrutinyBase++; RUN.scrutinyUpCount=(RUN.scrutinyUpCount||0)+1; } }
+  else if(r.type==="staff") RUN.staff.push(id);
+  rewardTaken=true; rewardMsg=`Taken: ${r.name}.`; render();
+}
+function skipReward(){ if(rewardTaken) return; RUN.coin+=5; rewardTaken=true; rewardMsg="Skipped — +5 coin."; render(); }
+function buyItem(id){
+  const it=ITEM(id); if(!it) return;
+  const price=DEV.inf ? 0 : itemPrice(it); if(RUN.coin<price) return;
+  RUN.coin-=price; RUN.items.push(id);
+  shopOffer=shopOffer.filter(x=>x.id!==id);
+  render();
+}
+
+// ============================================================ pointer drag
+let drag=null;
+function startDrag(id,ev,fromEl){
+  if(fs.over||fs.arming) return;
+  if(fs.puz.fixed){ toggleAccuse(id); return; }   // fixed wall: can't move, tap = flag
+  drag={id,fromEl,x0:ev.clientX,y0:ev.clientY,ghost:null};
+  window.addEventListener("pointermove",moveGhost);
+  window.addEventListener("pointerup",endDrag,{once:true});
+}
+function moveGhost(ev){
+  if(!drag) return;
+  if(!drag.ghost){
+    if(Math.abs(ev.clientX-drag.x0)<6 && Math.abs(ev.clientY-drag.y0)<6) return;   // still a tap
+    const g=drag.fromEl.cloneNode(true);
+    g.style.cssText="position:fixed;left:0;top:0;width:190px;margin:0;pointer-events:none;opacity:.92;z-index:999;transition:none;transform:rotate(-3deg);box-shadow:0 14px 30px -8px #000a";
+    document.body.appendChild(g); drag.ghost=g;
+  }
+  drag.ghost.style.transform=`translate(${ev.clientX-95}px,${ev.clientY-40}px) rotate(-3deg)`;
+  const el=document.elementFromPoint(ev.clientX,ev.clientY);
+  const slot=el && el.closest("[data-slot]");
+  document.querySelectorAll(".slot.hover").forEach(s=>{ if(s!==slot) s.classList.remove("hover"); });
+  if(slot) slot.classList.add("hover");
+}
+function endDrag(ev){
+  window.removeEventListener("pointermove",moveGhost);
+  document.querySelectorAll(".slot.hover").forEach(s=>s.classList.remove("hover"));
+  const d=drag; if(!d) return;
+  drag=null;
+  if(!d.ghost){ toggleAccuse(d.id); return; }   // a tap, not a drag → mark / unmark forgery
+  d.ghost.remove();
+  const under=document.elementFromPoint(ev.clientX,ev.clientY);
+  const slot=under && under.closest("[data-slot]");
+  const tray=under && under.closest("#tray");
+  if(slot) move(d.id,+slot.dataset.slot);
+  else if(tray) move(d.id,-1);
+}
+
+// ============================================================ render
+function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstChild; }
+function card(p){
+  const armed=!!fs.arming && !fs.over;
+  const ok = armed && targetOK(fs.arming, p.id);
+  const picked=(fs._picks||[]).includes(p.id);
+  const rv=fs.reveals[p.id], acc=fs.accused.has(p.id);
+  const d=el(`<div class="painting ${ok?"target":""} ${armed&&!ok?"notarget":""} ${picked?"picked":""} ${acc?"accused":""}" data-id="${p.id}">
+    <div class="art" style="background:${p.color}">${p.img?`<img src="${p.img}" alt="" draggable="false" onerror="this.remove()">`:""}</div>
+    <div class="meta"><b>${p.title}</b><span class="who">${p.artist}, ${p.year} · ${p.type}</span></div>
+    <div class="claim ${p.claim?"":"none"}">${p.claim?"&ldquo;"+glossify(p.claimText)+"&rdquo;":glossify("unattributed — no placard")}</div>
+    ${rv
+      ? `<div class="tag ${rv}">${rv==="f"?"◆ FORGERY — confirmed":"✓ GENUINE — confirmed"}</div>`
+      : acc ? `<div class="fmark">◆ marked a forgery</div>` : ""}
+  </div>`);
+  d.addEventListener("pointerdown",e=>{
+    if(e.button||fs.over) return;
+    if(armed){ e.preventDefault(); if(ok) actionTarget(p.id); return; }
+    e.preventDefault(); startDrag(p.id,e,d);
+  });
+  wireGlossary(d);
+  return d;
+}
+function render(){
+  tipHide();
+  const app=document.getElementById("app"); app.innerHTML="";
+
+  if(screen==="title"){
+    const box=el(`<div class="centre">
+      <p class="sub" style="letter-spacing:4px;text-transform:uppercase;font-style:normal;font-size:12px;margin-bottom:2px">A gallery of forgeries</p>
+      <h1 style="font-size:56px">The Appraiser</h1>
+      <p class="sub">Every placard is a claim. A genuine work tells the truth; a forgery lies; some works say nothing at all. Hang the wall so every placard holds, name the fake, and move on — eight walls, and your reputation is all you have.</p>
+      <div id="setup" style="margin:22px 0"></div>
+      ${rewardMsg?`<p class="sub" style="color:var(--sage);font-style:normal">${rewardMsg}</p>`:""}
+      <div class="bar">
+        <input id="seedin" placeholder="seed — practice only">
+        <button class="big" id="start">Begin the season</button>
+        <button class="big" id="tut">How to play</button>
+        <button class="big" id="museum">The Museum</button>
+      </div>
+      <p class="sub" style="font-size:12px;margin-top:2px">A chosen seed runs as practice — no Patronage, no unlocks. Leave it blank for a scoring run.</p>
+      <p class="sub" style="font-size:13.5px;margin-top:18px">
+        <b>Drag</b> paintings to hang them, <b>tap</b> the ones you think are fake, then <b>Appraise</b>.
+        Spend <b>Scrutiny</b> on the Investigation bench — Authenticate, Cross-examine, Hunch, Provenance —
+        for hard facts. Hover anything to see what it does.
+      </p>
+    </div>`);
+    app.appendChild(box);
+    const setup=box.querySelector("#setup");
+    const curIds=Object.keys(CURATORS).filter(k=>!CURATORS[k].locked());
+    if(curIds.length>1){
+      const row=el(`<div style="margin-bottom:14px"><h2 style="justify-content:center">Curator</h2></div>`);
+      const seg=el(`<span class="seg"></span>`);
+      curIds.forEach(k=>{
+        const b=el(`<button class="${chosenCurator===k?"on":""}">${CURATORS[k].name}</button>`);
+        b.onclick=()=>{ chosenCurator=k; SAVE.curator=k; saveMeta(); render(); };
+        seg.appendChild(b);
+      });
+      row.appendChild(seg);
+      row.appendChild(el(`<p class="sub" style="margin:8px 0 0;font-size:13px">${CURATORS[chosenCurator].blurb}</p>`));
+      setup.appendChild(row);
+    }
+    if((SAVE.maxStake||0) > 0){
+      const row=el(`<div><h2 style="justify-content:center">Stakes</h2></div>`);
+      const seg=el(`<span class="seg"></span>`);
+      for(let lv=0; lv<=SAVE.maxStake; lv++){
+        const b=el(`<button class="${chosenStake===lv?"on":""}">${lv}</button>`);
+        b.onclick=()=>{ chosenStake=lv; SAVE.stake=lv; saveMeta(); render(); };
+        seg.appendChild(b);
+      }
+      row.appendChild(seg);
+      row.appendChild(el(`<p class="sub" style="margin:8px 0 0;font-size:13px">${
+        chosenStake===0 ? "No stakes — the standard season."
+        : STAKES.slice(0,chosenStake).map(s=>`<b>${s.name}</b> — ${s.desc}`).join("<br>")}</p>`));
+      setup.appendChild(row);
+    }
+    box.querySelector("#start").onclick=()=>{ rewardMsg=""; newRun(box.querySelector("#seedin").value); };
+    box.querySelector("#tut").onclick=()=>{ rewardMsg=""; startTutorial(); };
+    box.querySelector("#museum").onclick=()=>{ screen="museum"; render(); };
+    return;
+  }
+
+  if(screen==="museum"){
+    const box=el(`<div class="centre" style="max-width:860px">
+      <h1>Your Museum</h1>
+      ${tutOutro?`<div class="tutbox" style="text-align:left"><b>Tutorial reward</b><p>${rewardMsg}</p></div>`:""}
+      <p class="sub">Patronage <b>${SAVE.patronage}</b> · best run reached Wall ${SAVE.bestWall||0} of ${WALLS.length}</p>
+      <div class="floorplan" id="plan"></div>
+      <div class="faclist" id="facs"></div>
+      <div class="bar"><button class="big" id="back">${tutOutro?"Done — to the title":"Back"}</button></div>
+    </div>`);
+    app.appendChild(box);
+    const tb=box.querySelector(".tutbox"); if(tb) wireGlossary(tb);
+    const plan=box.querySelector("#plan");
+    FACILITIES.forEach(f=>{
+      const lvl=(SAVE.facilities[f.id]||{}).level||0;
+      plan.appendChild(el(`<div class="room lvl${lvl}" title="${f.name} — level ${lvl}">
+        <span class="g">${f.glyph}</span><span class="rn">${f.name}</span>
+        <span class="dots">${"●".repeat(lvl)}${"○".repeat(3-lvl)}</span></div>`));
+    });
+    const facs=box.querySelector("#facs");
+    FACILITIES.forEach(f=>{
+      const st=SAVE.facilities[f.id]||{level:0,fork:"basic"};
+      const lvl=st.level, fork=st.fork||"basic", showLvl=Math.max(1,lvl), cost=facNextCost(f.id);
+      const c=el(`<div class="fac">
+        <div class="fac-h"><b>${f.name}</b> <span class="dots">${"●".repeat(lvl)}${"○".repeat(3-lvl)}</span></div>
+        <div class="seg forkseg">
+          <button data-fk="basic" class="${fork==="basic"?"on":""}">${f.forks.basic.name}</button>
+          <button data-fk="alt" class="${fork==="alt"?"on":""}">${f.forks.alt.name}</button>
+        </div>
+        <p class="fac-eff">${f.forks[fork].text(showLvl)}</p>
+        <button class="big buyfac" ${cost==null||SAVE.patronage<cost?"disabled":""}>${
+          cost==null?"Fully built":`Upgrade — ${cost}`}</button>
+      </div>`);
+      c.querySelectorAll(".forkseg button").forEach(b=>b.onclick=()=>setFork(f.id,b.dataset.fk));
+      c.querySelector(".buyfac").onclick=()=>buyFacility(f.id);
+      facs.appendChild(c);
+    });
+    box.querySelector("#back").onclick=()=>{ tutOutro=false; rewardMsg=""; screen="title"; render(); };
+    return;
+  }
+
+  if(screen==="reward"){
+    const box=el(`<div class="centre">
+      <h1>${RUN.tutorial?"Between walls — try it":"Between walls"}</h1>
+      <p class="sub">${RUN.tutorial?`Lesson ${RUN.tutIdx+1} of ${TUTORIAL.length} next`:`Wall ${RUN.wall+1} of ${WALLS.length} next`} · reputation ${"◆".repeat(RUN.rep)} · <b>${RUN.coin} coin</b></p>
+      <p class="info">${rewardMsg}</p>
+      <h2>Take one${RUN.rerollsLeft?` <button class="big" id="reroll" style="font-size:12px;padding:3px 10px">Reroll (${RUN.rerollsLeft})</button>`:""}</h2>
+      <div class="choices" id="rew"></div>
+      ${RUN.shopOpen
+        ? `<h2>The Market</h2><div class="choices" id="shop"></div>`
+        : `<p class="sub" style="font-size:13px">The market is closed — it opens again after the next wall.</p>`}
+      <div class="bar"><button class="big" id="next" ${rewardTaken?"":"disabled"}>${RUN.tutorial?"Next lesson":"To the wall"}</button></div>
+    </div>`);
+    app.appendChild(box);
+    const rr=box.querySelector("#reroll"); if(rr) rr.onclick=rerollReward;
+    const rew=box.querySelector("#rew");
+    rewardOffer.forEach(r=>{
+      const c=el(`<div class="choice rar-${r.rarity} ${rewardTaken?"dim":""}"><b>${r.name}</b><span>${r.desc}</span><span class="rar">${r.type} · ${r.rarity}</span></div>`);
+      c.onclick=()=>takeReward(r.id); rew.appendChild(c);
+    });
+    const skip=el(`<div class="choice ${rewardTaken?"dim":""}"><b>Skip</b><span>Take nothing — bank the coin for the market.</span><span class="rar">+5 coin</span></div>`);
+    skip.onclick=skipReward; rew.appendChild(skip);
+    const shop=box.querySelector("#shop");
+    if(shop){
+      if(!shopOffer.length) shop.appendChild(el(`<p style="color:var(--dim)">Sold out.</p>`));
+      shopOffer.forEach(it=>{
+        const price=itemPrice(it);
+        const c=el(`<div class="choice"><b>${it.name} — ${price}c${price<it.price?` <s style="color:var(--dim)">${it.price}</s>`:""}</b><span>${it.desc}</span>
+          <button ${RUN.coin<price?"disabled":""}>Buy</button></div>`);
+        c.querySelector("button").onclick=()=>buyItem(it.id);
+        shop.appendChild(c);
+      });
+    }
+    box.querySelector("#next").onclick=RUN.tutorial ? enterTutWall : enterWall;
+    return;
+  }
+
+  if(screen==="over"){
+    const kit=[...RUN.upgrades, ...RUN.staff]
+      .map(id=>{ const nm=(REWARDS.find(r=>r.id===id)||{name:id}).name;
+        return id==="scrutinyUp" && RUN.scrutinyUpCount>1 ? `${nm} ×${RUN.scrutinyUpCount}` : nm; });
+    const box=el(`<div class="centre">
+      <h1>${overWin?"The season is yours":"Dismissed"}</h1>
+      <p class="sub">${overWin
+        ? `All ${WALLS.length} walls appraised. Reputation ${RUN.rep}/${RUN.repMax}, ${RUN.coin} coin to spare.`
+        : `Reputation ran out on Wall ${Math.min(RUN.wall+1,WALLS.length)}.`}</p>
+      <div class="info">Seed <b>${RUN.seed}</b>${RUN.practice?" · practice run":""}<br>
+        Pieces known across seasons: ${(SAVE.known||[]).length} / ${POOL.length}<br>
+        Patronage in the bank: <b>${SAVE.patronage}</b>${RUN.practice?" (unchanged — practice)":""}<br>
+        Kit: ${kit.length?kit.join(", "):"nothing — a bare run"}</div>
+      <div class="bar">
+        <button class="big" id="museum">Visit the Museum</button>
+        <button class="big" id="again">New season</button>
+        <button class="big" id="replay">Replay seed</button>
+      </div>
+    </div>`);
+    app.appendChild(box);
+    box.querySelector("#museum").onclick=()=>{ screen="museum"; render(); };
+    box.querySelector("#again").onclick=()=>newRun();
+    box.querySelector("#replay").onclick=()=>newRun(RUN.seed);
+    return;
+  }
+
+  // ---- wall screen
+  const puz=fs.puz, order=fs.slots, placed=order.every(Boolean);
+  app.appendChild(el(`<div class="hud">
+    <span class="h-wall">${RUN.tutorial?`Tutorial ${RUN.tutIdx+1} / ${TUTORIAL.length}`:`Wall ${RUN.wall+1} / ${WALLS.length}`}</span>
+    <span><span class="h-lbl">works</span>${puz.N}</span>
+    <span><span class="h-lbl">rep</span><span class="rep" title="reputation">${"◆".repeat(Math.max(0,RUN.rep))}${"◇".repeat(Math.max(0,RUN.repMax-RUN.rep))}</span></span>
+    <span><span class="h-lbl">scrutiny</span><span class="scr">${fs.scrutiny}</span></span>
+    <span><span class="h-lbl">coin</span><span class="coin">${RUN.coin}</span></span>
+    ${RUN.stake?`<span class="mod" title="${STAKES.slice(0,RUN.stake).map(s=>s.name).join(', ')}">Stakes ${RUN.stake}</span>`:""}
+    ${RUN.tutorial?`<span class="mod">tutorial</span>`:RUN.practice?`<span class="mod" title="Chosen seed — banks no Patronage, unlocks nothing">practice</span>`:""}
+    ${RUN.tutorial?"":`<span class="seed">${RUN.seed}</span>`}
+  </div>`));
+
+  // ---- the Bench: every action you can take, in one place
+  const bench=el(`<div class="bench">
+    <div class="bench-top">
+      <span class="bench-title">Investigation</span>
+      <span class="scr-meter">${"◆".repeat(fs.scrutiny)||"·"} <span class="scr-num">${fs.scrutiny}</span> Scrutiny left</span>
+    </div>
+    <div class="tools" id="tools"></div>
+    <div id="armline"></div>
+  </div>`);
+  const tools=bench.querySelector("#tools");
+  const addTool=(k, label, tag, dis, onClick, tipTitle, tipBody, cls)=>{
+    const b=el(`<button class="tool ${cls||""} ${fs.arming===k?"arm":""}" ${dis?"disabled":""}>
+      <span class="tool-name">${label}</span><span class="tool-tag">${tag}</span></button>`);
+    if(!dis) b.onclick=onClick;
+    attachTip(b, tipTitle, tipBody);
+    tools.appendChild(b);
+  };
+  const ids=fs.puz.paintings.map(p=>p.id);
+  const nTargets = k=> ids.filter(id=>targetOK(k,id)).length;
+  RUN.actions.forEach(k=>{
+    const t=TOOLS[k], tag=toolTag(k);
+    const free = (k==="authenticate"&&fs.freeAuth>0)
+      || (k==="provenance"&&RUN.upgrades.has("provFree")&&!fs.freeProvUsed)
+      || (RUN.upgrades.has("firstFree")&&fs.firstFreeAvail);
+    const cost = toolCost(k);
+    const noTargets = nTargets(k) < picksFor(k);
+    const armedThis = fs.arming===k;
+    const dis = fs.over || (!armedThis && (noTargets || (!free && fs.scrutiny<cost)));
+    const why = noTargets
+      ? (k==="provenance" ? " — nothing hung to point at yet."
+        : k==="survey" ? " — needs two works still unknown."
+        : k==="authenticate" ? " — every work is already known." : " — no valid target.")
+      : (free ? "" : ` — costs ${cost} Scrutiny.`);
+    addTool(k, t.name, tag, dis, ()=>armAction(k), t.name, t.what + why, "scr");
+  });
+  if(!fs.over && RUN.rep>1 && fs.boughtScr<2){
+    const b=el(`<button class="tool"><span class="tool-name">Buy Scrutiny</span><span class="tool-tag">−1 reputation</span></button>`);
+    b.onclick=buyScrutiny;
+    attachTip(b, "Buy Scrutiny", "Spend 1 reputation for 1 more Scrutiny this wall. Twice per wall at most.");
+    tools.appendChild(b);
+  }
+  if(RUN.staff.includes("guard")){
+    const b=el(`<button class="tool" ${fs.guardUsed||fs.over?"disabled":""}><span class="tool-name">Night Guard</span><span class="tool-tag">${fs.guardUsed?"used":"1 / wall"}</span></button>`);
+    if(!fs.guardUsed && !fs.over) b.onclick=nightGuard;
+    attachTip(b, "Night Guard", "Once per wall — learn one slot the forgery is not in.");
+    tools.appendChild(b);
+  }
+  RUN.items.forEach(id=>{
+    const it=ITEM(id);
+    const b=el(`<button class="tool" ${fs.over?"disabled":""}><span class="tool-name">${it.name}</span><span class="tool-tag">one use</span></button>`);
+    if(!fs.over) b.onclick=()=>useItem(id);
+    attachTip(b, it.name, it.desc);
+    tools.appendChild(b);
+  });
+  const passives = RUN.staff.filter(id=>id!=="guard");
+  if(passives.length){
+    const line=el(`<div class="bench-staff">On staff: </div>`);
+    passives.forEach((id,ix)=>{
+      const s=REWARDS.find(r=>r.id===id);
+      const sp=el(`<b>${s.name}${ix<passives.length-1?", ":""}</b>`);
+      attachTip(sp, s.name, s.desc);
+      line.appendChild(sp);
+    });
+    bench.appendChild(line);
+  }
+  if(fs.arming){
+    const a=fs.arming, got=fs._picks.length, isSurvey=a==="survey";
+    const count = isSurvey ? ` · <b>${got}</b> chosen (2–${surveyMax()})`
+      : picksFor(a)>1 ? ` · <b>${got} of ${picksFor(a)}</b> chosen` : "";
+    const hint=el(
+      `<div class="arm-hint">${TOOLS[a].name} — ${TOOLS[a].verb}${count}` +
+      ` &nbsp;·&nbsp; highlighted works are valid &nbsp;·&nbsp; click the tool again to cancel</div>`);
+    if(isSurvey && got>=2){
+      const label = fs.armFree ? `Survey these ${got}` : `Survey these ${got} — 1 Scrutiny`;
+      const b=el(`<button class="big" style="margin:6px 0 0;font-size:12px;padding:5px 14px">${label}</button>`);
+      b.onclick=fireTool; hint.appendChild(document.createElement("br")); hint.appendChild(b);
+    }
+    bench.querySelector("#armline").appendChild(hint);
+  }
+  app.appendChild(bench);
+
+  const layout=el(`<div class="layout">
+    <div class="main">
+      ${fs.tutIntro?`<div class="tutbox"><b>Lesson ${RUN.tutIdx+1} of ${TUTORIAL.length} — ${fs.tutTitle.replace(/^\d+ · /,"")}</b><p>${fs.tutIntro}</p></div>`:""}
+      <p class="wall-how">${puz.fixed
+        ? `The wall is hung. <b>Tap</b> the paintings you judge forgeries, then <b>Appraise</b>.`
+        : `<b>Drag</b> a painting to hang it &nbsp;·&nbsp; <b>tap</b> it to mark it a forgery &nbsp;·&nbsp; then <b>Appraise</b>`}</p>
+      <div class="zoombar">
+        <button data-z="-1" title="zoom out">−</button><span id="zlbl">${Math.round(railZoom*100)}%</span><button data-z="1" title="zoom in">+</button>
+        <span class="zhint">scroll or drag to pan the wall</span>
+      </div>
+      <div class="rail" id="rail"><div class="rail-track" id="railtrack"></div></div>
+      ${puz.fixed ? "" : `<p class="tray-h">— not yet hung —</p><div class="tray" id="tray"></div>`}
+      <div class="bar" style="flex-direction:column;gap:4px">
+        <button class="big" id="appraise">Appraise</button>
+        <span class="appraise-note" id="apnote"></span>
+      </div>
+      <div id="verdictbox"></div>
+    </div>
+    <div class="side">
+      ${fs.tips?`<div class="info" style="border-left:3px solid var(--gold);margin-bottom:14px">
+        <b>Your first wall</b><br>${fs.tips.map(t=>"• "+t).join("<br>")}</div>`:""}
+      <h2>Curator's Notes</h2>
+      <ul class="notes" id="notes"></ul>
+      <h2>Findings</h2>
+      <ul class="log" id="log"></ul>
+    </div>
+  </div>`);
+  app.appendChild(layout);
+
+  const rail=layout.querySelector("#rail"), track=layout.querySelector("#railtrack"), tray=layout.querySelector("#tray");
+  const rr = puz.rooms ? roomRanges(puz) : null;
+  const slotEl = i=>{
+    const s=el(`<div class="slot" data-slot="${i}"><span class="n">Slot ${i+1}</span></div>`);
+    if(fs.slots[i]) s.appendChild(card(puz.P.get(fs.slots[i])));
+    return s;
+  };
+  if(puz.grid){
+    const g=el(`<div class="wallgrid" style="grid-template-columns:repeat(${puz.grid.cols},max-content)"></div>`);
+    for(let i=0;i<puz.N;i++) g.appendChild(slotEl(i));
+    track.appendChild(g);
+  } else if(rr){
+    rr.forEach((rg,ri)=>{
+      if(ri>0) track.appendChild(el(`<div class="doorway" title="doorway"></div>`));
+      const grp=el(`<div class="roomgrp"><div class="roomlbl">Room ${ROOM_LETTER[ri]}</div><div class="roomslots"></div></div>`);
+      for(let i=rg[0];i<=rg[1];i++) grp.querySelector(".roomslots").appendChild(slotEl(i));
+      track.appendChild(grp);
+    });
+  } else {
+    for(let i=0;i<puz.N;i++) track.appendChild(slotEl(i));
+  }
+  if(tray) puz.paintings.filter(p=>!fs.slots.includes(p.id)).forEach(p=>tray.appendChild(card(p)));
+
+  // ---- wall zoom + pan
+  const applyZoom = ()=>{ track.style.zoom = railZoom; layout.querySelector("#zlbl").textContent = Math.round(railZoom*100)+"%"; };
+  applyZoom();
+  layout.querySelectorAll(".zoombar button").forEach(b=>b.onclick=()=>{
+    railZoom = Math.max(0.6, Math.min(1.3, +(railZoom + (+b.dataset.z)*0.15).toFixed(2)));
+    applyZoom();
+  });
+  rail.addEventListener("wheel", e=>{                       // vertical wheel pans the wall
+    if(!e.deltaY || e.shiftKey) return;
+    rail.scrollLeft += e.deltaY; e.preventDefault();
+  }, {passive:false});
+  rail.addEventListener("pointerdown", e=>{                 // drag empty wall space to pan
+    if(e.target.closest(".painting")) return;               // let cards handle their own drag
+    const x0=e.clientX, s0=rail.scrollLeft; let moved=false;
+    const mv=ev=>{ if(Math.abs(ev.clientX-x0)>3) moved=true; rail.scrollLeft = s0-(ev.clientX-x0); };
+    const up=()=>{ window.removeEventListener("pointermove",mv); window.removeEventListener("pointerup",up); };
+    window.addEventListener("pointermove",mv); window.addEventListener("pointerup",up,{once:true});
+  });
+
+  const showReg = RUN.staff.includes("registrar") && placed;
+  const hideC = puz.spec.hideCount && !RUN.showHidden;
+  let notesHtml = puz.rules
+    .filter(r=> !(hideC && r.kind==="countForged"))
+    .map(r=>{
+      let mk="";
+      if(showReg) mk = testRule(r,order,fs.accused,puz)
+        ? ' <span style="color:var(--ok)">✓</span>' : ' <span style="color:var(--bad)">✗</span>';
+      return `<li>${glossify(r.text)}${mk}</li>`;
+    }).join("");
+  if(hideC) notesHtml += `<li><i>The number of ${glossify("forgeries")} here is not disclosed.</i></li>`;
+  else if(puz.spec.hideCount) notesHtml += `<li><i>Count normally withheld — your Index reveals it above.</i></li>`;
+  if(puz.paintings.some(p=>p.nature==="masterforger"))
+    notesHtml += `<li><i>${glossify("A master forger hangs here — its placard reads true. Only investigation or contradiction will out it.")}</i></li>`;
+  const notesEl=layout.querySelector("#notes"); notesEl.innerHTML = notesHtml; wireGlossary(notesEl);
+  const tutEl=layout.querySelector(".tutbox"); if(tutEl) wireGlossary(tutEl);
+
+  const logEl=layout.querySelector("#log");
+  logEl.innerHTML = fs.log.length
+    ? fs.log.map(l=>`<li class="${l.warn?"warn":""}">${glossify(l.text)}</li>`).join("")
+    : `<li style="background:none;color:#8a8072;padding:0">No findings yet.</li>`;
+  wireGlossary(logEl);
+
+  const ap=layout.querySelector("#appraise");
+  ap.disabled = fs.over || fs.slots.some(x=>!x) || !!fs.arming;
+  ap.onclick=appraise;
+  const apn=layout.querySelector("#apnote");
+  if(!fs.over) apn.textContent = fs.arming ? "finish or cancel the tool first"
+    : fs.slots.some(x=>!x) ? "hang every work first"
+    : fs.puz.fixed ? "submit — name every forgery, exactly"
+    : "submit the wall — placements and forgery calls together";
+
+  if(fs.verdict){
+    const vb=layout.querySelector("#verdictbox");
+    vb.appendChild(el(`<div class="verdict ${fs.verdict.cls}">${fs.verdict.html}</div>`));
+    if(fs.over && fs.result==="win" && RUN.tutorial){
+      const last=RUN.tutIdx>=TUTORIAL.length-1;
+      const b=el(`<div class="bar"><button class="big" id="cont">${last?"Finish tutorial":"Next lesson"}</button></div>`);
+      vb.appendChild(b); b.querySelector("#cont").onclick=tutNext;
+    } else if(fs.over && fs.result==="win"){
+      const b=el(`<div class="bar"><button class="big" id="cont">${RUN.wall+1>=WALLS.length?"Finish the season":"Continue"}</button></div>`);
+      vb.appendChild(b); b.querySelector("#cont").onclick=afterWall;
+    } else if(fs.over){
+      const b=el(`<div class="bar">
+        <button class="big" id="again">New season</button>
+        <button class="big" id="replay">Replay seed</button></div>`);
+      vb.appendChild(b);
+      b.querySelector("#again").onclick=()=>newRun();
+      b.querySelector("#replay").onclick=()=>newRun(RUN.seed);
+    }
+  }
+}
+
+// ============================================================ self-check
+function selfCheck(){
+  const savedSave=JSON.stringify(SAVE), savedCur=chosenCurator, savedStake=chosenStake;
+  const rows=[]; RAND=mulberry32(hashSeed("selfcheck"));
+  for(let w=0; w<WALLS.length; w++){
+    for(let i=0;i<4;i++){
+      const t0=performance.now();
+      const puz=makePuzzle(WALLS[w]);
+      const sol=puz.solution;
+      const s=WALLS[w];
+      let budget = 5 + (s.f>=2?2:0) + (s.rooms||s.grid?1:0)
+        + Math.min(3, (s.f>=3?1:0) + (s.mf?2:0) + (s.pa?1:0));
+      if(s.fixed) budget = Math.min(budget, 7);
+      const bp = puz.fixed ? (()=>{ const m={}; sol.order.forEach((id,k)=>m[id]=k); return m; })() : null;
+      const uniq = puz.fixed
+        ? evalWorld(puz,sol.order,new Set(sol.forged))
+        : (solve(puz,5).length===1 && evalWorld(puz,sol.order,new Set(sol.forged)));
+      const muteOK = puz.paintings.filter(p=>p.nature==="unattributed").every(p=>!p.claim);
+      const fr = fairReveals(puz, null, bp);
+      console.assert(uniq, `wall ${w+1}: unique+valid`);
+      console.assert(muteOK, `wall ${w+1}: unattributed carry no placard`);
+      console.assert(fr>=(s.min||0) && fr<=budget, `wall ${w+1}: Scrutiny to solve must be ${s.min||0}..${budget}, is ${fr}`);
+      rows.push({wall:w+1, n:puz.N, f:puz.forgeryCount, u:puz.paintings.filter(p=>!p.claim).length,
+        layout:puz.grid?`${puz.grid.cols}×${puz.grid.rows}${puz.fixed?" fixed":""}`:(puz.rooms?puz.rooms.join("+"):"row"),
+        rules:puz.rules.length, fair:fr, ms:Math.round(performance.now()-t0)});
+    }
+  }
+  // Master Forger (via the Committee stake): when one is present, its placard reads true
+  RAND=mulberry32(hashSeed("mf"));
+  for(let i=0;i<6;i++){
+    const puz=makePuzzle({n:6,f:2,u:1,mf:1});
+    const mf=puz.paintings.find(p=>p.nature==="masterforger");
+    if(mf){
+      const solF=new Set(puz.solution.forged);
+      console.assert(solF.has(mf.id), "a master forger must be one of the forgeries");
+      console.assert(resolveClaim(mf.claim,puz.solution.order,solF,mf.id,puz),
+        "a master forger's placard must read true in the solution");
+      console.assert(evalWorld(puz,puz.solution.order,solF), "master-forger wall must validate");
+    }
+  }
+  // Pastiche (via the Circle stake): its placard's truth equals the echoed claim, read at its own spot
+  RAND=mulberry32(hashSeed("pa"));
+  for(let i=0;i<6;i++){
+    const puz=makePuzzle({n:6,f:2,u:1,pa:1});
+    const pa=puz.paintings.find(p=>p.nature==="pastiche");
+    if(pa){
+      const solF=new Set(puz.solution.forged), t=puz.P.get(pa.claim.targetId);
+      console.assert(t && t.claim && t.claim.kind!=="pastiche", "a pastiche must quote a real placard");
+      console.assert(
+        resolveClaim(pa.claim,puz.solution.order,solF,pa.id,puz) ===
+        resolveClaim(t.claim,puz.solution.order,solF,pa.id,puz),
+        "a pastiche resolves to the echoed claim read at its own position");
+      console.assert(evalWorld(puz,puz.solution.order,solF), "pastiche wall must validate");
+    }
+  }
+  // Two-room walls: cross-room works aren't neighbours; room forgery counts add up
+  RAND=mulberry32(hashSeed("rooms"));
+  for(let i=0;i<6;i++){
+    const puz=makePuzzle({n:6,f:2,u:1,rooms:[3,3]});
+    if(!puz.rooms) continue;
+    const solF=new Set(puz.solution.forged), o=puz.solution.order;
+    console.assert(!adjSlot(2,3,puz), "the doorway breaks adjacency between slot 3 and slot 4");
+    console.assert(evalWorld(puz,o,solF), "two-room wall must validate");
+    const rc=roomRanges(puz).map(rg=>{ let c=0; for(let k=rg[0];k<=rg[1];k++) if(solF.has(o[k])) c++; return c; });
+    console.assert(rc[0]+rc[1]===puz.solution.forged.length, "room forgery counts sum to the total");
+  }
+  // 2-D grid walls: 4-connected adjacency (up/down + left/right), no diagonals
+  RAND=mulberry32(hashSeed("grid"));
+  let gridsMade=0;
+  for(let i=0;i<14;i++){
+    const puz=makePuzzle({n:4,f:1,u:1,grid:{cols:2,rows:2},min:2});
+    if(!puz.grid) continue;
+    gridsMade++;
+    const solF=new Set(puz.solution.forged), o=puz.solution.order;
+    console.assert(evalWorld(puz,o,solF), "grid wall must validate");
+    console.assert(adjSlot(0,1,puz) && adjSlot(0,2,puz), "2x2: slot 0 touches slot 1 (right) and slot 2 (below)");
+    console.assert(!adjSlot(0,3,puz) && !adjSlot(1,2,puz), "2x2: no diagonal adjacency");
+    console.assert(neighbours(0,puz).length===2, "2x2: every slot is a corner (2 neighbours)");
+    console.assert(fairReveals(puz) >= 2, "grid wall still needs investigation");
+  }
+  console.assert(gridsMade>=6, "grid walls generate reliably — "+gridsMade+"/14");
+
+  // fixed walls: a pre-hung 3×3, solved purely by which placards lie
+  RAND=mulberry32(hashSeed("fixed"));
+  let fixedMade=0, fixedT=0;
+  for(let i=0;i<10;i++){
+    const t0=performance.now();
+    let puz; try{ puz=makePuzzle(WALLS[WALLS.length-1]); }catch(e){ continue; }
+    fixedT=Math.max(fixedT, performance.now()-t0);
+    if(!puz.fixed || puz.N!==9) continue;
+    fixedMade++;
+    const solF=new Set(puz.solution.forged), o=puz.solution.order;
+    console.assert(evalWorld(puz,o,solF), "fixed 3×3 must validate in its canonical board");
+    const bp={}; o.forEach((id,i)=>bp[id]=i);
+    const fr=fairReveals(puz,null,bp);
+    console.assert(fr>=4 && fr<=7, "fixed wall: 4–7 Scrutiny to solve with the board known, got "+fr);
+    console.assert(fairReveals(puz,null,bp,true)>7, "fixed wall: notes alone can't name the fakes");
+  }
+  console.assert(fixedMade>=5, "fixed 3×3 walls generate — "+fixedMade+"/10");
+  console.assert(fixedT<900, "fixed 3×3 generation stays under ~900ms — "+Math.round(fixedT));
+
+  RAND=mulberry32(hashSeed("abc")); const a=makePuzzle(WALLS[4]);
+  RAND=mulberry32(hashSeed("abc")); const b=makePuzzle(WALLS[4]);
+  console.assert(JSON.stringify(a.solution)===JSON.stringify(b.solution), "seed determinism");
+
+  // a seed's walls must not shift when the museum changes
+  const wallSig=(seed,idx,facs)=>{
+    SAVE={v:1,patronage:0,facilities:facs,bestWall:0,curator:"standard",known:[]}; chosenCurator="standard";
+    RAND=mulberry32(hashSeed(seed));
+    RUN={ seed, wall:idx, rep:4,repMax:4,coin:0,scrutinyBase:4,actions:["authenticate","survey","provenance"],
+          upgrades:new Set(),staff:[],items:[],deck:shuffle(POOL),deckPos:0,patronMult:1,apprGrace:0,hintCharges:0,
+          freeAuthPerWall:0,shopDiscount:0,catCap:1,rerollsPerShop:0,notesConfirm:0,showHidden:false };
+    applyFacilities(); enterWall();
+    return fs.puz.paintings.map(p=>p.id+(p.claim?p.claim.kind:"·")).join()+"|"+JSON.stringify(fs.puz.solution);
+  };
+  console.assert(
+    wallSig("detA",3,{}) === wallSig("detA",3,{reception:{level:3,fork:"alt"},guidebook:{level:3,fork:"basic"},members:{level:2,fork:"alt"}}),
+    "same seed+wall must generate the same puzzle regardless of facilities");
+
+  // meta: save round-trips
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({v:1,patronage:77,facilities:{cafe:{level:2,fork:"basic"}},bestWall:3}));
+    const rt=loadSave();
+    console.assert(rt.patronage===77 && rt.facilities.cafe.level===2, "save round-trips");
+  }catch(e){ console.log("localStorage unavailable — skipping save test"); }
+
+  // meta: a facility effect actually reaches RUN
+  SAVE={v:1,patronage:0,facilities:{cafe:{level:2,fork:"basic"},security:{level:1,fork:"alt"}},bestWall:0};
+  chosenCurator="standard";
+  RUN={seed:"x",wall:0,rep:4,repMax:4,coin:0,scrutinyBase:3,actions:[],upgrades:new Set(),staff:[],
+       items:[],deck:[],deckPos:0,patronMult:1,apprGrace:0,hintCharges:0,freeAuthPerWall:0,
+       shopDiscount:0,catCap:1,rerollsPerShop:0,notesConfirm:0,showHidden:false};
+  applyFacilities();
+  console.assert(RUN.scrutinyBase===5, "Café L2/basic → +2 base Scrutiny, got "+RUN.scrutinyBase);
+  console.assert(RUN.hintCharges===1, "Security L1/alt → 1 hint charge, got "+RUN.hintCharges);
+
+  const sim = simRun();
+  console.assert(sim.over, "sim run should clear all walls");
+  console.assert(sim.coin>0, "clearing walls should pay coin — "+sim.coin);
+  console.assert(sim.patronage>0, "a scoring run should bank Patronage — "+sim.patronage);
+  console.assert(sim.bestWall===WALLS.length, "bestWall should reach the finale — "+sim.bestWall);
+  console.assert(sim.noRepeats, "no artwork may repeat within a run — saw "+sim.worksSeen+" placements");
+
+  // a practice run (chosen seed) must bank nothing
+  SAVE=defaultSave(); chosenCurator="standard";
+  newRun("practicecheck");
+  console.assert(RUN.practice, "a typed seed makes the run practice");
+  const p0=SAVE.patronage, b0=SAVE.bestWall;
+  while(screen!=="over"){
+    if(screen==="wall" && !fs.over){ const s=fs.puz.solution;
+      s.order.forEach((id,i)=>{fs.slots[i]=id;}); s.forged.forEach(id=>fs.accused.add(id)); appraise(); }
+    else if(screen==="wall" && fs.result==="win"){ afterWall(); }
+    else if(screen==="reward"){ rewardOffer[0]?takeReward(rewardOffer[0].id):skipReward(); enterWall(); }
+    else break;
+  }
+  console.assert(SAVE.patronage===p0 && SAVE.bestWall===b0,
+    "practice run must not bank Patronage or bestWall");
+
+  SAVE=JSON.parse(savedSave); chosenCurator=savedCur; chosenStake=savedStake; saveMeta();
+  screen="title"; overWin=false;
+  console.table(rows); console.log("self-check done");
+}
+function simRun(){
+  SAVE=defaultSave(); chosenCurator="standard";
+  newRun("simrun"); RUN.practice=false;   // a scoring run, but on a fixed seed for the check
+  let guard=40; const seen=[];
+  while(screen!=="over" && guard-->0){
+    if(screen==="wall" && !fs.over){
+      const sol=fs.puz.solution;
+      fs.puz.paintings.forEach(p=>seen.push(p.id));
+      sol.order.forEach((id,i)=>{ fs.slots[i]=id; });
+      sol.forged.forEach(id=>fs.accused.add(id));
+      appraise();
+    } else if(screen==="wall" && fs.over && fs.result==="win"){ afterWall(); }
+    else if(screen==="reward"){ (rewardOffer[0]?takeReward(rewardOffer[0].id):skipReward()); enterWall(); }
+    else break;
+  }
+  return { over:screen==="over"&&overWin, repMax:RUN.repMax, coin:RUN.coin,
+           patronage:SAVE.patronage, bestWall:SAVE.bestWall,
+           noRepeats: seen.length===new Set(seen).size, worksSeen:seen.length };
+}
+// ============================================================ balance harness (#balance)
+// Models a PERFECT deducer: fairReveals(puz, staffGivens) = the minimum facts
+// such a player must still buy. If that fits their Scrutiny, they clean-clear
+// with no reputation cost. High clean-clear % across walls ⇒ the wall is too easy.
+function wallSpecFor(w, stake, minF){
+  let spec = WALLS[w];
+  for(let s=0;s<stake;s++) if(STAKES[s] && STAKES[s].wall) spec = STAKES[s].wall(spec, w);
+  if(minF) spec = {...spec, f:Math.max(spec.f, minF)};
+  return spec;
+}
+function balanceReport(opts){
+  opts = Object.assign({scrutiny:4, stake:0, minForgery:0, seeds:80, upgrades:0}, opts);
+  const perWall = WALLS.map(()=>({need:[], clean:0, n:0, fb:0}));
+  for(let si=0; si<opts.seeds; si++){
+    const seed="bal"+si;
+    RAND=mulberry32(hashSeed(seed)); const deck=shuffle(POOL); let pos=0;
+    for(let w=0; w<WALLS.length; w++){
+      const base=wallSpecFor(w, opts.stake, opts.minForgery);
+      const spec={...base, works:deck.slice(pos,pos+base.n)}; pos+=base.n;
+      RAND=mulberry32(hashSeed(seed+"#w"+w+"s"+opts.stake));
+      let puz; try{ puz=makePuzzle(spec); }catch(e){ continue; }
+      const bp = puz.fixed ? (()=>{ const m={}; puz.solution.order.forEach((id,k)=>m[id]=k); return m; })() : null;
+      const need=fairReveals(puz, null, bp);   // Scrutiny to solve, not fact count
+      const scr=opts.scrutiny + (w<2?1:0) + (puz.fixed?2:0) + opts.upgrades*1;   // wall 1-2 & finale ease + any scrutinyUp
+      const rec=perWall[w]; rec.n++;
+      rec.need.push(need===Infinity?99:need);
+      if(need<=scr) rec.clean++;
+      if(base.rooms && !puz.rooms) rec.fb++;
+    }
+  }
+  const rows=perWall.map((r,i)=>{
+    const ns=r.need.filter(x=>x<99).sort((a,b)=>a-b);
+    return { wall:i+1, n:r.n,
+             cleanPct: r.n?Math.round(100*r.clean/r.n):0,
+             needMed: ns.length?ns[ns.length>>1]:"-",
+             needMax: ns.length?ns[ns.length-1]:"-",
+             unfair: r.need.filter(x=>x>=99).length,
+             roomFallback: r.fb };
+  });
+  const hdr = `=== scrutiny ${opts.scrutiny}${opts.upgrades?"+"+opts.upgrades:""} · stake ${opts.stake} · ${opts.seeds} seeds ===`;
+  const lines = rows.map(r=>`  wall ${r.wall}: clean ${String(r.cleanPct).padStart(3)}%  needMed ${r.needMed}  needMax ${r.needMax}  unfair ${r.unfair}  fb ${r.roomFallback}`);
+  const mean = Math.round(rows.reduce((a,r)=>a+r.cleanPct,0)/rows.length);
+  console.log("\n"+hdr+"\n"+lines.join("\n")+`\n  MEAN clean-clear (perfect play): ${mean}%`);
+  return {hdr, rows, mean};
+}
+// -- run survival: play a PERFECT deducer through a whole run, tracking reputation.
+// Reveals greedily up to Scrutiny; buys up to 2 more with reputation if that finishes
+// the wall; otherwise guesses the forced-logic remainder (each wrong guess −1 rep,
+// no hint). Reports the share of runs that reach Wall 8 alive.
+function simSurvival(opts){
+  opts = Object.assign({scrutiny:4, easyWalls:2, upgrades:0, startRep:5, label:"",
+                        staffReveals:0, stake:0, minForgery:0, catFree:0, seeds:120, accum:false}, opts);
+  let wins=0, repLeft=[]; const deathWall={};
+  for(let si=0; si<opts.seeds; si++){
+    const seed="surv"+si;
+    RAND=mulberry32(hashSeed(seed)); const deck=shuffle(POOL); let pos=0;
+    let rep=opts.startRep + (opts.stake>=2?1:0), dead=0;   // small buffer once Stakes get heavy
+    for(let w=0; w<WALLS.length; w++){
+      // accum models a realistically-drafted run: kit trickles in over the walls
+      // constraint-staff each shave ~0.5 of a reveal; model a drafted run as +1 reveal from ~wall 3
+      const staffReveals = opts.accum ? (w>=3?1:0) : (opts.staffReveals||0);
+      const upg   = opts.accum ? (w>=2?1:0) : opts.upgrades;
+      const cat   = opts.accum ? (w>=5?1:0) : opts.catFree;
+      const base=wallSpecFor(w, opts.stake, opts.minForgery);
+      const spec={...base, works:deck.slice(pos,pos+base.n)}; pos+=base.n;
+      RAND=mulberry32(hashSeed(seed+"#w"+w+"s"+opts.stake));
+      let puz; try{ puz=makePuzzle(spec); }catch(e){ continue; }
+      const ids=[...puz.P.keys()], order=puz.solution.order, solF=new Set(puz.solution.forged);
+      const gNat={}, gPos={};
+      if(puz.fixed) order.forEach((id,k)=>gPos[id]=k);   // fixed wall: the board is given
+      for(let c=0;c<staffReveals;c++){ if(RAND()<0.5){ const id=order.find(x=>!(x in gNat)); if(id) gNat[id]=solF.has(id)?"f":"g"; } }
+      for(let c=0;c<cat;c++){ const id=order.find(x=>!(x in gNat)); if(id) gNat[id]=solF.has(id)?"f":"g"; }
+      let natN=0;
+      const revealNext=r=>{
+        const aN=ids.find(x=>!(x in gNat)&&r.nat[x].size>1);
+        if(aN){ gNat[aN]=solF.has(aN)?"f":"g"; const c=natN===0?1:2; natN++; return c; }
+        const aP=ids.find(x=>!(x in gPos)&&r.pos[x].size>1);
+        if(aP){ gPos[aP]=order.indexOf(aP); return 1; }
+        return 0;
+      };
+      const budget=opts.scrutiny + (w<opts.easyWalls?1:0) + (puz.fixed?2:0) + upg;
+      let used=0, r=propSolve(puz,gNat,gPos);
+      while(!r.solved && used<budget){ const c=revealNext(r); if(!c) break; used+=c; r=propSolve(puz,gNat,gPos); }
+      let buys=0;
+      while(!r.solved && buys<2 && rep>1){ const c=revealNext(r); if(!c) break; rep--; buys++; used+=c; r=propSolve(puz,gNat,gPos); }
+      if(r.solved){ continue; }   // wall cleared, no reputation lost
+      const amb=ids.filter(x=>r.pos[x].size>1||r.nat[x].size>1).length;
+      const pWin=Math.pow(0.55, Math.max(1,amb));   // rough model of guessing the forced-logic remainder
+      let ok=false;
+      while(!ok){ if(rep<=0){ dead=w+1; break; } if(RAND()<pWin) ok=true; else rep--; }
+      if(dead) break;
+    }
+    if(dead){ deathWall[dead]=(deathWall[dead]||0)+1; }
+    else { wins++; repLeft.push(rep); }
+  }
+  const winPct=Math.round(100*wins/opts.seeds);
+  const avgRep=repLeft.length?(repLeft.reduce((a,b)=>a+b,0)/repLeft.length).toFixed(1):"-";
+  const deaths=Object.keys(deathWall).sort((a,b)=>a-b).map(k=>`w${k}:${deathWall[k]}`).join(" ");
+  console.log(`  ${opts.label||("startRep "+opts.startRep)} · scr ${opts.scrutiny} · stake ${opts.stake}${opts.accum?" · drafted":""} · ${opts.seeds} seeds`);
+  console.log(`    → reach Wall 8 alive: ${winPct}%   avg reputation left: ${avgRep}   deaths: ${deaths||"none"}`);
+  return {winPct, avgRep};
+}
+function balanceSuite(n){
+  n = n || 24;
+  console.log("--- per-wall clean-clear by a perfect deducer (lower=harder) ---");
+  balanceReport({seeds:n});
+  balanceReport({stake:4, seeds:Math.min(n,16)});
+}
+// ============================================================ dev console
+// Press ` or ~ for an in-game console, or use window.dev from the browser console.
+// dev.rep(9) · dev.win() · dev.inf() · dev.staff("intern") · dev.set("fs.scrutiny",20) · dev.help()
+function devResolve(path){
+  const roots={RUN, fs, SAVE, DEV};
+  let parts=String(path).split("."), obj;
+  if(parts[0] in roots){ obj=roots[parts[0]]; parts=parts.slice(1); }
+  else obj=RUN;                                   // bare name → RUN.<name>
+  for(let i=0;i<parts.length-1;i++) obj=obj[parts[i]];
+  return {obj, key:parts[parts.length-1]};
+}
+const devVal=s=> s==="true"?true : s==="false"?false : s==="null"?null
+  : (s!=="" && s!=null && !isNaN(+s)) ? +s : s;
+const DEVCMD={
+  help:()=>[
+    "set <path> <val>   e.g. set fs.scrutiny 20 · set RUN.coin 999 · set SAVE.patronage 500",
+    "get <path>",
+    "rep N · coin N · scrutiny N · patronage N · wall N (jump)",
+    "win · winrun · lose · reveal (show answer) · solve (lay it out, no appraise)",
+    "inf [on|off]  — free investigations, free buys, no reputation cost, unlimited",
+    "staff X · upgrade X · item X [n] · facility <id> <L> [basic|alt]",
+    "stake N · stakes (unlock all) · curator X · known [N|all] · seed X (restart)",
+    "reset — wipe the save (tutorial grant included) and reload",
+    "staff:   intern aide ledger docent guard registrar",
+    "upgrade: scrutinyUp firstFree surveyWide provExact provFree",
+    "item:    rake ledger coffee opinion",
+  ].join("\n"),
+  set:(p,v)=>{ const {obj,key}=devResolve(p); obj[key]=devVal(v); render(); return `${p} = ${JSON.stringify(obj[key])}`; },
+  get:(p)=>{ const {obj,key}=devResolve(p); return `${p} = ${JSON.stringify(obj[key])}`; },
+  rep:n=>{ RUN.rep=+n; RUN.repMax=Math.max(RUN.repMax,+n); render(); return "reputation "+n; },
+  coin:n=>{ RUN.coin=+n; render(); return "coin "+n; },
+  gold:n=>DEVCMD.coin(n),
+  scrutiny:n=>{ fs.scrutiny=+n; render(); return "scrutiny "+n; },
+  scr:n=>DEVCMD.scrutiny(n),
+  patronage:n=>{ SAVE.patronage=+n; saveMeta(); render(); return "patronage "+n; },
+  reset:()=>{ try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+    SAVE=defaultSave(); saveMeta(); location.reload(); return "save wiped — reloading"; },
+  wall:n=>{ RUN.wall=Math.max(0,Math.min(WALLS.length-1,+n-1)); enterWall(); return "→ wall "+(RUN.wall+1); },
+  win:()=>{ if(screen!=="wall"||fs.over) return "not on a live wall";
+    const s=fs.puz.solution; if(!fs.puz.fixed) s.order.forEach((id,i)=>{fs.slots[i]=id;});
+    fs.accused=new Set(s.forged); appraise(); return fs.result==="win"?"wall won":"appraise: "+fs.result; },
+  winrun:()=>{ let g=25; while(screen!=="over"&&g-->0){
+      if(screen==="wall"&&!fs.over) DEVCMD.win();
+      else if(screen==="wall"&&fs.over&&fs.result==="win") afterWall();
+      else if(screen==="reward"){ (rewardOffer[0]?takeReward(rewardOffer[0].id):skipReward()); enterWall(); }
+      else break; } return "advanced — screen: "+screen; },
+  lose:()=>{ if(fs&&!fs.over){ RUN.rep=0; lose(); } return "run ended"; },
+  reveal:()=>{ const s=fs.puz.solution, F=new Set(s.forged);
+    s.order.forEach(id=>{ fs.reveals[id]=F.has(id)?"f":"g"; }); render();
+    return "TRUE HANG — "+s.order.map((id,i)=>`${i+1}:${fs.puz.P.get(id).title}${F.has(id)?" ✗FAKE":""}`).join("  "); },
+  solve:()=>{ const s=fs.puz.solution; if(!fs.puz.fixed) s.order.forEach((id,i)=>{fs.slots[i]=id;});
+    fs.accused=new Set(s.forged); render(); return "laid out (not appraised)"; },
+  inf:st=>{ DEV.inf = st===undefined ? !DEV.inf : /^(on|true|1)$/i.test(st);
+    if(DEV.inf && fs && !fs.over) fs.scrutiny=Math.max(fs.scrutiny,99);
+    render(); return "infinite mode "+(DEV.inf?"ON":"OFF"); },
+  staff:x=>{ if(!REWARDS.some(r=>r.id===x&&r.type==="staff")) return "no staff '"+x+"'";
+    if(!RUN.staff.includes(x)) RUN.staff.push(x); render(); return "hired "+x; },
+  upgrade:x=>{ if(!REWARDS.some(r=>r.id===x&&r.type==="upgrade")) return "no upgrade '"+x+"'";
+    RUN.upgrades.add(x); if(x==="scrutinyUp"){ RUN.scrutinyBase++; RUN.scrutinyUpCount=(RUN.scrutinyUpCount||0)+1; }
+    render(); return "gained "+x; },
+  item:(x,n)=>{ if(!CONSUMABLES.some(c=>c.id===x)) return "no item '"+x+"'";
+    for(let i=0;i<(+n||1);i++) RUN.items.push(x); render(); return `+${+n||1} ${x}`; },
+  facility:(id,l,fk)=>{ if(!FACILITIES.some(f=>f.id===id)) return "facilities: "+FACILITIES.map(f=>f.id).join(" ");
+    SAVE.facilities[id]={level:Math.max(0,Math.min(3,+l||0)), fork:(fk==="alt"?"alt":"basic")};
+    saveMeta(); return `${id} → L${SAVE.facilities[id].level} ${SAVE.facilities[id].fork} (next run)`; },
+  stake:n=>{ chosenStake=Math.max(0,Math.min(STAKES.length,+n)); SAVE.stake=chosenStake;
+    SAVE.maxStake=Math.max(SAVE.maxStake||0,chosenStake); saveMeta(); return "stake "+chosenStake+" (next run)"; },
+  stakes:()=>{ SAVE.maxStake=STAKES.length; saveMeta(); return "all stakes unlocked"; },
+  curator:x=>{ if(!CURATORS[x]) return "curators: "+Object.keys(CURATORS).join(" ");
+    chosenCurator=x; SAVE.curator=x; saveMeta(); return "curator "+x+" (next run)"; },
+  known:n=>{ SAVE.known = n==="all" ? POOL.map(p=>p.id) : POOL.slice(0,+n||0).map(p=>p.id);
+    saveMeta(); return "SAVE.known: "+SAVE.known.length; },
+  seed:x=>{ newRun(String(x==null?"":x)); return "new run — seed "+RUN.seed; },
+};
+function devRun(line){
+  line=String(line||"").trim(); if(!line) return "";
+  const [cmd,...args]=line.split(/\s+/);
+  if(!DEVCMD[cmd]) return devLog("? '"+cmd+"' — try help");
+  try{ return devLog(DEVCMD[cmd](...args)); }catch(e){ return devLog("err: "+e.message); }
+}
+let _devOutBuf=[];
+function devLog(msg){
+  if(msg==null) msg="ok";
+  _devOutBuf.push(String(msg)); if(_devOutBuf.length>40) _devOutBuf.shift();
+  const o=document.querySelector("#devpanel .devout");
+  if(o){ o.textContent=_devOutBuf.join("\n"); o.scrollTop=o.scrollHeight; }
+  return msg;
+}
+window.dev=new Proxy(DEVCMD,{ get:(t,p)=> p==="run" ? devRun : (p in t ? (...a)=>{const r=t[p](...a); console.log(r); return r;} : undefined) });
+
+// ---- dev GUI panel ----------------------------------------------------------
+(function(){
+  const S=document.createElement("style");
+  S.textContent=`
+  #devpanel{position:fixed;top:0;right:0;bottom:0;width:300px;z-index:6000;overflow-y:auto;
+    background:#15100af7;border-left:2px solid var(--brass);color:#e9ddc1;
+    font:12.5px/1.4 ui-monospace,Menlo,Consolas,monospace;padding:10px 12px 40px;box-shadow:-14px 0 34px -12px #000}
+  #devpanel h4{margin:14px 0 6px;font:600 11px var(--body);letter-spacing:1.5px;text-transform:uppercase;color:var(--brass)}
+  #devpanel h4:first-child{margin-top:0}
+  #devpanel button{background:#0005;border:1px solid #ffffff26;color:inherit;font:inherit;
+    padding:4px 8px;border-radius:3px;cursor:pointer;margin:2px 3px 2px 0}
+  #devpanel button:hover{background:#ffffff1a}
+  #devpanel button.on{background:var(--brass);border-color:var(--brass);color:#1c140a;font-weight:700}
+  #devpanel input,#devpanel select{background:#0006;border:1px solid #ffffff26;color:inherit;font:inherit;
+    padding:3px 5px;border-radius:3px}
+  #devpanel input[type=number]{width:58px}
+  #devpanel label{display:flex;align-items:center;gap:6px;margin:3px 0}
+  #devpanel .row{display:flex;flex-wrap:wrap;gap:2px;align-items:center}
+  #devpanel .devout{max-height:120px;overflow:auto;white-space:pre-wrap;opacity:.85;
+    border-top:1px solid #ffffff1f;margin-top:8px;padding-top:6px;font-size:11.5px}
+  #devtab{position:fixed;top:8px;right:8px;z-index:5999;background:#15100af0;border:1px solid var(--brass);
+    color:var(--brass);font:600 10px var(--body);letter-spacing:1px;padding:4px 8px;border-radius:3px;cursor:pointer}`;
+  document.head.appendChild(S);
+
+  // no visible entry point — the panel opens only via the ` / ~ key or window.dev
+  let panel=null;
+  const num=(label,path)=>{
+    const {obj,key}=devResolve(path), r=el(`<label>${label}<input type="number" value="${obj[key]}"></label>`);
+    r.querySelector("input").onchange=e=>{ DEVCMD.set(path, e.target.value); paint(); };
+    return r;
+  };
+  const btn=(label,fn)=>{ const b=el(`<button>${label}</button>`); b.onclick=()=>{ fn(); paint(); }; return b; };
+  const chip=(label,active,fn)=>{ const b=el(`<button class="${active?'on':''}">${label}</button>`); b.onclick=()=>{ fn(); paint(); }; return b; };
+  const sect=(t)=>el(`<h4>${t}</h4>`);
+
+  function paint(){
+    if(!panel) return;
+    const foc=document.activeElement, focCmd=foc&&foc.classList.contains("devin");
+    panel.innerHTML="";
+    const add=(...n)=>n.forEach(x=>panel.appendChild(x));
+    const live = RUN && fs;
+
+    const hdr=el(`<div class="row" style="justify-content:space-between;position:sticky;top:-10px;background:#15100a;padding:4px 0;margin:-2px 0 4px">
+      <b style="color:var(--brass);letter-spacing:1px">DEV TOOLS</b><button style="font-weight:700">✕ close  (~)</button></div>`);
+    hdr.querySelector("button").onclick=toggle;
+    add(hdr);
+
+    add(sect("Reputation & coin"));
+    if(live){
+      const g=el(`<div class="row"></div>`);
+      g.append(num("rep","RUN.rep"), num("cap","RUN.repMax"), num("coin","RUN.coin"));
+      add(g);
+      const g2=el(`<div class="row"></div>`);
+      g2.append(num("scrutiny","fs.scrutiny"), num("patronage","SAVE.patronage"));
+      add(g2);
+    } else add(el(`<div style="opacity:.6">start a run first</div>`));
+
+    add(sect("This wall"));
+    if(live && screen==="wall"){
+      const g=el(`<div class="row"></div>`);
+      g.append(btn("Win wall",()=>DEVCMD.win()), btn("Solve (lay out)",()=>DEVCMD.solve()),
+               btn("Reveal answer",()=>DEVCMD.reveal()), btn("Win whole run",()=>DEVCMD.winrun()),
+               btn("Lose run",()=>DEVCMD.lose()));
+      add(g);
+      const jw=el(`<div class="row">jump: </div>`);
+      WALLS.forEach((_,i)=> jw.appendChild(chip(""+(i+1), RUN.wall===i, ()=>DEVCMD.wall(i+1))));
+      add(jw);
+    } else add(el(`<div style="opacity:.6">(available on a wall)</div>`));
+
+    add(sect("Toggles"));
+    add(chip("INFINITE  (free everything, no rep cost)", DEV.inf, ()=>DEVCMD.inf()));
+
+    add(sect("Staff"));
+    const sf=el(`<div class="row"></div>`);
+    REWARDS.filter(r=>r.type==="staff").forEach(r=>{
+      const has = live && RUN.staff.includes(r.id);
+      sf.appendChild(chip(r.id, has, ()=>{ if(!live) return;
+        if(has) RUN.staff.splice(RUN.staff.indexOf(r.id),1); else DEVCMD.staff(r.id); render(); }));
+    });
+    add(sf);
+
+    add(sect("Upgrades"));
+    const up=el(`<div class="row"></div>`);
+    REWARDS.filter(r=>r.type==="upgrade").forEach(r=>{
+      const has = live && RUN.upgrades.has(r.id);
+      up.appendChild(chip(r.id, has, ()=>{ if(!live) return;
+        if(has) RUN.upgrades.delete(r.id); else DEVCMD.upgrade(r.id); render(); }));
+    });
+    add(up);
+
+    add(sect("Consumables  (adds to bag)"));
+    const cs=el(`<div class="row"></div>`);
+    CONSUMABLES.forEach(c=> cs.appendChild(btn("+ "+c.id, ()=>DEVCMD.item(c.id,1))));
+    add(cs);
+
+    add(sect("Meta  (applies next run)"));
+    const cur=el(`<label>curator <select></select></label>`);
+    Object.keys(CURATORS).forEach(k=>{ const o=el(`<option ${chosenCurator===k?"selected":""}>${k}</option>`); cur.querySelector("select").appendChild(o); });
+    cur.querySelector("select").onchange=e=>{ DEVCMD.curator(e.target.value); paint(); };
+    add(cur);
+    const stk=el(`<label>stake <select></select></label>`);
+    for(let i=0;i<=STAKES.length;i++){ const o=el(`<option ${chosenStake===i?"selected":""}>${i}</option>`); stk.querySelector("select").appendChild(o); }
+    stk.querySelector("select").onchange=e=>{ DEVCMD.stake(e.target.value); paint(); };
+    add(stk, btn("unlock all stakes",()=>DEVCMD.stakes()), btn("know every piece",()=>DEVCMD.known("all")));
+    FACILITIES.forEach(f=>{
+      const st=(SAVE.facilities[f.id]||{level:0,fork:"basic"});
+      const row=el(`<div class="row">${f.id} <select class="lv"></select><select class="fk"><option ${st.fork==="basic"?"selected":""}>basic</option><option ${st.fork==="alt"?"selected":""}>alt</option></select></div>`);
+      [0,1,2,3].forEach(l=> row.querySelector(".lv").appendChild(el(`<option ${st.level===l?"selected":""}>${l}</option>`)));
+      const apply=()=>{ DEVCMD.facility(f.id, row.querySelector(".lv").value, row.querySelector(".fk").value); paint(); };
+      row.querySelector(".lv").onchange=apply; row.querySelector(".fk").onchange=apply;
+      add(row);
+    });
+
+    add(sect("New run"));
+    const nr=el(`<div class="row"><input class="seed" placeholder="seed (blank=random)" style="flex:1"><button>Start</button></div>`);
+    nr.querySelector("button").onclick=()=>{ DEVCMD.seed(nr.querySelector(".seed").value); paint(); };
+    add(nr);
+    add(btn("run tutorial", ()=>{ startTutorial(); }),
+        btn("full reset (wipe save + tutorial)", ()=>DEVCMD.reset()));
+
+    add(sect("Console"));
+    const con=el(`<div><div class="devout"></div><div class="row"><span style="color:var(--brass)">dev&gt;</span><input class="devin" style="flex:1" placeholder="type 'help'"></div></div>`);
+    con.querySelector(".devout").textContent=_devOutBuf.join("\n");
+    const inp=con.querySelector(".devin");
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ const v=inp.value; if(v.trim()){ devLog("dev> "+v); devRun(v); } inp.value=""; paint(); }});
+    add(con);
+    if(focCmd) panel.querySelector(".devin").focus();
+  }
+  function toggle(){
+    if(panel){ panel.remove(); panel=null; return; }
+    panel=el(`<div id="devpanel"></div>`); document.body.appendChild(panel);
+    paint();
+  }
+  window.addEventListener("keydown",e=>{
+    if((e.key==="`"||e.key==="~") && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target||{}).tagName||"")){ e.preventDefault(); toggle(); }
+  });
+  // keep the panel fresh when the game re-renders (unless you're mid-edit in it)
+  const _render=render;
+  render=function(){ _render.apply(this,arguments);
+    const f=document.activeElement;
+    if(panel && !(f && panel.contains(f) && /^(INPUT|SELECT)$/.test(f.tagName))) paint();
+  };
+})();
+
+// #balance = the fast per-wall report.  #balancesurv = the slow full-run survival sim.
+if(location.hash==="#test") selfCheck();
+if(location.hash.indexOf("#balancesurv")===0){
+  const m=location.hash.match(/\d+/), s=m?+m[0]:20;
+  simSurvival({startRep:5, seeds:s, label:"stake 0, no draft"});
+  simSurvival({startRep:5, accum:true, seeds:s, label:"stake 0, drafted"});
+  simSurvival({startRep:5, stake:2, accum:true, seeds:s, label:"stake 2, drafted"});
+  simSurvival({startRep:5, stake:4, accum:true, seeds:s, label:"stake 4, drafted"});
+  console.log("SURVIVAL SIM COMPLETE");
+} else if(location.hash.indexOf("#balance")===0){
+  const m=location.hash.match(/\d+/); balanceSuite(m?+m[0]:24);
+  console.log("BALANCE SUITE COMPLETE");
+}
+render();
+</script>
+</body>
+</html>

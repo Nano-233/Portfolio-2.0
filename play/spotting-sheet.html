@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRAZIL vs MOROCCO — Spotting Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14;
+    --grid-line: rgba(255,255,255,0.025);
+    --pitch-1:#173628;
+    --pitch-2:#234d3a;
+    --pitch-line: rgba(255,255,255,0.16);
+    --ink:#f4f7fa;
+    --muted:#92a5b8;
+    --panel:#11161f;
+    --panel-border: rgba(255,255,255,0.07);
+    --home: #FFD60A;
+    --away: #c8102e;
+    --tag-bg:#ff9f1c;
+    --tag-ink:#1a1200;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background-color:var(--bg);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    padding: 18px;
+  }
+  .board{ max-width:1320px; margin:0 auto; }
+
+  /* ---------- match bar ---------- */
+  .matchbar{
+    display:grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items:center;
+    gap:18px;
+    padding: 14px 22px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    margin-bottom:10px;
+  }
+  .matchbar .team{
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size:26px;
+    letter-spacing:0.04em;
+    display:flex; align-items:center; gap:10px;
+  }
+  .matchbar .team.away{ justify-content:flex-end; text-align:right; }
+  .matchbar .swatch{
+    width:14px; height:14px; border-radius:3px; flex:none;
+  }
+  .home .swatch{ background:var(--home); }
+  .away .swatch{ background:var(--away); }
+  .matchbar .formation{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px; color:var(--muted); font-weight:400;
+    border:1px solid var(--panel-border);
+    border-radius:5px; padding:2px 7px;
+  }
+  .matchbar .meta{
+    text-align:center; color:var(--muted);
+    font-size:13px; font-family:'JetBrains Mono', monospace;
+    line-height:1.5;
+  }
+  .matchbar .meta b{ color:var(--ink); font-weight:500; }
+
+  /* ---------- pitch ---------- */
+  .pitch{
+    position:relative;
+    border-radius:10px;
+    overflow:hidden;
+    background: linear-gradient(180deg, var(--pitch-1) 0%, var(--pitch-2) 50%, var(--pitch-1) 100%);
+    border:1px solid var(--panel-border);
+    padding: 18px 22px;
+  }
+  .pitch::before{ /* halfway line */
+    content:"";
+    position:absolute; left:6%; right:6%; top:50%;
+    height:1px; background:var(--pitch-line);
+  }
+  .pitch::after{ /* center circle */
+    content:"";
+    position:absolute; left:50%; top:50%;
+    width:150px; height:150px;
+    border:1px solid var(--pitch-line);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+  .half{ position:relative; display:flex; flex-direction:column; gap:14px; padding: 10px 0; }
+  .home-half{ padding-bottom: 26px; }
+  .away-half{ padding-top: 26px; }
+
+  .row{
+    display:flex; justify-content:center; gap: 28px; flex-wrap:wrap;
+  }
+
+  /* ---------- player card ---------- */
+  .player{
+    display:flex; flex-direction:column; align-items:center;
+    width: 108px; text-align:center; position:relative;
+  }
+  .player.tbc{ opacity:0.55; }
+  .badge{
+    width:54px; height:54px; border-radius:50%;
+    background: var(--panel);
+    border:2px solid var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:18px;
+  }
+  .home .badge, .player.home .badge{ border-color: var(--home); }
+  .player.away .badge{ border-color: var(--away); }
+  .badge img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  }
+  .badge .number{
+    position:absolute; bottom:-3px; right:-3px;
+    background:var(--ink); color:#0a0e14;
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:12px;
+    border-radius:50%; width:22px; height:22px;
+    display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--bg);
+  }
+  .player.home .badge .number{ background:var(--home); color:#1a1200; }
+  .player.away .badge .number{ background:var(--away); color:#fff; }
+  .player .name{
+    font-family:'Oswald', sans-serif; font-weight:600;
+    font-size:13.5px; letter-spacing:0.02em; text-transform:uppercase;
+    margin-top:6px; line-height:1.2;
+  }
+  .player .meta{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    color:var(--muted); margin-top:2px; line-height:1.4;
+  }
+  .player .tag{
+    margin-top:5px;
+    background:var(--tag-bg); color:var(--tag-ink);
+    font-size:10px; font-weight:700; letter-spacing:0.02em;
+    border-radius:4px; padding:2px 6px; line-height:1.4;
+  }
+
+  /* ---------- bottom panels ---------- */
+  .panels{
+    display:grid; grid-template-columns: 1fr 1.3fr 1fr; gap:10px;
+    margin-top:10px;
+  }
+  .panel{
+    background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:10px; padding:12px 16px;
+  }
+  .panel h3{
+    font-family:'Oswald', sans-serif; font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 8px 0;
+    font-weight:600;
+  }
+  .bench-list{ display:flex; flex-direction:column; gap:6px; }
+  .bench-item{
+    display:flex; align-items:baseline; gap:8px; font-size:13px;
+  }
+  .bench-item .num{
+    font-family:'JetBrains Mono', monospace; color:var(--muted);
+    width:20px; text-align:right; flex:none; margin-right:8px;
+  }
+  .bench-item .nm{ font-weight:500; margin-right:8px; }
+  .bench-item .ps{ color:var(--muted); font-size:11px; }
+
+  .notable-item{
+    display:flex; gap:10px; align-items:flex-start;
+    padding:8px 0; border-top:1px solid var(--panel-border);
+  }
+  .notable-item:first-of-type{ border-top:none; padding-top:0; }
+  .notable-item .num{
+    font-family:'JetBrains Mono', monospace; font-weight:700;
+    font-size:13px; background:var(--tag-bg); color:var(--tag-ink);
+    border-radius:4px; padding:2px 6px; flex:none;
+  }
+  .notable-item .txt b{ font-family:'Oswald', sans-serif; letter-spacing:0.02em; }
+  .notable-item .txt span{ color:var(--muted); display:block; font-size:12.5px; margin-top:2px;}
+
+  @media (max-width: 900px){
+    .panels{ grid-template-columns:1fr; }
+    .row{ gap:14px; }
+    .player{ width:84px; }
+    .matchbar .team{ font-size:18px; }
+  }
+</style>
+</head>
+<body>
+<div class="board">
+
+  <div class="matchbar">
+    <div class="team home"><span class="swatch"></span>BRAZIL <span class="formation">4-3-3</span></div>
+    <div class="meta">FIFA World Cup 2026 · Group Stage<br><b>Demo data — Sat 18:00 ET</b> · Example Stadium</div>
+    <div class="team away"><span class="formation">4-3-3</span> MOROCCO<span class="swatch"></span></div>
+  </div>
+
+  <div class="pitch">
+    <div class="half home-half">
+      
+      <div class="row">
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">7</span>
+          </div>
+          <div class="name">VINÍCIUS JR</div>
+          <div class="meta">25 · 176 cm<br>Real Madrid</div>
+          
+        </div>
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">25</span>
+          </div>
+          <div class="name">I. THIAGO</div>
+          <div class="meta">24 · 190 cm<br>Brentford</div>
+          <div class="tag">22 goals (38 apps) — 2nd, Premier League scoring 2025/26</div>
+        </div>
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">11</span>
+          </div>
+          <div class="name">RAPHINHA</div>
+          <div class="meta">29 · 176 cm<br>Barcelona</div>
+          
+        </div>
+        
+      </div>
+      
+      <div class="row">
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">5</span>
+          </div>
+          <div class="name">CASEMIRO</div>
+          <div class="meta">34 · 185 cm<br>Manchester United</div>
+          
+        </div>
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">8</span>
+          </div>
+          <div class="name">GUIMARÃES</div>
+          <div class="meta">28 · 182 cm<br>Newcastle Utd</div>
+          
+        </div>
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">20</span>
+          </div>
+          <div class="name">PAQUETÁ</div>
+          <div class="meta">28 · 180 cm<br>West Ham</div>
+          
+        </div>
+        
+      </div>
+      
+      <div class="row">
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">4</span>
+          </div>
+          <div class="name">MARQUINHOS</div>
+          <div class="meta">32 · 183 cm<br>Paris Saint-Germain</div>
+          
+        </div>
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">3</span>
+          </div>
+          <div class="name">GABRIEL</div>
+          <div class="meta">28 · 190 cm<br>Arsenal</div>
+          
+        </div>
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">24</span>
+          </div>
+          <div class="name">IBAÑEZ</div>
+          <div class="meta">33 · 193 cm<br>Al-Ittihad</div>
+          
+        </div>
+        
+        <div class="player home tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+      </div>
+      
+      <div class="row">
+        
+        <div class="player home ">
+          <div class="badge">
+            
+            <span class="number">1</span>
+          </div>
+          <div class="name">ALISSON</div>
+          <div class="meta">33 · 193 cm<br>Liverpool</div>
+          
+        </div>
+        
+      </div>
+      
+    </div>
+    <div class="half away-half">
+      
+      <div class="row">
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+      </div>
+      
+      <div class="row">
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+      </div>
+      
+      <div class="row">
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+      </div>
+      
+      <div class="row">
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+        <div class="player away tbc">
+          <div class="badge">
+            
+            <span class="number">—</span>
+          </div>
+          <div class="name">—</div>
+          <div class="meta">— · —</div>
+          
+        </div>
+        
+      </div>
+      
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>BRAZIL — Bench</h3>
+      <div class="bench-list">
+        
+        <div class="bench-item"><span class="num">16</span><span class="nm">Alisson (GK2)</span><span class="ps">G</span></div>
+        
+        <div class="bench-item"><span class="num">—</span><span class="nm">+ rest of bench from build_squad_db.py cache</span><span class="ps"></span></div>
+        
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Notable Stats</h3>
+      
+      <div class="notable-item">
+        <span class="num">25</span>
+        <div class="txt"><b>I. THIAGO</b><span>22 goals (38 apps) for Brentford — 2nd, Premier League scoring 2025/26</span></div>
+      </div>
+      
+    </div>
+
+    <div class="panel">
+      <h3>MOROCCO — Bench</h3>
+      <div class="bench-list">
+        
+        <div class="bench-item"><span class="num">—</span><span class="nm">Lineup loads ~60 min pre-kickoff</span><span class="ps"></span></div>
+        
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
