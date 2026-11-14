@@ -325,7 +325,8 @@
   pin.addEventListener("wheel", function (e) {
     if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
     e.preventDefault(); // ponytail: endless loop, so the wheel always captures; scroll the page with the pointer outside the section
-    W.pos += e.deltaY / 160;
+    // ponytail: target may lead the visible position by at most 1.5 cards, so fast flicks still pass through every entry
+    W.pos = Math.max(W.cur - 1.5, Math.min(W.cur + 1.5, W.pos + Math.max(-0.5, Math.min(0.5, e.deltaY / 160))));
     kick();
   }, { passive: false });
 

@@ -1222,3 +1222,4 @@ main { position: relative; z-index: 1; }
   .cursor-preview { width: 460px; }
 }
 @media (hover: hover) { .row:hover { transform: perspective(700px) translateZ(80px) scale(1.02); } }
+@media (hover: hover) { .cursor-preview { width: 580px; } }
