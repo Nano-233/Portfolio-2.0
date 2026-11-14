@@ -19,7 +19,7 @@ window.PORTFOLIO = {
     { src: "media/appraiser.jpg", type: "image", p: "the-appraiser", label: "The Appraiser — first wall", note: "Playable · browser" },
     { src: "media/broadcast.jpg", type: "image", p: "broadcast", label: "Broadcast — studio", note: "Fastify · WebRTC" },
     { src: "media/travel-cv.jpg", type: "image", p: "travel-cv", label: "Travel-CV — predictions", note: "Faster R-CNN" },
-    { src: "media/worldguessr.jpg", type: "image", p: "worldguessr-fork", label: "WorldGuessr Fork: Hide and Seek", note: "Hide and Seek · hiding phase" },
+    { src: "media/worldguessr.jpg", type: "image", p: "worldguessr-fork", label: "WorldGuessr: Hide and Seek", note: "Hide and Seek · hiding phase" },
     { src: "media/huddle.jpg", type: "image", p: "huddle", label: "Huddle — web preview", note: "Team project" }
   ],
 
@@ -43,12 +43,12 @@ window.PORTFOLIO = {
     },
     {
       id: "worldguessr-fork",
-      title: "WorldGuessr Fork",
+      title: "WorldGuessr: Hide and Seek",
       category: "games",
       year: "2026",
       status: "public",
       commits: null,
-      tagline: "Hide and Seek multiplayer on an open-source GeoGuessr clone",
+      tagline: "A new multiplayer mode for an open-source GeoGuessr clone",
       stack: ["Next.js", "Node.js", "WebSockets", "MongoDB", "Redis"],
       summary: "A fork of the open-source WorldGuessr that adds a Hide and Seek multiplayer mode and reworks the API and deployment config so the whole stack runs on free hosting.",
       detail: "Hide and Seek turns the game around: everyone first drops a pin on a hiding spot, then the group takes turns seeking each hider's location in Street View. It adds a new server game state machine (hiding, get ready, guess, end) with configurable hide and seek timers and cycle counts, hidden-location handling so spots never leak to other clients, a hiding-phase UI, and party settings for the new mode. Alongside it: the API folder split into a dedicated server API, a hardened client config that accepts bare hosts or full URLs for the API and WebSocket endpoints, Google login fixes, and a step-by-step guide for deploying the frontend on Vercel and the backend services on Railway.",
