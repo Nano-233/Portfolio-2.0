@@ -1215,3 +1215,9 @@ main { position: relative; z-index: 1; }
 }
 .wheel-scene { margin-top: calc(var(--cw, 300px) * -0.18); }
 .wheel-info { margin-top: calc(var(--cw, 300px) * 0.3); }
+@media (hover: hover) {
+  .row:hover { transform: perspective(700px) translateZ(80px) rotateX(4deg) scale(1.02); }
+  .rows:hover .row:not(:hover) { opacity: 1; transform: perspective(700px) translateZ(-24px); }
+  .row::before { box-shadow: 0 40px 60px -20px rgba(0,0,0,0.95), 0 0 0 1px var(--rule-strong); }
+  .cursor-preview { width: 460px; }
+}
