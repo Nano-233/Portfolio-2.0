@@ -278,7 +278,7 @@
   var pin = $("wheel-pin"), wheel = $("wheel");
   var W = { list: data.plates, cards: [], step: 0, cur: 0, target: 0, active: -1, R: 0, raf: 0 };
 
-  function cardW() { return Math.max(240, Math.min(560, window.innerWidth * 0.38)); }
+  function cardW() { return Math.max(240, Math.min(760, window.innerWidth * 0.31)); }
 
   function buildGallery() {
     var n = W.list.length, cw = cardW();
@@ -311,7 +311,7 @@
   }
 
   function sizePin() {
-    pin.style.height = (window.innerHeight + (W.list.length - 1) * window.innerHeight * 0.34) + "px";
+    pin.style.height = (window.innerHeight + (W.list.length - 1) * window.innerHeight * 0.16) + "px";
   }
 
   function pinSpan() { return pin.offsetHeight - window.innerHeight; }
@@ -333,7 +333,8 @@
     W.cards.forEach(function (c, i) {
       var d = Math.abs(i - W.cur);
       d = Math.min(d, n - d);
-      c.el.style.transform = "rotateY(" + (i * W.step) + "deg) translateZ(" + (W.R + Math.max(0, 1 - d) * W.R * 0.32).toFixed(1) + "px)";
+      var near = Math.max(0, 1 - d);
+      c.el.style.transform = "rotateY(" + (i * W.step) + "deg) translateZ(" + (W.R + near * W.R * 0.3).toFixed(1) + "px) scale(" + (0.7 + 0.3 * near).toFixed(3) + ")";
       c.el.style.opacity = Math.max(0, 1 - d / 4).toFixed(2);
       c.el.style.pointerEvents = d < 3 ? "auto" : "none";
       c.el.classList.toggle("is-active", i === act);

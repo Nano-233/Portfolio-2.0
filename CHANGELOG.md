@@ -48,3 +48,7 @@ Revert: `git switch main`. The earlier split idea lives on `exp-stage`.
 - **Index is the plain table again** (rows, filters, hover preview, scramble), same as `main`.
 - **The 3D wheel now lives in "Take a look"** and replaces the sideways strip: it spins from page scroll, the front card is pushed toward you (about a third bigger), neighbours sit almost touching so there is far less empty space, and title + caption stay below. Video plates play when in front. Click a side card to spin to it; arrow keys step.
 - Removed: the wheel-over-index, detail zoom-from-card, strip skew/drag code.
+
+## Wheel sizing pass
+- Pin shortened (0.16 vh per card), front card ~800px wide at 1920 (scale push 0.3), sides scale 0.7, scene fills sticky area and is lifted 10vh to remove the gap above/below.
+

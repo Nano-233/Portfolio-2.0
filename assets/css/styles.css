@@ -1183,3 +1183,11 @@ main { position: relative; z-index: 1; }
 .wheel-title { font-size: clamp(1.8rem, 4.6vw, 3.6rem); }
 .wheel-tag { margin-bottom: 0; }
 @media (max-width: 640px) { .wheel-scene { height: 54vh; } }.wheel-scene { height: 62vh; } .wheel-info { margin-top: 1.6rem; }
+.wheel-scene { height: 66vh; }
+.gallery { padding-top: 3.5rem; }
+.gallery-label { margin-bottom: 0; }
+.wheel-sticky { padding-top: 3rem; }
+.wheel-scene { flex: 1; height: auto; min-height: 0; perspective: 1500px; }
+.wheel-info { padding-bottom: 1.2rem; margin-top: 0; }
+.wheel-scene { margin-top: -14vh; }
+.wheel-scene { margin-top: 0; transform: translateY(-10vh); }
