@@ -278,7 +278,7 @@
   var pin = $("wheel-pin"), wheel = $("wheel");
   var W = { list: data.plates, cards: [], step: 0, cur: 0, target: 0, active: -1, R: 0, raf: 0 };
 
-  function cardW() { return Math.max(240, Math.min(760, window.innerWidth * 0.31)); }
+  function cardW() { return Math.max(240, Math.min(760, window.innerWidth * 0.31, window.innerHeight * 0.6)); }
 
   function buildGallery() {
     var n = W.list.length, cw = cardW();
@@ -311,7 +311,7 @@
   }
 
   function sizePin() {
-    pin.style.height = (window.innerHeight + (W.list.length - 1) * window.innerHeight * 0.16) + "px";
+    pin.style.height = (window.innerHeight + (W.list.length - 1) * window.innerHeight * 0.1) + "px";
   }
 
   function pinSpan() { return pin.offsetHeight - window.innerHeight; }

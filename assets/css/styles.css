@@ -1191,3 +1191,6 @@ main { position: relative; z-index: 1; }
 .wheel-info { padding-bottom: 1.2rem; margin-top: 0; }
 .wheel-scene { margin-top: -14vh; }
 .wheel-scene { margin-top: 0; transform: translateY(-10vh); }
+/* final wheel layout: content starts under the header, no centering gap */
+.wheel-sticky { justify-content: flex-start; padding-top: 4.5rem; }
+.wheel-scene { flex: none; height: 60vh; transform: none; margin: 0; }
