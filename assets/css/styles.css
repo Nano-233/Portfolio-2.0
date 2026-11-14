@@ -1148,3 +1148,9 @@ main { position: relative; z-index: 1; }
   .hero-name .line > em { transform: none; }
   .cursor { display: none !important; }
 }
+
+/* ---------- flair ---------- */
+.hero-name .ltr { display: inline-block; transition: transform 0.45s var(--ease); }
+.hero-name.is-settled .line { overflow: visible; }
+.plate { transform: skewX(var(--skew, 0deg)); transform-origin: 50% 100%; }
+.row-title { min-width: 0; font-variant-ligatures: none; }

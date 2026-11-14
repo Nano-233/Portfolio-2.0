@@ -24,3 +24,12 @@ Every project now has media except EchoForge and st-tg-bridge (nothing visual ex
 - **TRLP removed.** The code is `tylo-git/auto-trip-planner-xiaohongshu` (not in Nano-233, local copy has no git history), so it is not Harbour's work. Entry, strip plate and media deleted.
 - **Cursor:** the system cursor is hidden on the whole page (fine pointers only, not reduced-motion) and the custom dot is the only cursor. It swells over links/rows and more over the strip. Raised above modals so it never disappears.
 - **Take a look:** the wheel scrolls the strip sideways again; at either end it hands the wheel back to the page, so leaving the strip never gets stuck.
+
+## 2026-11-14 (dynamic pass)
+- BioCore ARG live link -> `https://biocore-inky.vercel.app/leak`.
+- Research (Awwwards, Hoverstate): the strongest portfolios win on micro-interactions (Rauno, Emil) or being playable (Bruno Simon). Added, with no libraries:
+  - hero name letters shy away from the cursor
+  - index titles scramble then resolve on hover
+  - strip skews with its scroll/drag velocity
+  - live Singapore clock in the hero facts
+- **Cursor jitter fixed:** the dot used to ride the same lagging container as the preview, so it trailed the pointer and snapped when the preview flipped at a screen edge. The dot now sits exactly on the pointer; only the preview eases.

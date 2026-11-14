@@ -82,7 +82,7 @@ window.PORTFOLIO = {
       summary: "A serverless bio-horror alternate-reality game in which a corporate website slowly stops pretending to be a corporate website.",
       detail: "Rather than a REST API, a single endpoint takes JSON commands that a state-machine router dispatches by the player's current location — so puzzles hide inside pastebins, PDFs, recovery flows and a chat widget instead of obvious menus. A second Python microservice implements a small string-manipulation puzzle language (LYSE, LIGATE, EXPRESS, CATALYZE). Sessions live in DynamoDB, and a BroadcastChannel policy enforces one tab at a time.",
       media: { type: "image", src: "media/live-biocore.jpg", alt: "BioCore ARG landing page, a green corporate biotech facade" },
-      links: [{ label: "Live site", href: "https://biocore-inky.vercel.app" }]
+      links: [{ label: "Live site", href: "https://biocore-inky.vercel.app/leak" }]
     },
     {
       id: "echoforge",

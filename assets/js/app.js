@@ -136,6 +136,7 @@
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetail(p); }
       });
       attachPreview(row, p);
+      if (finePointer) row.addEventListener("mouseenter", function () { if (!state.q) scramble(title, p.title); });
 
       rowsEl.appendChild(row);
     });
@@ -202,7 +203,7 @@
   var preview = $("cursor-preview");
   var previewVideo = preview.querySelector("video");
   var previewImage = preview.querySelector("img");
-  var mouse = { x: -200, y: -200, cx: -200, cy: -200 };
+  var mouse = { x: -200, y: -200, cx: 0, cy: 0 };
 
   function attachPreview(node, project) {
     if (!finePointer || !project.media) return;
@@ -252,15 +253,15 @@
 
     // keep the preview inside the viewport
     function tick() {
-      mouse.cx += (mouse.x - mouse.cx) * 0.22;
-      mouse.cy += (mouse.y - mouse.cy) * 0.22;
-
+      // the dot sits exactly on the pointer; only the preview eases, and flips at the viewport edge
       var w = 260, pad = 24;
-      var px = mouse.cx, py = mouse.cy;
-      if (px + pad + w > window.innerWidth) px = mouse.cx - w - pad;
-      if (py + pad + w * 0.62 > window.innerHeight) py = mouse.cy - pad - w * 0.62;
+      var tx = mouse.x + pad + w > window.innerWidth ? -w - pad * 2 : 0;
+      var ty = mouse.y + pad + w * 0.62 > window.innerHeight ? -w * 0.62 - pad * 2 : 0;
+      mouse.cx += (tx - mouse.cx) * 0.2;
+      mouse.cy += (ty - mouse.cy) * 0.2;
 
-      cursor.style.transform = "translate3d(" + px.toFixed(1) + "px," + py.toFixed(1) + "px,0)";
+      cursor.style.transform = "translate3d(" + mouse.x + "px," + mouse.y + "px,0)";
+      preview.style.translate = mouse.cx.toFixed(1) + "px " + mouse.cy.toFixed(1) + "px";
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
@@ -738,6 +739,87 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * flair: live clock, letters that shy away from the cursor,
+   * scrambling row titles, strip that skews with its own velocity
+   * ------------------------------------------------------------------ */
+
+  var GLYPHS = "!<>-_/[]{}=+*^?#";
+
+  function scramble(node, final) {
+    if (reduce || node.dataset.busy) return;
+    node.dataset.busy = "1";
+    var n = 0, steps = 14;
+    var timer = setInterval(function () {
+      n++;
+      node.textContent = final.split("").map(function (c, i) {
+        return c === " " || i < (n / steps) * final.length ? c : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      }).join("");
+      if (n >= steps) {
+        clearInterval(timer);
+        delete node.dataset.busy;
+        mark(node, final, state.q);
+      }
+    }, 28);
+  }
+
+  function setupFlair() {
+    var clock = $("clock");
+    function tick() {
+      clock.textContent = new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit", minute: "2-digit", timeZone: "Asia/Singapore"
+      }).format(new Date()) + " SGT";
+    }
+    tick();
+    setInterval(tick, 15000);
+
+    if (reduce) return;
+
+    // strip skew from scroll velocity
+    var vp = $("gallery-viewport"), track = $("gallery-track");
+    var last = vp.scrollLeft, skew = 0;
+    (function loop() {
+      var d = vp.scrollLeft - last;
+      last = vp.scrollLeft;
+      skew += (Math.max(-8, Math.min(8, d * -0.25)) - skew) * 0.18;
+      track.style.setProperty("--skew", skew.toFixed(2) + "deg");
+      requestAnimationFrame(loop);
+    })();
+
+    if (!finePointer) return;
+
+    // split the name into letters; once the reveal is over, let them leave the mask
+    var name = document.querySelector(".hero-name");
+    name.setAttribute("aria-label", "Harbour Wang");
+    var letters = [];
+    name.querySelectorAll(".line > span").forEach(function (w) {
+      var txt = w.textContent;
+      w.textContent = "";
+      txt.split("").forEach(function (c) {
+        var l = el("span", "ltr", c);
+        w.appendChild(l);
+        letters.push(l);
+      });
+    });
+    setTimeout(function () { name.classList.add("is-settled"); }, 1600);
+
+    var pending = false, mx = -999, my = -999;
+    window.addEventListener("pointermove", function (e) {
+      mx = e.clientX; my = e.clientY;
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(function () {
+        pending = false;
+        letters.forEach(function (l) {
+          var r = l.getBoundingClientRect();
+          var dx = r.left + r.width / 2 - mx, dy = r.top + r.height / 2 - my;
+          var dist = Math.hypot(dx, dy) || 1, R = 260;
+          var f = dist < R ? Math.pow(1 - dist / R, 2) * 46 : 0;
+          l.style.transform = f ? "translate(" + (dx / dist * f).toFixed(1) + "px," + (dy / dist * f).toFixed(1) + "px)" : "";
+        });
+      });
+    }, { passive: true });
+  }
+  /* ------------------------------------------------------------------ *
    * boot
    * ------------------------------------------------------------------ */
 
@@ -751,6 +833,7 @@
     setupScroll();
     setupCursor();
     setupReveals();
+    setupFlair();
 
     document.body.classList.remove("is-loading");
     requestAnimationFrame(function () {
