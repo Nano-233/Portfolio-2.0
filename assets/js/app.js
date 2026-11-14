@@ -204,30 +204,45 @@
   var previewVideo = preview.querySelector("video");
   var previewImage = preview.querySelector("img");
   var mouse = { x: -200, y: -200, cx: 0, cy: 0 };
+  var previewTok = 0, warmCache = {};
+  function warm(src) { if (!warmCache[src]) { warmCache[src] = new Image(); warmCache[src].src = src; } return warmCache[src]; }
+  // fetch every preview image/poster once the page has settled, so first hovers are instant
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      data.projects.forEach(function (p) { if (p.media) warm(p.media.type === "video" ? p.media.poster : p.media.src); });
+    }, 300);
+  });
 
   function attachPreview(node, project) {
     if (!finePointer || !project.media) return;
 
     node.addEventListener("hotenter", function () {
-      var m = project.media;
+      var m = project.media, tok = ++previewTok;
       previewVideo.classList.remove("is-shown");
       previewImage.classList.remove("is-shown");
       previewVideo.pause();
+      preview.classList.add("is-visible");
+      document.body.classList.add("cursor-active");
 
       if (m.type === "video") {
+        // poster first, so the previous entry's frame never lingers while the clip loads
+        previewVideo.poster = m.poster || "";
         if (previewVideo.getAttribute("src") !== m.src) previewVideo.src = m.src;
         previewVideo.muted = true;
         previewVideo.play().catch(function () {});
         previewVideo.classList.add("is-shown");
       } else {
-        previewImage.src = m.src;
-        previewImage.alt = "";
-        previewImage.classList.add("is-shown");
+        // only reveal the image once it is decoded; ignore if the pointer already moved on
+        var im = warm(m.src);
+        var show = function () {
+          if (tok !== previewTok) return;
+          previewImage.src = m.src;
+          previewImage.alt = "";
+          previewImage.classList.add("is-shown");
+        };
+        if (im.complete && im.naturalWidth) show(); else im.addEventListener("load", show, { once: true });
       }
-      preview.classList.add("is-visible");
-      document.body.classList.add("cursor-active");
     });
-
     node.addEventListener("hotleave", function () {
       preview.classList.remove("is-visible");
       document.body.classList.remove("cursor-active");
@@ -259,9 +274,11 @@
     window.addEventListener("pointermove", function (e) {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
-      syncHot();
+      syncHotSoon();
     }, { passive: true });
-    window.addEventListener("scroll", syncHot, { passive: true });
+    var hotRaf = 0;
+    function syncHotSoon() { if (!hotRaf) hotRaf = requestAnimationFrame(function () { hotRaf = 0; syncHot(); }); }
+    window.addEventListener("scroll", syncHotSoon, { passive: true });
 
     // keep the preview inside the viewport
     function tick() {

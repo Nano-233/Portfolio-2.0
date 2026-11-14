@@ -1223,3 +1223,4 @@ main { position: relative; z-index: 1; }
 }
 @media (hover: hover) { .row.is-hot { transform: perspective(700px) translateZ(80px) scale(1.02); } }
 @media (hover: hover) { .cursor-preview { width: 580px; } }
+.rows.has-hot .row:not(.is-hot) { transform: none; opacity: 1; }
