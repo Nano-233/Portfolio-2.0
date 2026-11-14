@@ -646,10 +646,10 @@ main { position: relative; z-index: 1; }
 }
 
 @media (hover: hover) {
-  .row:hover::before { transform: scaleY(1); }
-  .row:hover .row-title { color: var(--accent-ink); }
-  .row:hover .row-title { transform: translateX(0.45rem); }
-  .row:hover .row-arrow { opacity: 1; transform: none; }
+  .row.is-hot::before { transform: scaleY(1); }
+  .row.is-hot .row-title { color: var(--accent-ink); }
+  .row.is-hot .row-title { transform: translateX(0.45rem); }
+  .row.is-hot .row-arrow { opacity: 1; transform: none; }
 }
 
 .row:focus-visible {
@@ -1210,16 +1210,16 @@ main { position: relative; z-index: 1; }
 @media (hover: hover) {
   .row { transition: color 0.3s var(--ease), transform 0.4s var(--ease), opacity 0.3s; }
   .row::before { box-shadow: 0 24px 40px -18px rgba(0,0,0,0.9), 0 0 0 1px var(--rule-strong); }
-  .row:hover { transform: perspective(900px) translateZ(34px) rotateX(2.5deg); z-index: 2; }
-  .rows:hover .row:not(:hover) { opacity: 0.42; transform: perspective(900px) translateZ(-14px); }
+  .row.is-hot { transform: perspective(900px) translateZ(34px) rotateX(2.5deg); z-index: 2; }
+  .rows.has-hot .row:not(.is-hot) { opacity: 0.42; transform: perspective(900px) translateZ(-14px); }
 }
 .wheel-scene { margin-top: calc(var(--cw, 300px) * -0.18); }
 .wheel-info { margin-top: calc(var(--cw, 300px) * 0.3); }
 @media (hover: hover) {
-  .row:hover { transform: perspective(700px) translateZ(80px) rotateX(4deg) scale(1.02); }
-  .rows:hover .row:not(:hover) { opacity: 1; transform: perspective(700px) translateZ(-24px); }
+  .row.is-hot { transform: perspective(700px) translateZ(80px) rotateX(4deg) scale(1.02); }
+  .rows.has-hot .row:not(.is-hot) { opacity: 1; transform: perspective(700px) translateZ(-24px); }
   .row::before { box-shadow: 0 40px 60px -20px rgba(0,0,0,0.95), 0 0 0 1px var(--rule-strong); }
   .cursor-preview { width: 460px; }
 }
-@media (hover: hover) { .row:hover { transform: perspective(700px) translateZ(80px) scale(1.02); } }
+@media (hover: hover) { .row.is-hot { transform: perspective(700px) translateZ(80px) scale(1.02); } }
 @media (hover: hover) { .cursor-preview { width: 580px; } }

@@ -136,7 +136,7 @@
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetail(p); }
       });
       attachPreview(row, p);
-      if (finePointer) row.addEventListener("mouseenter", function () { if (!state.q) scramble(title, p.title); });
+      if (finePointer) row.addEventListener("hotenter", function () { if (!state.q) scramble(title, p.title); });
 
       rowsEl.appendChild(row);
     });
@@ -208,7 +208,7 @@
   function attachPreview(node, project) {
     if (!finePointer || !project.media) return;
 
-    node.addEventListener("mouseenter", function () {
+    node.addEventListener("hotenter", function () {
       var m = project.media;
       previewVideo.classList.remove("is-shown");
       previewImage.classList.remove("is-shown");
@@ -228,7 +228,7 @@
       document.body.classList.add("cursor-active");
     });
 
-    node.addEventListener("mouseleave", function () {
+    node.addEventListener("hotleave", function () {
       preview.classList.remove("is-visible");
       document.body.classList.remove("cursor-active");
       previewVideo.pause();
@@ -246,15 +246,27 @@
       document.body.classList.toggle("cursor-drag", !!(t && t.closest(".gallery-viewport")));
     });
 
+    // ponytail: hover is computed from the pointer position (not :hover), so it also updates while scrolling and never skips a row
+    var hot = null, rowsEl = $("rows");
+    function syncHot() {
+      var e = document.elementFromPoint(mouse.x, mouse.y), r = e && e.closest ? e.closest(".row") : null;
+      if (r === hot) return;
+      if (hot) { hot.classList.remove("is-hot"); hot.dispatchEvent(new Event("hotleave")); }
+      hot = r;
+      if (hot) { hot.classList.add("is-hot"); hot.dispatchEvent(new Event("hotenter")); }
+      rowsEl.classList.toggle("has-hot", !!hot);
+    }
     window.addEventListener("pointermove", function (e) {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
+      syncHot();
     }, { passive: true });
+    window.addEventListener("scroll", syncHot, { passive: true });
 
     // keep the preview inside the viewport
     function tick() {
       // the dot sits exactly on the pointer; only the preview eases, and flips at the viewport edge
-      var w = 260, pad = 24;
+      var w = 580, pad = 24;
       var tx = mouse.x + pad + w > window.innerWidth ? -w - pad * 2 : 0;
       var ty = mouse.y + pad + w * 0.62 > window.innerHeight ? -w * 0.62 - pad * 2 : 0;
       mouse.cx += (tx - mouse.cx) * 0.2;
