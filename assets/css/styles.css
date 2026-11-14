@@ -1202,3 +1202,4 @@ main { position: relative; z-index: 1; }
 .wheel-sticky { padding-top: calc(var(--cw, 300px) * 0.08); }
 .wheel-scene { height: calc(var(--cw, 300px) * 0.8); }
 .wheel-info { margin-top: calc(var(--cw, 300px) * 0.16); }
+.wheel-sticky { position: static; }

@@ -310,13 +310,11 @@
     spin(true);
   }
 
-  function sizePin() {
-    pin.style.height = ""; // measure the sticky box at its natural height
-    pin.style.height = (pin.firstElementChild.offsetHeight + (W.list.length - 1) * window.innerHeight * 0.1) + "px";
-  }
+  // ponytail: no pinning. The section is only as tall as its content; rotation follows it crossing the viewport (top at 90% -> bottom at 10%).
+  function sizePin() { pin.style.height = ""; }
 
-  function pinSpan() { return pin.offsetHeight - pin.firstElementChild.offsetHeight; }
-  function pinTop() { return pin.getBoundingClientRect().top + window.scrollY; }
+  function pinSpan() { return window.innerHeight * 0.8 + pin.offsetHeight; }
+  function pinTop() { return pin.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.9; }
 
   function scrollToCard(i) {
     window.scrollTo({ top: pinTop() + i / (W.list.length - 1) * pinSpan(), behavior: reduce ? "auto" : "smooth" });
