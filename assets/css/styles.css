@@ -1198,3 +1198,7 @@ main { position: relative; z-index: 1; }
 .wheel-sticky { height: auto; top: 3.5rem; padding-top: 0; justify-content: flex-start; }
 .wheel-scene { height: calc(var(--cw, 300px) * 1.02); }
 .wheel-info { margin-top: 1.2rem; padding-bottom: 0; }
+/* hug the wheel: room only for the front card's enlargement, text pushed clear below it */
+.wheel-sticky { padding-top: calc(var(--cw, 300px) * 0.08); }
+.wheel-scene { height: calc(var(--cw, 300px) * 0.8); }
+.wheel-info { margin-top: calc(var(--cw, 300px) * 0.16); }
