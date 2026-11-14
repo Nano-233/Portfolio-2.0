@@ -1206,3 +1206,10 @@ main { position: relative; z-index: 1; }
 .gallery { padding-top: 2rem; }
 .wheel-sticky { padding-top: 0; overflow: visible; }
 .wheel-scene { margin-top: calc(var(--cw, 300px) * -0.1); }
+/* 3D pop on hover: row lifts toward the viewer, panel gets depth, neighbours recede */
+@media (hover: hover) {
+  .row { transition: color 0.3s var(--ease), transform 0.4s var(--ease), opacity 0.3s; }
+  .row::before { box-shadow: 0 24px 40px -18px rgba(0,0,0,0.9), 0 0 0 1px var(--rule-strong); }
+  .row:hover { transform: perspective(900px) translateZ(34px) rotateX(2.5deg); z-index: 2; }
+  .rows:hover .row:not(:hover) { opacity: 0.42; transform: perspective(900px) translateZ(-14px); }
+}
