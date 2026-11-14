@@ -302,7 +302,11 @@
       frame.appendChild(media);
       card.appendChild(frame);
       card.appendChild(el("span", "card-num", String(i + 1).padStart(2, "0")));
-      card.addEventListener("click", function () { scrollToCard(i); });
+      card.addEventListener("click", function () {
+        if (i !== mod(Math.round(W.cur))) { scrollToCard(i); return; }
+        var proj = data.projects.filter(function (q) { return q.id === plate.p; })[0];
+        if (proj) openDetail(proj);
+      });
       wheel.appendChild(card);
       W.cards.push({ el: card, media: media, plate: plate, i: i });
     });
@@ -314,14 +318,14 @@
   function sizePin() { pin.style.height = ""; }
 
   function kick() { if (!W.raf) W.raf = requestAnimationFrame(function () { spin(false); }); }
-  function scrollToCard(i) { W.pos = i; kick(); }
+  function mod(k) { return ((k % W.list.length) + W.list.length) % W.list.length; }
+  // circular: go to card i by the shortest way round
+  function scrollToCard(i) { var n = W.list.length, r = Math.round(W.pos); W.pos = r + mod(i - r + n / 2 | 0) - (n / 2 | 0); kick(); }
 
   pin.addEventListener("wheel", function (e) {
     if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-    var last = W.list.length - 1, next = W.pos + e.deltaY / 160;
-    if ((e.deltaY < 0 && W.pos <= 0) || (e.deltaY > 0 && W.pos >= last)) return; // at an end: page scrolls
-    e.preventDefault();
-    W.pos = Math.max(0, Math.min(last, next));
+    e.preventDefault(); // ponytail: endless loop, so the wheel always captures; scroll the page with the pointer outside the section
+    W.pos += e.deltaY / 160;
     kick();
   }, { passive: false });
 
@@ -332,9 +336,9 @@
     else W.cur += (W.target - W.cur) * 0.14;
 
     wheel.style.transform = "translateZ(" + (-W.R) + "px) rotateX(-4deg) rotateY(" + (-W.cur * W.step) + "deg)";
-    var act = Math.round(W.cur);
+    var act = mod(Math.round(W.cur));
     W.cards.forEach(function (c, i) {
-      var d = Math.abs(i - W.cur);
+      var d = (((i - W.cur) % n) + n) % n;
       d = Math.min(d, n - d);
       var near = Math.max(0, 1 - d);
       c.el.style.transform = "rotateY(" + (i * W.step) + "deg) translateZ(" + (W.R + near * W.R * 0.3).toFixed(1) + "px) scale(" + (0.7 + 0.3 * near).toFixed(3) + ")";
@@ -707,7 +711,7 @@
       var wr = pin.getBoundingClientRect();
       if (wr.top < window.innerHeight * 0.5 && wr.bottom > window.innerHeight * 0.5) {
         e.preventDefault();
-        scrollToCard(Math.max(0, Math.min(W.list.length - 1, W.active + (e.key === "ArrowRight" ? 1 : -1))));
+        scrollToCard(mod(W.active + (e.key === "ArrowRight" ? 1 : -1)));
         return;
       }
     }

@@ -9,19 +9,19 @@ window.PORTFOLIO = {
 
   /* gallery plates: real captures, in narrative order */
   plates: [
-    { src: "media/kit-detector.mp4", type: "video", label: "Kit detector — live webcam", note: "YOLOv11s · 6 classes" },
-    { src: "media/live-speed-tarot.jpg", type: "image", label: "Speed Tarot — card view", note: "Next.js · live" },
-    { src: "media/kaleidoscope-fan.jpg", type: "image", label: "Kaleidoscope — fan feed", note: "Agent framework" },
-    { src: "media/pixel-stuck.mp4", type: "video", label: "Pixel Stuck — gameplay", note: "Pygame · Swap & Hook" },
-    { src: "media/kaleidoscope-analyst.jpg", type: "image", label: "Kaleidoscope — tactics board", note: "Analyst view" },
-    { src: "media/live-biocore.jpg", type: "image", label: "BioCore ARG — facade", note: "AWS CDK · level 1" },
-    { src: "media/kaleidoscope-recap.jpg", type: "image", label: "Kaleidoscope — full-time recap", note: "Generated report" },
-    { src: "media/live-pitchprobe.jpg", type: "image", label: "PitchProbe — query UI", note: "LangGraph · live" },
-    { src: "media/wuxia.mp4", type: "video", label: "Wuxia — trailer", note: "LLM narrates · engine decides" },
-    { src: "media/appraiser.jpg", type: "image", label: "The Appraiser — first wall", note: "Playable · browser" },
-    { src: "media/broadcast.jpg", type: "image", label: "Broadcast — studio", note: "Fastify · WebRTC" },
-    { src: "media/travel-cv.jpg", type: "image", label: "Travel-CV — predictions", note: "Faster R-CNN" },
-    { src: "media/huddle.jpg", type: "image", label: "Huddle — web preview", note: "Team project" }
+    { src: "media/kit-detector.mp4", type: "video", p: "kit-detector", label: "Kit detector — live webcam", note: "YOLOv11s · 6 classes" },
+    { src: "media/live-speed-tarot.jpg", type: "image", p: "speed-tarot", label: "Speed Tarot — card view", note: "Next.js · live" },
+    { src: "media/kaleidoscope-fan.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope — fan feed", note: "Agent framework" },
+    { src: "media/pixel-stuck.mp4", type: "video", p: "pixel-stuck", label: "Pixel Stuck — gameplay", note: "Pygame · Swap & Hook" },
+    { src: "media/kaleidoscope-analyst.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope — tactics board", note: "Analyst view" },
+    { src: "media/live-biocore.jpg", type: "image", p: "biolab-arg", label: "BioCore ARG — facade", note: "AWS CDK · level 1" },
+    { src: "media/kaleidoscope-recap.jpg", type: "image", p: "football-kaleidoscope", label: "Kaleidoscope — full-time recap", note: "Generated report" },
+    { src: "media/live-pitchprobe.jpg", type: "image", p: "pitchprobe", label: "PitchProbe — query UI", note: "LangGraph · live" },
+    { src: "media/wuxia.mp4", type: "video", p: "wuxia", label: "Wuxia — trailer", note: "LLM narrates · engine decides" },
+    { src: "media/appraiser.jpg", type: "image", p: "the-appraiser", label: "The Appraiser — first wall", note: "Playable · browser" },
+    { src: "media/broadcast.jpg", type: "image", p: "broadcast", label: "Broadcast — studio", note: "Fastify · WebRTC" },
+    { src: "media/travel-cv.jpg", type: "image", p: "travel-cv", label: "Travel-CV — predictions", note: "Faster R-CNN" },
+    { src: "media/huddle.jpg", type: "image", p: "huddle", label: "Huddle — web preview", note: "Team project" }
   ],
 
   projects: [
