@@ -288,7 +288,7 @@
     W.step = 360 / n;
     // ponytail: radius keeps neighbours nearly touching; the front card is pushed toward the viewer in spin()
     W.R = Math.max(cw * 1.2, (cw * 1.04 / 2) / Math.tan(Math.PI / n));
-    wheel.style.setProperty("--cw", cw + "px");
+    pin.style.setProperty("--cw", cw + "px");
 
     W.list.forEach(function (plate, i) {
       var card = el("button", "card");
@@ -311,10 +311,11 @@
   }
 
   function sizePin() {
-    pin.style.height = (window.innerHeight + (W.list.length - 1) * window.innerHeight * 0.1) + "px";
+    pin.style.height = ""; // measure the sticky box at its natural height
+    pin.style.height = (pin.firstElementChild.offsetHeight + (W.list.length - 1) * window.innerHeight * 0.1) + "px";
   }
 
-  function pinSpan() { return pin.offsetHeight - window.innerHeight; }
+  function pinSpan() { return pin.offsetHeight - pin.firstElementChild.offsetHeight; }
   function pinTop() { return pin.getBoundingClientRect().top + window.scrollY; }
 
   function scrollToCard(i) {

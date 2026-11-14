@@ -1194,3 +1194,7 @@ main { position: relative; z-index: 1; }
 /* final wheel layout: content starts under the header, no centering gap */
 .wheel-sticky { justify-content: flex-start; padding-top: 4.5rem; }
 .wheel-scene { flex: none; height: 60vh; transform: none; margin: 0; }
+/* sticky box hugs its content; scene scales with the card so nothing overlaps the title */
+.wheel-sticky { height: auto; top: 3.5rem; padding-top: 0; justify-content: flex-start; }
+.wheel-scene { height: calc(var(--cw, 300px) * 1.02); }
+.wheel-info { margin-top: 1.2rem; padding-bottom: 0; }
