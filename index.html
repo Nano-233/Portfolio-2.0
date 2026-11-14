@@ -80,18 +80,7 @@
         <div class="cats" id="cats" role="group" aria-label="Filter by discipline"></div>
       </div>
 
-      <div class="wheel-pin" id="wheel-pin">
-        <div class="wheel-sticky">
-          <div class="wheel-scene"><div class="wheel" id="wheel"></div></div>
-          <div class="wheel-info" aria-live="polite">
-            <span class="wheel-num" id="wheel-num"></span>
-            <h3 class="wheel-title" id="wheel-title"></h3>
-            <p class="wheel-tag" id="wheel-tag"></p>
-            <button class="textbtn" id="wheel-open" type="button">Open ↗</button>
-          </div>
-          <p class="wheel-hint" aria-hidden="true">Scroll to spin</p>
-        </div>
-      </div>
+      <ol class="rows" id="rows"></ol>
       <p class="no-results" id="no-results" hidden>No works match that. <button class="inlinebtn" type="button" id="reset">Reset</button></p>
     </section>
 
@@ -99,16 +88,16 @@
       <div class="section-label gallery-label">
         <span class="num">02</span>
         <h2 id="gallery-title">Take a look</h2>
-        <span class="aside">Drag, or scroll sideways</span>
+        <span class="aside">Scroll to spin</span>
       </div>
-      <div class="gallery-viewport" id="gallery-viewport">
-        <div class="gallery-track" id="gallery-track"></div>
-      </div>
-      <div class="gallery-foot">
-        <div class="gallery-scrollbar" aria-hidden="true"><span id="gallery-thumb"></span></div>
-        <div class="gallery-arrows">
-          <button class="textbtn" id="gallery-prev" type="button" aria-label="Previous images">←</button>
-          <button class="textbtn" id="gallery-next" type="button" aria-label="Next images">→</button>
+      <div class="wheel-pin" id="wheel-pin">
+        <div class="wheel-sticky">
+          <div class="wheel-scene"><div class="wheel" id="wheel"></div></div>
+          <div class="wheel-info" aria-live="polite">
+            <span class="wheel-num" id="wheel-num"></span>
+            <h3 class="wheel-title" id="wheel-title"></h3>
+            <p class="wheel-tag" id="wheel-tag"></p>
+          </div>
         </div>
       </div>
     </section>

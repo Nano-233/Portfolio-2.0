@@ -43,3 +43,8 @@ Revert: `git switch main`. The earlier split idea lives on `exp-stage`.
 - The hero name **recedes** (drifts down, shrinks, fades) as you scroll toward the wheel.
 - **Arrow keys** step the wheel one project at a time while it is on screen.
 - Dev gotcha: the browser caches `app.js`; hard reload after edits.
+
+## exp-wheel, third pass (current layout)
+- **Index is the plain table again** (rows, filters, hover preview, scramble), same as `main`.
+- **The 3D wheel now lives in "Take a look"** and replaces the sideways strip: it spins from page scroll, the front card is pushed toward you (about a third bigger), neighbours sit almost touching so there is far less empty space, and title + caption stay below. Video plates play when in front. Click a side card to spin to it; arrow keys step.
+- Removed: the wheel-over-index, detail zoom-from-card, strip skew/drag code.

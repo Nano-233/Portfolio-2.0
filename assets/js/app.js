@@ -100,125 +100,55 @@
    * index rows
    * ------------------------------------------------------------------ */
 
+  var rowsEl = $("rows");
   var countEl = $("index-count");
   var noResults = $("no-results");
 
-  /* ---- 3D wheel: page scroll spins a cylinder of project cards ---- */
-  var pin = $("wheel-pin"), wheel = $("wheel");
-  var W = { list: [], cards: [], step: 0, cur: 0, target: 0, active: -1, R: 0, raf: 0 };
-
-  function cardW() { return Math.max(220, Math.min(420, window.innerWidth * 0.3)); }
-
   function buildRows() {
     var list = filterList();
-    W.list = list;
-    wheel.textContent = "";
-    W.cards = [];
-    W.active = -1;
-
-    var n = list.length;
-    W.step = n ? 360 / n : 0;
-    var cw = cardW();
-    W.R = n > 1 ? Math.max(cw * 1.5, (cw * 1.18 / 2) / Math.tan(Math.PI / n)) : 0;
-    wheel.style.setProperty("--cw", cw + "px");
+    rowsEl.textContent = "";
 
     list.forEach(function (p, i) {
-      var card = el("button", "card");
-      card.type = "button";
-      card.setAttribute("aria-label", "Open " + p.title);
-      card.style.transform = "rotateY(" + (i * W.step) + "deg) translateZ(" + W.R + "px)";
+      var row = el("li", "row");
+      row.tabIndex = 0;
+      row.setAttribute("role", "button");
+      row.setAttribute("aria-label", "Open " + p.title);
+      row.dataset.id = p.id;
 
-      var frame = el("span", "card-frame");
-      var m = p.media;
-      var src = m && (m.type === "video" ? m.poster : m.src);
-      if (src) {
-        var img = document.createElement("img");
-        img.src = src; img.alt = ""; img.loading = "lazy"; img.draggable = false;
-        frame.appendChild(img);
-      } else {
-        frame.appendChild(el("span", "card-empty", p.title));
-      }
-      card.appendChild(frame);
-      card.appendChild(el("span", "card-num", String(i + 1).padStart(2, "0")));
+      row.appendChild(el("span", "row-num", String(i + 1).padStart(2, "0")));
 
-      card.addEventListener("click", function () {
-        if (i === W.active) openDetail(p); else scrollToCard(i);
+      var main = el("div", "row-main");
+      var title = el("span", "row-title");
+      mark(title, p.title, state.q);
+      main.appendChild(title);
+      main.appendChild(el("span", "row-sub", p.tagline));
+      row.appendChild(main);
+
+      var side = el("div", "row-side");
+      side.appendChild(el("span", "row-cat", CAT[p.category] || p.category));
+      side.appendChild(el("span", "row-year", p.year));
+      var arrow = el("span", "row-arrow", "↗");
+      side.appendChild(arrow);
+      row.appendChild(side);
+
+      row.addEventListener("click", function () { openDetail(p); });
+      row.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetail(p); }
       });
-      wheel.appendChild(card);
-      W.cards.push({ el: card, frame: frame, p: p });
+      attachPreview(row, p);
+      if (finePointer) row.addEventListener("mouseenter", function () { if (!state.q) scramble(title, p.title); });
+
+      rowsEl.appendChild(row);
     });
 
-    countEl.textContent = n === data.projects.length
-      ? n + " works"
-      : n + " / " + data.projects.length;
+    countEl.textContent = list.length === data.projects.length
+      ? data.projects.length + " works"
+      : list.length + " / " + data.projects.length;
 
-    noResults.hidden = n !== 0;
-    pin.hidden = n === 0;
-    sizePin();
-    spin(true);
+    noResults.hidden = list.length !== 0;
+    rowsEl.hidden = list.length === 0;
   }
 
-  function sizePin() {
-    var n = W.list.length;
-    pin.style.height = n ? (window.innerHeight + Math.max(0, n - 1) * window.innerHeight * 0.38) + "px" : "0";
-  }
-
-  function pinProgress() {
-    var top = pin.getBoundingClientRect().top + window.scrollY;
-    var span = pin.offsetHeight - window.innerHeight;
-    return span > 0 ? Math.max(0, Math.min(1, (window.scrollY - top) / span)) : 0;
-  }
-
-  function scrollToCard(i) {
-    var top = pin.getBoundingClientRect().top + window.scrollY;
-    var span = pin.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: top + (W.list.length > 1 ? i / (W.list.length - 1) : 0) * span, behavior: reduce ? "auto" : "smooth" });
-  }
-
-  function spin(snap) {
-    var n = W.list.length;
-    if (!n) return;
-    W.target = pinProgress() * (n - 1);
-    if (snap || reduce) W.cur = W.target;
-    else W.cur += (W.target - W.cur) * 0.14;
-    var ang = W.cur * W.step;
-    wheel.style.transform = "translateZ(" + (-W.R) + "px) rotateX(-5deg) rotateY(" + (-ang) + "deg)";
-
-    var act = Math.round(W.cur);
-    W.cards.forEach(function (c, i) {
-      var d = Math.abs(i - W.cur);
-      d = Math.min(d, n - d);
-      var o = Math.max(0, 1 - d / 4.5);
-      c.el.style.opacity = o.toFixed(2);
-      c.el.style.pointerEvents = d < 3 ? "auto" : "none";
-      c.el.classList.toggle("is-active", i === act);
-    });
-    if (act !== W.active) setActive(act);
-    if (Math.abs(W.target - W.cur) > 0.002) W.raf = requestAnimationFrame(function () { spin(false); });
-    else W.raf = 0;
-  }
-
-  function setActive(i) {
-    var c = W.cards[i];
-    if (!c) return;
-    // only the front card plays video
-    W.cards.forEach(function (o) { var v = o.frame.querySelector("video"); if (v) { v.pause(); v.remove(); } });
-    var m = c.p.media;
-    if (m && m.type === "video") {
-      var v = document.createElement("video");
-      v.src = m.src; v.muted = true; v.loop = true; v.playsInline = true;
-      c.frame.appendChild(v);
-      v.play().catch(function () {});
-    }
-    W.active = i;
-    $("wheel-num").textContent = String(i + 1).padStart(2, "0") + " / " + String(W.list.length).padStart(2, "0");
-    $("wheel-title").textContent = c.p.title;
-    $("wheel-tag").textContent = c.p.tagline + "  ·  " + (CAT[c.p.category] || "") + " · " + c.p.year;
-  }
-
-  $("wheel-open").addEventListener("click", function () { if (W.list[W.active]) openDetail(W.list[W.active]); });
-  window.addEventListener("scroll", function () { if (!W.raf) W.raf = requestAnimationFrame(function () { spin(false); }); }, { passive: true });
-  window.addEventListener("resize", function () { buildRows(); });
   function buildCats() {
     var wrap = $("cats");
     data.categories.forEach(function (c) {
@@ -341,88 +271,91 @@
    * gallery rail
    * ------------------------------------------------------------------ */
 
+  /* ------------------------------------------------------------------ *
+   * "Take a look": a 3D wheel the page scroll spins. Front card is large and plays.
+   * ------------------------------------------------------------------ */
+
+  var pin = $("wheel-pin"), wheel = $("wheel");
+  var W = { list: data.plates, cards: [], step: 0, cur: 0, target: 0, active: -1, R: 0, raf: 0 };
+
+  function cardW() { return Math.max(240, Math.min(560, window.innerWidth * 0.38)); }
+
   function buildGallery() {
-    var track = $("gallery-track");
+    var n = W.list.length, cw = cardW();
+    wheel.textContent = "";
+    W.cards = [];
+    W.active = -1;
+    W.step = 360 / n;
+    // ponytail: radius keeps neighbours nearly touching; the front card is pushed toward the viewer in spin()
+    W.R = Math.max(cw * 1.2, (cw * 1.04 / 2) / Math.tan(Math.PI / n));
+    wheel.style.setProperty("--cw", cw + "px");
 
-    data.plates.forEach(function (plate, i) {
-      var fig = el("figure", "plate");
-
-      var frame = el("div", "plate-frame");
-      var media;
-      if (plate.type === "video") {
-        media = document.createElement("video");
-        media.src = plate.src;
-        media.muted = true;
-        media.loop = true;
-        media.playsInline = true;
-        media.setAttribute("playsinline", "");
-        media.preload = "metadata";;
-        frame.appendChild(media);
-        frame.addEventListener("mouseenter", function () { media.play().catch(function () {}); });
-        frame.addEventListener("mouseleave", function () { media.pause(); });
-      } else {
-        media = document.createElement("img");
-        media.src = plate.src;
-        media.alt = plate.label;
-        media.loading = i < 2 ? "eager" : "lazy";
-        media.decoding = "async";
-        frame.appendChild(media);
-      }
-      frame.addEventListener("error", function () { fig.classList.add("is-fallback"); }, true);
-      frame.dataset.label = plate.label;
-
-      var cap = el("figcaption", "plate-cap");
-      cap.appendChild(el("strong", null, plate.label));
-      cap.appendChild(el("span", null, plate.note));
-
-      fig.appendChild(frame);
-      fig.appendChild(cap);
-      track.appendChild(fig);
+    W.list.forEach(function (plate, i) {
+      var card = el("button", "card");
+      card.type = "button";
+      card.setAttribute("aria-label", plate.label);
+      var frame = el("span", "card-frame");
+      var media = document.createElement(plate.type === "video" ? "video" : "img");
+      media.src = plate.src;
+      if (plate.type === "video") { media.muted = true; media.loop = true; media.playsInline = true; media.preload = "metadata"; }
+      else { media.alt = plate.label; media.loading = "lazy"; media.draggable = false; }
+      frame.appendChild(media);
+      card.appendChild(frame);
+      card.appendChild(el("span", "card-num", String(i + 1).padStart(2, "0")));
+      card.addEventListener("click", function () { scrollToCard(i); });
+      wheel.appendChild(card);
+      W.cards.push({ el: card, media: media, plate: plate, i: i });
     });
-    strip();
+    sizePin();
+    spin(true);
   }
 
-  // Native horizontal scroll (vertical wheel passes through to the page); add drag, arrows, thumb.
-  function strip() {
-    var vp = $("gallery-viewport"), thumb = $("gallery-thumb");
-    function sync() {
-      var max = vp.scrollWidth - vp.clientWidth;
-      var w = vp.clientWidth / vp.scrollWidth;
-      thumb.style.width = (w * 100) + "%";
-      thumb.style.left = (max > 0 ? (vp.scrollLeft / max) * (1 - w) * 100 : 0) + "%";
-    }
-    vp.addEventListener("scroll", sync, { passive: true });
-    window.addEventListener("resize", sync);
-    window.addEventListener("load", sync);
-    sync();
-
-    function by(d) { vp.scrollBy({ left: d * vp.clientWidth * 0.7, behavior: reduce ? "auto" : "smooth" }); }
-    $("gallery-prev").addEventListener("click", function () { by(-1); });
-    $("gallery-next").addEventListener("click", function () { by(1); });
-
-    // Wheel over the strip scrolls it sideways; at either end it hands off to the page.
-    vp.addEventListener("wheel", function (e) {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      var max = vp.scrollWidth - vp.clientWidth;
-      var next = vp.scrollLeft + e.deltaY;
-      if (e.deltaY === 0 || next < 0 && vp.scrollLeft <= 0 || next > max && vp.scrollLeft >= max) return;
-      e.preventDefault();
-      vp.scrollLeft = next;
-    }, { passive: false });
-
-    var down = null;
-    vp.addEventListener("pointerdown", function (e) {
-      if (e.pointerType !== "mouse" || e.button) return;
-      down = { x: e.clientX, left: vp.scrollLeft };
-    });
-    window.addEventListener("pointermove", function (e) {
-      if (!down) return;
-      vp.classList.add("is-drag");
-      vp.scrollLeft = down.left - (e.clientX - down.x);
-    });
-    window.addEventListener("pointerup", function () { down = null; vp.classList.remove("is-drag"); });
-    vp.addEventListener("dragstart", function (e) { e.preventDefault(); });
+  function sizePin() {
+    pin.style.height = (window.innerHeight + (W.list.length - 1) * window.innerHeight * 0.34) + "px";
   }
+
+  function pinSpan() { return pin.offsetHeight - window.innerHeight; }
+  function pinTop() { return pin.getBoundingClientRect().top + window.scrollY; }
+
+  function scrollToCard(i) {
+    window.scrollTo({ top: pinTop() + i / (W.list.length - 1) * pinSpan(), behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function spin(snap) {
+    var n = W.list.length;
+    var p = Math.max(0, Math.min(1, (window.scrollY - pinTop()) / pinSpan()));
+    W.target = p * (n - 1);
+    if (snap || reduce) W.cur = W.target;
+    else W.cur += (W.target - W.cur) * 0.14;
+
+    wheel.style.transform = "translateZ(" + (-W.R) + "px) rotateX(-4deg) rotateY(" + (-W.cur * W.step) + "deg)";
+    var act = Math.round(W.cur);
+    W.cards.forEach(function (c, i) {
+      var d = Math.abs(i - W.cur);
+      d = Math.min(d, n - d);
+      c.el.style.transform = "rotateY(" + (i * W.step) + "deg) translateZ(" + (W.R + Math.max(0, 1 - d) * W.R * 0.32).toFixed(1) + "px)";
+      c.el.style.opacity = Math.max(0, 1 - d / 4).toFixed(2);
+      c.el.style.pointerEvents = d < 3 ? "auto" : "none";
+      c.el.classList.toggle("is-active", i === act);
+    });
+    if (act !== W.active) setActive(act);
+    if (Math.abs(W.target - W.cur) > 0.002) W.raf = requestAnimationFrame(function () { spin(false); });
+    else W.raf = 0;
+  }
+
+  function setActive(i) {
+    W.cards.forEach(function (c) { if (c.plate.type === "video") c.media.pause(); });
+    var c = W.cards[i];
+    if (c.plate.type === "video") c.media.play().catch(function () {});
+    W.active = i;
+    $("wheel-num").textContent = String(i + 1).padStart(2, "0") + " / " + String(W.list.length).padStart(2, "0");
+    $("wheel-title").textContent = c.plate.label;
+    $("wheel-tag").textContent = c.plate.note;
+  }
+
+  window.addEventListener("scroll", function () { if (!W.raf) W.raf = requestAnimationFrame(function () { spin(false); }); }, { passive: true });
+  window.addEventListener("resize", buildGallery);
+
   /* ------------------------------------------------------------------ *
    * scroll-driven behaviours: rail, progress, marquee, gallery
    * ------------------------------------------------------------------ */
@@ -531,18 +464,6 @@
   var openList = [];
   var openIndex = -1;
   var lastFocus = null;
-
-  // the detail panel grows out of the wheel card it was opened from
-  function zoomFromCard(project) {
-    var c = W.cards[W.active];
-    if (reduce || !c || c.p.id !== project.id) return;
-    var inner = detail.querySelector(".detail-inner"), cr = c.el.getBoundingClientRect(), ir = inner.getBoundingClientRect();
-    var dx = cr.left + cr.width / 2 - (ir.left + ir.width / 2), dy = cr.top + cr.height / 2 - (ir.top + ir.height / 2);
-    inner.animate([
-      { transform: "translate(" + dx + "px," + dy + "px) scale(" + (cr.width / ir.width) + ")", opacity: 0 },
-      { transform: "none", opacity: 1 }
-    ], { duration: 650, easing: "cubic-bezier(0.19, 1, 0.22, 1)" });
-  }
 
   function openDetail(project) {
     openList = filterList();
@@ -869,17 +790,6 @@
     setInterval(tick, 15000);
 
     if (reduce) return;
-
-    // strip skew from scroll velocity
-    var vp = $("gallery-viewport"), track = $("gallery-track");
-    var last = vp.scrollLeft, skew = 0;
-    (function loop() {
-      var d = vp.scrollLeft - last;
-      last = vp.scrollLeft;
-      skew += (Math.max(-8, Math.min(8, d * -0.25)) - skew) * 0.18;
-      track.style.setProperty("--skew", skew.toFixed(2) + "deg");
-      requestAnimationFrame(loop);
-    })();
 
     if (!finePointer) return;
 
