@@ -1213,3 +1213,5 @@ main { position: relative; z-index: 1; }
   .row:hover { transform: perspective(900px) translateZ(34px) rotateX(2.5deg); z-index: 2; }
   .rows:hover .row:not(:hover) { opacity: 0.42; transform: perspective(900px) translateZ(-14px); }
 }
+.wheel-scene { margin-top: calc(var(--cw, 300px) * -0.18); }
+.wheel-info { margin-top: calc(var(--cw, 300px) * 0.3); }
