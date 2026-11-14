@@ -3,3 +3,6 @@ _shots/
 *.log
 .DS_Store
 Thumbs.db
+PROJECTS.md
+_d.html
+check.js
