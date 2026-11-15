@@ -1342,3 +1342,25 @@ body { font-optical-sizing: auto; }
   margin-top: 0;
 }
 .wheel-num { display: none; }
+
+/* contact: real word gaps (tracking was crushing the spaces) */
+.contact-big {
+  white-space: normal;
+  letter-spacing: -0.01em;
+  word-spacing: 0.18em;
+}
+
+/* spotlight title sits tight above the wheel */
+.wheel-info {
+  margin-top: 0 !important;
+  margin-bottom: 0.15rem !important;
+}
+
+/* restore Take a look section breathing room; clip 3D bleed before Index */
+.gallery {
+  padding: clamp(3rem, 6vh, 4.5rem) 0 clamp(2.5rem, 5vh, 4rem);
+  overflow: hidden;
+}
+.gallery-label { margin-bottom: 1.25rem; }
+.wheel-sticky { overflow: visible; }
+.wheel-scene { overflow: visible; }
