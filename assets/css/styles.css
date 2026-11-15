@@ -1278,3 +1278,21 @@ body { font-optical-sizing: auto; }
   justify-items: center;
   place-items: unset;
 }
+
+/* restore centered wheel; hug the card height; keep clearance only under the cards for the title */
+.wheel-scene {
+  display: grid;
+  place-items: center;
+  align-items: center;
+  justify-items: center;
+  overflow: visible;
+  height: calc(var(--cw, 300px) * 0.78);
+  margin-top: 0;
+  transform: none;
+}
+.wheel-info {
+  position: relative;
+  z-index: 2;
+  margin-top: calc(var(--cw, 300px) * 0.22);
+  padding-bottom: 0;
+}
