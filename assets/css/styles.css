@@ -1399,3 +1399,7 @@ body { font-optical-sizing: auto; }
   overflow: visible !important;
   padding-bottom: 2rem !important;
 }
+
+/* nudge: pull wheel up toward title, give that space back under the section */
+.wheel-scene { margin-top: -0.85rem !important; }
+.gallery { padding-bottom: calc(2rem + 0.85rem) !important; }
