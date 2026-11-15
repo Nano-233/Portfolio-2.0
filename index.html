@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=33">
+  <link rel="stylesheet" href="assets/css/styles.css?v=34">
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body class="is-loading">
@@ -23,6 +23,8 @@
 
   <div class="cursor" id="cursor" aria-hidden="true">
     <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+    <span class="cursor-label">Open</span>
     <div class="cursor-preview" id="cursor-preview">
       <video class="cursor-media cursor-media--video" muted loop playsinline preload="none"></video>
       <img class="cursor-media cursor-media--image" alt="">
@@ -77,12 +79,11 @@
       </div>
       <div class="wheel-pin" id="wheel-pin">
         <div class="wheel-sticky">
-          <div class="wheel-scene"><div class="wheel" id="wheel"></div></div>
           <div class="wheel-info" aria-live="polite">
-            <span class="wheel-num" id="wheel-num"></span>
             <h3 class="wheel-title" id="wheel-title"></h3>
             <p class="wheel-tag" id="wheel-tag"></p>
           </div>
+          <div class="wheel-scene"><div class="wheel" id="wheel"></div></div>
         </div>
       </div>
     </section>
@@ -185,7 +186,7 @@
     </div>
   </div>
 
-  <script src="assets/js/data.js?v=31"></script>
-  <script src="assets/js/app.js?v=31"></script>
+  <script src="assets/js/data.js?v=34"></script>
+  <script src="assets/js/app.js?v=34"></script>
 </body>
 </html>

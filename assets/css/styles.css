@@ -162,6 +162,34 @@ kbd {
     transition: transform 0.25s var(--ease-spring), opacity 0.2s;
   }
 
+  .cursor-ring {
+    position: absolute;
+    top: -16px;
+    left: -16px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.35);
+    transition: transform 0.28s var(--ease-spring), opacity 0.2s;
+  }
+
+  .cursor-label {
+    position: absolute;
+    left: 20px;
+    top: -7px;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s, transform 0.28s var(--ease-spring);
+    white-space: nowrap;
+  }
+
   .cursor-preview {
     position: absolute;
     top: 18px;
@@ -189,11 +217,16 @@ kbd {
 
   body.cursor-active .cursor-dot { transform: scale(0.4); opacity: 0.5; }
 
-  /* one cursor for the whole page: the dot; it swells over links and the strip */
+  /* one cursor for the whole page: the dot; ring + Open label on clickable targets */
   body.has-cursor, body.has-cursor * { cursor: none !important; }
   .cursor-dot { z-index: 1; }
-  body.cursor-link .cursor-dot { transform: scale(3); opacity: 0.55; }
+  body.cursor-link .cursor-dot { transform: scale(0.55); opacity: 1; }
+  body.cursor-link .cursor-ring { opacity: 1; transform: scale(1); }
+  body.cursor-link .cursor-label { opacity: 1; transform: translateX(0); }
+  body.cursor-active.cursor-link .cursor-label { opacity: 0; } /* preview already says "look here" */
   body.cursor-drag .cursor-dot { transform: scale(6); opacity: 0.25; }
+  body.cursor-drag .cursor-ring,
+  body.cursor-drag .cursor-label { opacity: 0; }
 }
 
 /* ---------- top bar ---------- */
@@ -1296,3 +1329,16 @@ body { font-optical-sizing: auto; }
   margin-top: calc(var(--cw, 300px) * 0.22);
   padding-bottom: 0;
 }
+
+/* title sits above the wheel; clearance below the title, not under the cards */
+.wheel-info {
+  margin-top: 0;
+  margin-bottom: calc(var(--cw, 300px) * 0.14);
+  padding-bottom: 0;
+  z-index: 2;
+}
+.wheel-scene {
+  height: calc(var(--cw, 300px) * 0.78);
+  margin-top: 0;
+}
+.wheel-num { display: none; }

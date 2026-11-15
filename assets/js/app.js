@@ -262,7 +262,8 @@
     document.body.classList.add("has-cursor");
     document.addEventListener("pointerover", function (e) {
       var t = e.target.closest ? e.target : e.target.parentElement;
-      document.body.classList.toggle("cursor-link", !!(t && t.closest("a,button,input,[role=button],.row")));
+      var clickable = !!(t && t.closest("a,button,input,[role=button],.row,.card"));
+      document.body.classList.toggle("cursor-link", clickable);
       document.body.classList.toggle("cursor-drag", !!(t && t.closest(".gallery-viewport")));
     });
 
@@ -391,7 +392,6 @@
     var c = W.cards[i];
     if (c.plate.type === "video") c.media.play().catch(function () {});
     W.active = i;
-    $("wheel-num").textContent = String(i + 1).padStart(2, "0") + " / " + String(W.list.length).padStart(2, "0");
     $("wheel-title").textContent = c.plate.label;
     $("wheel-tag").textContent = c.plate.note;
   }
