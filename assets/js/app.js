@@ -204,7 +204,7 @@
   var previewVideo = preview.querySelector("video");
   var previewImage = preview.querySelector("img");
   var mouse = { x: -200, y: -200, cx: 0, cy: 0 };
-  var previewTok = 0, warmCache = {};
+  var previewTok = 0, previewDelay = 0, warmCache = {};
   function warm(src) { if (!warmCache[src]) { warmCache[src] = new Image(); warmCache[src].src = src; } return warmCache[src]; }
   // fetch every preview image/poster once the page has settled, so first hovers are instant
   window.addEventListener("load", function () {
@@ -221,18 +221,21 @@
       previewVideo.classList.remove("is-shown");
       previewImage.classList.remove("is-shown");
       previewVideo.pause();
-      preview.classList.add("is-visible");
-      document.body.classList.add("cursor-active");
+      // ponytail: pop is immediate via .is-hot; preview waits 100ms so fast skims don't flash media
+      clearTimeout(previewDelay);
+      previewDelay = setTimeout(function () {
+        if (tok !== previewTok) return;
+        preview.classList.add("is-visible");
+        document.body.classList.add("cursor-active");
+      }, 100);
 
       if (m.type === "video") {
-        // poster first, so the previous entry's frame never lingers while the clip loads
         previewVideo.poster = m.poster || "";
         if (previewVideo.getAttribute("src") !== m.src) previewVideo.src = m.src;
         previewVideo.muted = true;
         previewVideo.play().catch(function () {});
         previewVideo.classList.add("is-shown");
       } else {
-        // only reveal the image once it is decoded; ignore if the pointer already moved on
         var im = warm(m.src);
         var show = function () {
           if (tok !== previewTok) return;
@@ -244,6 +247,8 @@
       }
     });
     node.addEventListener("hotleave", function () {
+      clearTimeout(previewDelay);
+      previewTok++;
       preview.classList.remove("is-visible");
       document.body.classList.remove("cursor-active");
       previewVideo.pause();
@@ -403,8 +408,8 @@
   function buildRail() {
     var defs = [
       { id: "hero", label: "Top" },
-      { id: "index", label: "Index" },
       { id: "gallery", label: "Take a look" },
+      { id: "index", label: "Index" },
       { id: "about", label: "Colophon" },
       { id: "contact", label: "Contact" }
     ];
@@ -604,8 +609,8 @@
 
   function commands() {
     var list = [
-      { kind: "Go", title: "Index of works", run: function () { jump("#index"); } },
       { kind: "Go", title: "Take a look", run: function () { jump("#gallery"); } },
+      { kind: "Go", title: "Index of works", run: function () { jump("#index"); } },
       { kind: "Go", title: "Colophon", run: function () { jump("#about"); } },
       { kind: "Go", title: "Contact", run: function () { jump("#contact"); } },
       { kind: "Act", title: "Invert theme", run: toggleTheme },

@@ -1224,3 +1224,9 @@ main { position: relative; z-index: 1; }
 @media (hover: hover) { .row.is-hot { transform: perspective(700px) translateZ(80px) scale(1.02); } }
 @media (hover: hover) { .cursor-preview { width: 580px; } }
 .rows.has-hot .row:not(.is-hot) { transform: none; opacity: 1; }
+
+/* wheel stays in the content column so left/right gutters scroll the page */
+.wheel-pin { margin-left: 0; width: 100%; max-width: var(--max, 72rem); }
+.wheel-scene { overflow: hidden; }
+.contact-big { white-space: nowrap; }
+
