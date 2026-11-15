@@ -309,7 +309,7 @@
    * "Take a look": a 3D wheel the page scroll spins. Front card is large and plays.
    * ------------------------------------------------------------------ */
 
-  var pin = $("wheel-pin"), wheel = $("wheel");
+  var pin = $("wheel-pin"), wheel = $("wheel"), scene = pin ? pin.querySelector(".wheel-scene") : null;
   var W = { list: data.plates, cards: [], step: 0, cur: 0, target: 0, pos: 0, active: -1, R: 0, raf: 0 };
 
   function cardW() { return Math.max(240, Math.min(760, window.innerWidth * 0.31, window.innerHeight * 0.6)); }
@@ -356,7 +356,7 @@
   // circular: go to card i by the shortest way round
   function scrollToCard(i) { var n = W.list.length, r = Math.round(W.pos); W.pos = r + mod(i - r + n / 2 | 0) - (n / 2 | 0); kick(); }
 
-  pin.addEventListener("wheel", function (e) {
+  (scene || pin).addEventListener("wheel", function (e) {
     if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
     e.preventDefault(); // ponytail: endless loop, so the wheel always captures; scroll the page with the pointer outside the section
     // ponytail: target may lead the visible position by at most 1.5 cards, so fast flicks still pass through every entry

@@ -1241,3 +1241,20 @@ body { font-optical-sizing: auto; }
   font-variation-settings: "SOFT" 50, "WONK" 1;
 }
 
+
+/* final wheel layout: same width as the Take a look header, sides visible, title snug */
+.wheel-pin {
+  margin: 0 auto;
+  width: 100%;
+  max-width: var(--max);
+  padding: 0 var(--gutter);
+  box-sizing: border-box;
+}
+.wheel-sticky { padding-top: 0; overflow: visible; }
+.wheel-scene {
+  overflow: visible;
+  height: calc(var(--cw, 300px) * 0.72);
+  margin-top: 0;
+  transform: none;
+}
+.wheel-info { margin-top: 0.6rem; padding-bottom: 0; }
