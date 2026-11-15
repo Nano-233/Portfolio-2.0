@@ -1258,3 +1258,16 @@ body { font-optical-sizing: auto; }
   transform: none;
 }
 .wheel-info { margin-top: 0.6rem; padding-bottom: 0; }
+
+/* room for the enlarged front card so it can't cover the title */
+.wheel-scene {
+  overflow: visible;
+  height: calc(var(--cw, 300px) * 1.12);
+  margin-top: 0;
+  transform: none;
+}
+.wheel-info {
+  position: relative;
+  z-index: 2;
+  margin-top: calc(var(--cw, 300px) * 0.12);
+}
