@@ -18,7 +18,7 @@
   --accent-ink: #ff6f47;
   --highlight: #2a2118;
 
-  --serif: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  --serif: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas, monospace;
 
@@ -1225,8 +1225,19 @@ main { position: relative; z-index: 1; }
 @media (hover: hover) { .cursor-preview { width: 580px; } }
 .rows.has-hot .row:not(.is-hot) { transform: none; opacity: 1; }
 
-/* wheel stays in the content column so left/right gutters scroll the page */
-.wheel-pin { margin-left: 0; width: 100%; max-width: var(--max, 72rem); }
+/* wheel centered, narrower than the viewport so left/right gutters still scroll the page */
+.wheel-pin {
+  margin: 0 auto;
+  width: min(100%, 56rem);
+  max-width: 100%;
+  padding: 0 var(--gutter);
+  box-sizing: border-box;
+}
 .wheel-scene { overflow: hidden; }
 .contact-big { white-space: nowrap; }
+body { font-optical-sizing: auto; }
+.hero-name, .wheel-title, .contact-big, .row-title, .detail-title {
+  font-family: "Fraunces", var(--serif);
+  font-variation-settings: "SOFT" 50, "WONK" 1;
+}
 

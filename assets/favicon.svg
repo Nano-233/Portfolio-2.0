@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="6" fill="#14120d"/>
-  <text x="14" y="24" font-family="Palatino Linotype, Palatino, Georgia, serif" font-size="24" fill="#d6d0c2" text-anchor="middle">H</text>
+  <text x="14" y="24" font-family="Fraunces, Georgia, serif" font-size="24" fill="#d6d0c2" text-anchor="middle">H</text>
   <circle cx="25.5" cy="22.5" r="2.4" fill="#e2552f"/>
 </svg>
