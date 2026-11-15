@@ -1271,3 +1271,10 @@ body { font-optical-sizing: auto; }
   z-index: 2;
   margin-top: calc(var(--cw, 300px) * 0.12);
 }
+
+/* keep the tall scene for title clearance, but park the wheel at the top so the gap isn't above it */
+.wheel-scene {
+  align-items: start;
+  justify-items: center;
+  place-items: unset;
+}
