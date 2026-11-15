@@ -153,10 +153,10 @@ kbd {
 
   .cursor-dot {
     position: absolute;
-    top: -3px;
-    left: -3px;
-    width: 6px;
-    height: 6px;
+    top: -4px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--accent);
     transition: transform 0.25s var(--ease-spring), opacity 0.2s;
@@ -164,10 +164,10 @@ kbd {
 
   .cursor-ring {
     position: absolute;
-    top: -16px;
-    left: -16px;
-    width: 32px;
-    height: 32px;
+    top: -11px;
+    left: -11px;
+    width: 22px;
+    height: 22px;
     border: 1px solid var(--accent);
     border-radius: 50%;
     opacity: 0;
@@ -177,8 +177,8 @@ kbd {
 
   .cursor-label {
     position: absolute;
-    left: 20px;
-    top: -7px;
+    left: 16px;
+    top: -6px;
     font-family: var(--mono);
     font-size: 0.58rem;
     letter-spacing: 0.16em;
@@ -220,7 +220,7 @@ kbd {
   /* one cursor for the whole page: the dot; ring + Open label on clickable targets */
   body.has-cursor, body.has-cursor * { cursor: none !important; }
   .cursor-dot { z-index: 1; }
-  body.cursor-link .cursor-dot { transform: scale(0.55); opacity: 1; }
+  body.cursor-link .cursor-dot { transform: scale(1.35); opacity: 1; }
   body.cursor-link .cursor-ring { opacity: 1; transform: scale(1); }
   body.cursor-link .cursor-label { opacity: 1; transform: translateX(0); }
   body.cursor-active.cursor-link .cursor-label { opacity: 0; } /* preview already says "look here" */
