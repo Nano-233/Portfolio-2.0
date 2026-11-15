@@ -1375,3 +1375,27 @@ body { font-optical-sizing: auto; }
 }
 .wheel-pin { padding-bottom: calc(var(--cw, 300px) * 0.28); }
 .gallery { overflow: visible; padding-bottom: calc(var(--cw, 420px) * 0.35 + 3rem); }
+
+/* definitive spacing: title flush to wheel, modest room under for 3D only */
+.wheel-info {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1;
+}
+.wheel-title { margin: 0 0 0.1rem !important; line-height: 1.05; }
+.wheel-tag { margin: 0 !important; padding: 0 !important; }
+.wheel-scene {
+  height: calc(var(--cw, 300px) * 0.68) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  place-items: center;
+  overflow: visible !important;
+}
+.wheel-pin {
+  padding-bottom: 1.25rem !important;
+}
+.gallery {
+  overflow: visible !important;
+  padding-bottom: 2rem !important;
+}
