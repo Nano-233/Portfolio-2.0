@@ -1364,3 +1364,13 @@ body { font-optical-sizing: auto; }
 .gallery-label { margin-bottom: 1.25rem; }
 .wheel-sticky { overflow: visible; }
 .wheel-scene { overflow: visible; }
+
+/* no gap under spotlight title; don't clip ¡ª grow the section under the wheel instead */
+.wheel-info { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+.wheel-title { margin-bottom: 0.15rem; }
+.wheel-tag { margin-bottom: 0 !important; }
+.gallery {
+  overflow: visible;
+  padding-bottom: calc(var(--cw, 300px) * 0.35 + 3rem);
+}
+.wheel-pin { padding-bottom: calc(var(--cw, 300px) * 0.28); }
