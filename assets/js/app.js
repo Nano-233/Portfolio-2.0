@@ -324,6 +324,7 @@
     // ponytail: radius keeps neighbours nearly touching; the front card is pushed toward the viewer in spin()
     W.R = Math.max(cw * 1.2, (cw * 1.04 / 2) / Math.tan(Math.PI / n));
     pin.style.setProperty("--cw", cw + "px");
+    if (pin.parentElement) pin.parentElement.style.setProperty("--cw", cw + "px");
 
     W.list.forEach(function (plate, i) {
       var card = el("button", "card");

@@ -1374,3 +1374,4 @@ body { font-optical-sizing: auto; }
   padding-bottom: calc(var(--cw, 300px) * 0.35 + 3rem);
 }
 .wheel-pin { padding-bottom: calc(var(--cw, 300px) * 0.28); }
+.gallery { overflow: visible; padding-bottom: calc(var(--cw, 420px) * 0.35 + 3rem); }
